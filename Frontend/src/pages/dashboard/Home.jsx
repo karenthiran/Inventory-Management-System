@@ -1,131 +1,97 @@
 import React from "react";
 
 const Home = () => {
-  const user = {
-    name: "Anton",
-    role: "admin",
-  };
-
-  const isAdmin = user.role === "admin";
-
   return (
-    <>
-      {/* Welcome Section */}
-      <h2 className="text-3xl font-bold text-gray-800 mb-8">
-        Welcome, {user.name} 👋
-      </h2>
+    <div className="space-y-8">
+      {/* PAGE TITLE */}
+      <h1 className="text-2xl font-semibold text-gray-700 tracking-wide">
+        HOME
+      </h1>
 
-      {/* ================= SUMMARY CARDS ================= */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        <SummaryCard title="Total Items" value="245" />
-        <SummaryCard title="Issued Items" value="58" />
-        <SummaryCard title="Available Items" value="167" />
+      {/* ===================== SUMMARY CARDS ===================== */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard
+          title="Total Items"
+          value="1245"
+          subtitle="+12.5% from last month"
+          gradient="from-blue-500 to-indigo-600"
+        />
 
-        {isAdmin && (
-          <SummaryCard title="Damaged Items" value="20" color="red" />
-        )}
+        <StatCard
+          title="Issued Items"
+          value="487"
+          subtitle="Currently in use"
+          gradient="from-pink-500 to-rose-500"
+        />
+
+        <StatCard
+          title="Available"
+          value="758"
+          subtitle="Ready to issue"
+          gradient="from-green-500 to-emerald-600"
+        />
+
+        <StatCard
+          title="Low Stock"
+          value="23"
+          subtitle="Requires attention"
+          gradient="from-orange-500 to-red-500"
+        />
       </div>
 
-      {/* ================= QUICK ACTIONS ================= */}
-      {isAdmin && (
-        <div className="mb-10">
-          <h3 className="text-xl font-semibold text-gray-700 mb-4">
-            Quick Actions
-          </h3>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <ActionButton label="Add Item" />
-            <ActionButton label="Issue Item" />
-            <ActionButton label="Return Item" />
-            <ActionButton label="Generate Report" />
-          </div>
+      {/* ===================== LOW STOCK & DAMAGED ===================== */}
+      <div className="bg-gray-100 p-6 rounded-2xl shadow-inner max-w-xl">
+        <div className="mb-6">
+          <h3 className="font-semibold text-gray-800">Low Stock & Damaged</h3>
+          <p className="text-sm text-gray-500">Items requiring attention</p>
         </div>
-      )}
 
-      {/* ================= RECENT ACTIVITY ================= */}
-      <div>
-        <h3 className="text-xl font-semibold text-gray-700 mb-4">
-          Recent Activity
-        </h3>
-
-        <div className="bg-white shadow rounded-2xl overflow-hidden">
-          <table className="min-w-full text-left">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="px-6 py-3 text-sm font-medium text-gray-600">
-                  Date
-                </th>
-                <th className="px-6 py-3 text-sm font-medium text-gray-600">
-                  Item
-                </th>
-                <th className="px-6 py-3 text-sm font-medium text-gray-600">
-                  Action
-                </th>
-                <th className="px-6 py-3 text-sm font-medium text-gray-600">
-                  User
-                </th>
-                <th className="px-6 py-3 text-sm font-medium text-gray-600">
-                  Status
-                </th>
-              </tr>
-            </thead>
-
-            <tbody className="divide-y">
-              <tr>
-                <td className="px-6 py-4">2026-01-12</td>
-                <td className="px-6 py-4">Arduino Kit</td>
-                <td className="px-6 py-4">Issued</td>
-                <td className="px-6 py-4">Student A</td>
-                <td className="px-6 py-4 text-blue-600 font-medium">Active</td>
-              </tr>
-
-              <tr>
-                <td className="px-6 py-4">2026-01-11</td>
-                <td className="px-6 py-4">Oscilloscope</td>
-                <td className="px-6 py-4">Returned</td>
-                <td className="px-6 py-4">Lecturer B</td>
-                <td className="px-6 py-4 text-green-600 font-medium">
-                  Returned
-                </td>
-              </tr>
-
-              <tr>
-                <td className="px-6 py-4">2026-01-10</td>
-                <td className="px-6 py-4">Raspberry Pi</td>
-                <td className="px-6 py-4">Damaged</td>
-                <td className="px-6 py-4">Student C</td>
-                <td className="px-6 py-4 text-red-600 font-medium">Damaged</td>
-              </tr>
-            </tbody>
-          </table>
+        <div className="space-y-4">
+          <ItemRow name='Dell Monitor 24"' qty="5" status="low" />
+          <ItemRow name="HP Keyboard" qty="2" status="damaged" />
+          <ItemRow name="Logitech Mouse" qty="5" status="low" />
+          <ItemRow name="USB-C Cable" qty="4" status="low" />
         </div>
       </div>
-    </>
-  );
-};
-
-/* ================= COMPONENTS ================= */
-
-const SummaryCard = ({ title, value, color = "blue" }) => {
-  const colors = {
-    blue: "border-blue-500",
-    red: "border-red-500",
-  };
-
-  return (
-    <div
-      className={`bg-white shadow-lg rounded-2xl p-6 border-l-4 ${colors[color]}`}
-    >
-      <h4 className="text-gray-600 text-sm">{title}</h4>
-      <p className="text-3xl font-bold text-gray-800 mt-2">{value}</p>
     </div>
   );
 };
 
-const ActionButton = ({ label }) => (
-  <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl shadow transition duration-200 px-4">
-    {label}
-  </button>
-);
+/* ===================== COMPONENTS ===================== */
+
+const StatCard = ({ title, value, subtitle, gradient }) => {
+  return (
+    <div
+      className={`rounded-2xl p-6 text-white shadow-lg bg-gradient-to-br ${gradient}`}
+    >
+      <p className="text-sm opacity-90">{title}</p>
+      <h2 className="text-3xl font-bold mt-2">{value}</h2>
+      <p className="text-xs mt-2 opacity-80">{subtitle}</p>
+    </div>
+  );
+};
+
+const ItemRow = ({ name, qty, status }) => {
+  return (
+    <div className="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm">
+      <div>
+        <p className="text-sm font-medium text-gray-800">{name}</p>
+        <p className="text-xs text-gray-500">Quantity: {qty}</p>
+      </div>
+
+      {status === "low" && (
+        <span className="bg-orange-100 text-orange-600 text-xs font-semibold px-3 py-1 rounded-full">
+          Low Stock
+        </span>
+      )}
+
+      {status === "damaged" && (
+        <span className="bg-red-100 text-red-600 text-xs font-semibold px-3 py-1 rounded-full">
+          Damaged
+        </span>
+      )}
+    </div>
+  );
+};
 
 export default Home;
