@@ -5,7 +5,6 @@ import DashboardLayout from "../components/layout/DashboardLayout";
 // Dashboard Pages
 import Home from "../pages/dashboard/Home";
 import Inventory from "../pages/dashboard/Inventory";
-// import Categories from "../pages/dashboard/Categories";
 
 const AppRoutes = () => {
   return (
@@ -19,7 +18,6 @@ const AppRoutes = () => {
         <Route index element={<Home />} />
 
         <Route path="inventory" element={<Inventory />} />
-        {/* <Route path="categories" element={<Categories />} /> */}
       </Route>
 
       {/* Optional Redirect */}
