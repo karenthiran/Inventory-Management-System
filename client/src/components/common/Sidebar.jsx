@@ -15,7 +15,7 @@ const Sidebar = () => {
     { name: "Home", icon: HomeIcon, path: "/home" },
     { name: "Inventory Item", icon: Box, path: "/inventory" },
     { name: "Issue", icon: ArrowRight, path: "/issue" },
-    { name: "Return", icon: ArrowLeft },
+    { name: "Return", icon: ArrowLeft, path: "/return" },
     { name: "Maintenance", icon: Wrench },
     { name: "Report", icon: FileText },
     { name: "Setting", icon: Settings },
