@@ -1,24 +1,24 @@
 import { NavLink } from "react-router-dom";
 import {
-  LayoutGrid,
   Box,
   FolderKanban,
   ArrowRight,
   ArrowLeft,
   Wrench,
-  Users,
+  FileText,
   Settings,
+  HomeIcon,
 } from "lucide-react";
 
 const Sidebar = () => {
   const menuItems = [
-    { name: "Home", icon: LayoutGrid, path: "/home" },
+    { name: "Home", icon: HomeIcon, path: "/home" },
     { name: "Inventory Item", icon: Box, path: "/dashboard/inventory" },
-    { name: "Categories", icon: FolderKanban },
+
     { name: "Issue", icon: ArrowRight },
     { name: "Return", icon: ArrowLeft },
     { name: "Maintenance", icon: Wrench },
-    { name: "User", icon: Users },
+    { name: "Report", icon: FileText },
     { name: "Setting", icon: Settings },
   ];
 
