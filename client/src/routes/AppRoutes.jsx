@@ -7,6 +7,7 @@ import Return from "../pages/Return";
 import Maintenance from "../pages/Maintenance";
 import Report from "../pages/Report";
 import Setting from "../pages/Settings";
+import Userprofile from "../pages/UserProfile";
 
 const AppRoutes = () => {
   return (
@@ -20,6 +21,7 @@ const AppRoutes = () => {
         <Route path="maintenance" element={<Maintenance />} />
         <Route path="report" element={<Report />} />
         <Route path="setting" element={<Setting />} />
+        <Route path="userprofile" element={<Userprofile />} />
       </Route>
     </Routes>
   );
