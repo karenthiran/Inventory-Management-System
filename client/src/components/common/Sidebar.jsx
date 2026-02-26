@@ -24,8 +24,8 @@ const Sidebar = () => {
   return (
     <div className="w-64 min-h-screen bg-gray-100 pt-0 px-6 pb-6">
       {/* logo */}
-      <div className=" flex justify-center ">
-        <img src={logo} alt="IMS Logo" className="h-40 object-contain" />
+      <div className=" flex justify-center pb-4 ">
+        <img src={logo} alt="IMS Logo" className="h-20 object-contain" />
       </div>
 
       <div className="space-y-2">
