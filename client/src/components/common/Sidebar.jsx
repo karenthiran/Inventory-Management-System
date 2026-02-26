@@ -22,7 +22,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="w-64 min-h-screen bg-gray-100 px-6 flex flex-col">
+    <div className="w-64 min-h-screen bg-gray-100 px-6 pb-4 flex flex-col ">
       {/* Logo Section */}
       <div className="flex justify-center pb-6 border-b border-gray-200">
         <img src={logo} alt="IMS Logo" className="h-20 object-contain" />
@@ -51,14 +51,20 @@ const Sidebar = () => {
       {/* User Profile Section */}
       <NavLink
         to="/userprofile"
-        className="mt-4 p-3 border border-gray-200 rounded-xl flex items-center gap-3 hover:bg-gray-200 transition"
+        className={({ isActive }) =>
+          `flex items-center  border border-gray-300 gap-4 px-2 py-1.5 rounded-2xl transition-all duration-300 ${
+            isActive
+              ? "bg-linear-to-r from-indigo-500 to-purple-500 text-white shadow-md"
+              : "text-gray-600 hover:bg-gray-200"
+          }`
+        }
       >
         <img
           src="https://i.pravatar.cc/40"
           alt="User"
-          className="w-10 h-10 rounded-full object-cover"
+          className="w-8 h-8 rounded-full object-cover"
         />
-        <span className="text-sm text-gray-700 font-medium truncate">
+        <span className="text-base font-medium truncate">
           user@eng.jfn.ac.lk
         </span>
       </NavLink>
