@@ -10,7 +10,7 @@ const DashboardCard = ({
   return (
     <div
       className={`relative w-64 h-40 rounded-xl px-5 py-4 text-white 
-      bg-gradient-to-br ${gradient} shadow-lg 
+      bg-linear-to-br ${gradient} shadow-lg 
       transition-transform duration-300 hover:scale-105`}
     >
       {/* Top Section */}
