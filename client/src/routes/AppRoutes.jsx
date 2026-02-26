@@ -14,6 +14,7 @@ const AppRoutes = () => {
         <Route path="inventory" element={<InventoryItem />} />
         <Route path="issue" element={<Issue />} />
         <Route path="return" element={<Return />} />
+        <Route path="maintenance" element={<Return />} />
       </Route>
     </Routes>
   );
