@@ -23,7 +23,10 @@ const Sidebar = () => {
 
   return (
     <div className="w-64 min-h-screen bg-gray-100 p-6">
-      <h2 className="text-gray-700 text-lg font-medium mb-8">Navigation Bar</h2>
+      {/* logo */}
+      <div className="  flex justify-center">
+        <img src={logo} alt="IMS Logo" className="h-50 object-contain" />
+      </div>
 
       <div className="space-y-2">
         {menuItems.map((item, index) => {
