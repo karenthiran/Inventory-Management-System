@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
+import logo from "../../assets/Images/logoIMS2.png";
 import {
   Box,
-  FolderKanban,
   ArrowRight,
   ArrowLeft,
   Wrench,
