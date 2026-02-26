@@ -6,6 +6,7 @@ import Issue from "../pages/Issue";
 import Return from "../pages/Return";
 import Maintenance from "../pages/Maintenance";
 import Report from "../pages/Report";
+import Setting from "../pages/Settings";
 
 const AppRoutes = () => {
   return (
@@ -18,6 +19,7 @@ const AppRoutes = () => {
         <Route path="return" element={<Return />} />
         <Route path="maintenance" element={<Maintenance />} />
         <Route path="report" element={<Report />} />
+        <Route path="setting" element={<Setting />} />
       </Route>
     </Routes>
   );
