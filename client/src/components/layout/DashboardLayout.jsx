@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
-import Sidebar from "../dashboard/Sidebar";
-import TopNavbar from "../dashboard/TopNavbar";
+import Sidebar from "../common/Sidebar";
+import TopNavbar from "../common/TopNavbar";
 
 const DashboardLayout = () => {
   return (

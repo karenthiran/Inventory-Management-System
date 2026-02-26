@@ -12,7 +12,7 @@ import {
 
 const Sidebar = () => {
   const menuItems = [
-    { name: "Home", icon: LayoutGrid, path: "/dashboard" },
+    { name: "Home", icon: LayoutGrid, path: "/home" },
     { name: "Inventory Item", icon: Box, path: "/dashboard/inventory" },
     { name: "Categories", icon: FolderKanban },
     { name: "Issue", icon: ArrowRight },
