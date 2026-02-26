@@ -14,7 +14,7 @@ const Sidebar = () => {
   const menuItems = [
     { name: "Home", icon: HomeIcon, path: "/home" },
     { name: "Inventory Item", icon: Box, path: "/inventory" },
-    { name: "Issue", icon: ArrowRight },
+    { name: "Issue", icon: ArrowRight, path: "/issue" },
     { name: "Return", icon: ArrowLeft },
     { name: "Maintenance", icon: Wrench },
     { name: "Report", icon: FileText },
