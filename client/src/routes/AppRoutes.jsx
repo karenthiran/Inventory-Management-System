@@ -5,6 +5,7 @@ import InventoryItem from "../pages/InventoryItem";
 import Issue from "../pages/Issue";
 import Return from "../pages/Return";
 import Maintenance from "../pages/Maintenance";
+import Report from "../pages/Report";
 
 const AppRoutes = () => {
   return (
