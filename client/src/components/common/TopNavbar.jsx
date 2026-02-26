@@ -1,17 +1,31 @@
-import { Bell, Search } from "lucide-react";
+import { Bell, Moon, LogOut, Search } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
-const TopNavbar = () => {
+const Topbar = () => {
+  const location = useLocation();
+
+  const routeTitles = {
+    "/home": "Home",
+    "/inventory": "Inventory Item",
+    "/issue": "Issue Item",
+    "/return": "Return Item",
+    "/maintenance": "Maintenance",
+    "/report": "Reports",
+    "/setting": "Settings",
+    "/userprofile": "User Profile",
+  };
+
+  const title = routeTitles[location.pathname] || "Dashboard";
+
   return (
-    <div
-      className="h-16 px-8 flex items-center justify-between 
-                    bg-gray-100 border-b border-gray-200"
-    >
-      {/* Left Section */}
-      <div className="flex items-center gap-6">
-        <h1 className="text-xl font-semibold text-gray-700">Dashboard</h1>
+    <div className="w-full bg-gray-200 px-8 py-4 flex items-center justify-between">
+      {/* Dynamic Title */}
+      <h1 className="text-2xl font-semibold text-indigo-600">{title}</h1>
 
-        {/* Search */}
-        <div className="relative hidden md:block">
+      {/* Right Section */}
+      <div className="flex items-center gap-6">
+        {/* Search Bar */}
+        <div className="relative">
           <Search
             size={18}
             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -19,53 +33,16 @@ const TopNavbar = () => {
           <input
             type="text"
             placeholder="Search..."
-            className="pl-10 pr-4 py-2 w-64 rounded-xl 
-                       bg-white shadow-sm 
-                       focus:outline-none 
-                       focus:ring-2 
-                       focus:ring-indigo-500 
-                       text-sm"
+            className="w-72 bg-gray-100 rounded-lg py-2 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-indigo-300"
           />
         </div>
-      </div>
 
-      {/* Right Section */}
-      <div className="flex items-center gap-6">
-        {/* Notification */}
-        <div className="relative cursor-pointer p-2 rounded-xl hover:bg-white transition">
-          <Bell size={22} className="text-gray-600" />
-          <span
-            className="absolute top-1 right-1 
-           bg-red-500
-           text-white text-xs w-4 h-4 
-           flex items-center justify-center rounded-full"
-          >
-            3
-          </span>
-        </div>
-
-        {/* User Profile */}
-        <div
-          className="flex items-center gap-3 cursor-pointer 
-                        hover:bg-white px-3 py-2 rounded-xl transition"
-        >
-          <div
-            className="w-9 h-9 rounded-full 
-                          bg-gradient-to-r from-indigo-500 to-purple-500 
-                          text-white flex items-center justify-center 
-                          font-semibold shadow-md"
-          >
-            A
-          </div>
-
-          <div className="hidden md:block">
-            <p className="text-sm font-medium text-gray-700">Anton</p>
-            <p className="text-xs text-gray-500">Admin</p>
-          </div>
-        </div>
+        <Bell size={20} className="text-indigo-500 cursor-pointer" />
+        <Moon size={20} className="text-black cursor-pointer" />
+        <LogOut size={20} className="text-red-500 cursor-pointer" />
       </div>
     </div>
   );
 };
 
-export default TopNavbar;
+export default Topbar;
