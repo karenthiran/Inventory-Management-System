@@ -28,10 +28,12 @@ const cardData = [
 
 const Home = () => {
   return (
-    <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-      {cardData.map((card, index) => (
-        <DashboardCard key={index} {...card} />
-      ))}
+    <div className="p-6 flex justify-center">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl w-full">
+        {cardData.map((card, index) => (
+          <DashboardCard key={index} {...card} />
+        ))}
+      </div>
     </div>
   );
 };
