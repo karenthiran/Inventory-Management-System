@@ -18,7 +18,7 @@ const Topbar = () => {
   const title = routeTitles[location.pathname] || "Dashboard";
 
   return (
-    <div className="w-full bg-gray-200 px-8 py-4 flex items-center justify-between">
+    <div className="w-full bg-gray-100 px-8 py-4 flex items-center justify-between   border-b border-gray-300">
       {/* Dynamic Title */}
       <h1 className="text-2xl font-semibold text-indigo-600">{title}</h1>
 
@@ -33,7 +33,7 @@ const Topbar = () => {
           <input
             type="text"
             placeholder="Search..."
-            className="w-72 bg-gray-100 rounded-lg py-2 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-indigo-300"
+            className="w-72 bg-gray-100 rounded-lg py-2 pl-10 pr-4 text-sm outline outline-1 outline-gray-300 focus:ring-2 focus:ring-indigo-300"
           />
         </div>
 
