@@ -18,7 +18,7 @@ const Topbar = () => {
   const title = routeTitles[location.pathname] || "Dashboard";
 
   return (
-    <div className="w-full bg-gray-100 px-8 py-4 flex items-center justify-between   border-b border-gray-300">
+    <div className="fixed top-0 left-64 right-0 h-16 bg-gray-100 px-8 flex items-center justify-between border-b border-gray-300 z-40">
       {/* Dynamic Title */}
       <h1 className="text-2xl font-semibold text-indigo-600">{title}</h1>
 
