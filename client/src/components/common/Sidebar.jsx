@@ -22,7 +22,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="w-64 min-h-screen    bg-gray-100 px-6 pb-4 flex flex-col border-r border-gray-300">
+    <div className="fixed top-0 left-0 w-64 h-screen bg-gray-100 px-6 pb-4 flex flex-col border-r border-gray-300">
       {/* Logo Section */}
       <div className="flex flex-col items-center pt-2 pb-6 border-b border-gray-300">
         <img src={logo} alt="IMS Logo" className="h-15 object-contain" />

@@ -4,16 +4,16 @@ import TopNavbar from "../common/TopNavbar";
 
 const DashboardLayout = () => {
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="bg-gray-100">
+      {/* Fixed Sidebar */}
       <Sidebar />
 
-      <div className="flex-1 flex flex-col">
-        <TopNavbar />
+      {/* Fixed Topbar */}
+      <TopNavbar />
 
-        {/* This is where page content changes */}
-        <div className="p-8">
-          <Outlet />
-        </div>
+      {/* Main Content */}
+      <div className="ml-64 mt-16 p-8 min-h-screen overflow-y-auto">
+        <Outlet />
       </div>
     </div>
   );
