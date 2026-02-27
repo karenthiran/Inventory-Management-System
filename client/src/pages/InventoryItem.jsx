@@ -1,45 +1,10 @@
 import React from "react";
-import DashboardCard from "../components/common/DashboardCard";
+import { useNavigate } from "react-router-dom";
 import InventoryTable from "../components/layout/inventory/InventoryTable";
-import {
-  AlertTriangle,
-  AlertCircle,
-  XCircle,
-  Wrench,
-  LayoutGrid,
-} from "lucide-react";
+import { LayoutGrid, Plus } from "lucide-react";
 
 const InventoryItem = () => {
-  const cardData = [
-    {
-      title: "Total Damaged Items",
-      value: 234,
-      subtitle: "All reported damaged inventory",
-      icon: <AlertTriangle size={18} />,
-      gradient: "from-orange-500 to-amber-600",
-    },
-    {
-      title: "Partially Damaged",
-      value: 125,
-      subtitle: "Can be repaired or reused",
-      icon: <AlertCircle size={18} />,
-      gradient: "from-yellow-400 to-amber-500",
-    },
-    {
-      title: "Fully Damaged",
-      value: 87,
-      subtitle: "Not usable – replacement required",
-      icon: <XCircle size={18} />,
-      gradient: "from-red-500 to-rose-600",
-    },
-    {
-      title: "Submitted for Repair",
-      value: 22,
-      subtitle: "Currently under maintenance",
-      icon: <Wrench size={18} />,
-      gradient: "from-blue-600 to-indigo-700",
-    },
-  ];
+  const navigate = useNavigate();
 
   const tableColumns = [
     { header: "NO.", accessor: "no" },
@@ -83,32 +48,88 @@ const InventoryItem = () => {
       location: "EML-01",
       quantity: 12,
     },
+    {
+      no: "04",
+      itemNumber: "114-7821-556-9021",
+      itemName: "Projector",
+      category: "Electronic",
+      location: "COL-03",
+      quantity: 3,
+    },
+    {
+      no: "05",
+      itemNumber: "771-2290-443-1188",
+      itemName: "Router",
+      category: "Networking",
+      location: "NET-01",
+      quantity: 9,
+    },
+    {
+      no: "06",
+      itemNumber: "662-9033-781-5520",
+      itemName: "Multimeter",
+      category: "Electronic",
+      location: "EML-02",
+      quantity: 15,
+    },
+    {
+      no: "07",
+      itemNumber: "905-3321-667-4412",
+      itemName: "Desktop Computer",
+      category: "Computing",
+      location: "COL-04",
+      quantity: 6,
+    },
+    {
+      no: "08",
+      itemNumber: "318-7740-902-6631",
+      itemName: "Keyboard",
+      category: "Accessories",
+      location: "COL-05",
+      quantity: 25,
+    },
+    {
+      no: "09",
+      itemNumber: "440-1288-554-9902",
+      itemName: "Mouse",
+      category: "Accessories",
+      location: "COL-05",
+      quantity: 30,
+    },
+    {
+      no: "10",
+      itemNumber: "552-6671-223-8044",
+      itemName: "Power Supply Unit",
+      category: "Hardware",
+      location: "HW-01",
+      quantity: 8,
+    },
   ];
 
   return (
     <div className="px-6 py-4">
-      {/* Header */}
+      {/* Page Header */}
       <div className="flex items-center gap-3 mb-10">
         <div className="bg-indigo-100 p-2 rounded-lg">
           <LayoutGrid size={22} className="text-indigo-600" />
         </div>
         <h1 className="text-xl font-semibold text-gray-800">
-          Inventory Overview
+          Inventory Item List
         </h1>
       </div>
 
-      {/* Cards */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-        {cardData.map((card, index) => (
-          <DashboardCard key={index} {...card} />
-        ))}
-      </div>
-
-      {/* Table */}
+      {/* Table Section */}
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-lg font-semibold text-gray-800 mb-6">
-          Inventory Item List
-        </h2>
+        {/* Add Button Row (Right Aligned) */}
+        <div className="flex justify-end mb-6">
+          <button
+            onClick={() => navigate("/add-item")}
+            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm"
+          >
+            <Plus size={18} />
+            Add New Item
+          </button>
+        </div>
 
         <InventoryTable columns={tableColumns} data={tableData} />
       </div>
