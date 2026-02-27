@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 import DashboardCard from "../components/common/DashboardCard";
-import HomeDataTable from "../components/layout/Home/HomeDataTable";
+import HomeDataTable from "../components/layout/home/HomeDataTable";
 
 /* =========================================================
    📊 Dashboard Cards Data
