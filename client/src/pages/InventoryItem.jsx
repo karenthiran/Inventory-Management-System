@@ -3,9 +3,6 @@ import { useNavigate } from "react-router-dom";
 import InventoryTable from "../components/layout/inventory/InventoryTable";
 import { LayoutGrid, Plus } from "lucide-react";
 
-
-
-
 const InventoryItem = () => {
   const navigate = useNavigate();
 
