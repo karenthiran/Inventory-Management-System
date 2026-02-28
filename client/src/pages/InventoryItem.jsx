@@ -1,21 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import InventoryTable from "../components/layout/inventory/InventoryTable";
-import Pagination from "../components/common/Pagination";
 import { LayoutGrid, Plus } from "lucide-react";
 
 const InventoryItem = () => {
   const navigate = useNavigate();
-
-  /* ================= Pagination Setup ================= */
-
-  // Current active page
-  const [currentPage, setCurrentPage] = useState(1);
-
-  // How many items per page
-  const itemsPerPage = 5;
-
-  /* ================= Table Columns ================= */
 
   const tableColumns = [
     { header: "NO.", accessor: "no" },
@@ -34,8 +23,6 @@ const InventoryItem = () => {
     },
   ];
 
-  /* ================= Table Data ================= */
-
   const tableData = [
     {
       no: "01",
@@ -47,7 +34,7 @@ const InventoryItem = () => {
     },
     {
       no: "02",
-      itemNumber: "661-7963 - 661-7963",
+      itemNumber: "661-7963-661-7963",
       itemName: "Oscilloscope",
       category: "Electronic",
       location: "COL-02",
@@ -119,21 +106,10 @@ const InventoryItem = () => {
     },
   ];
 
-  /* ================= Simulate Backend Pagination ================= */
-
-  // Calculate index positions
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-
-  // Slice data for current page
-  const currentItems = tableData.slice(indexOfFirstItem, indexOfLastItem);
-
-  /* ================= Render ================= */
-
   return (
-    <div className="px-6 py-4">
-      {/* Page Header */}
-      <div className="flex items-center gap-3 mb-10">
+    <div className="h-full flex flex-col overflow-hidden px-6 py-4">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-6 flex-shrink-0">
         <div className="bg-indigo-100 p-2 rounded-lg">
           <LayoutGrid size={22} className="text-indigo-600" />
         </div>
@@ -142,10 +118,10 @@ const InventoryItem = () => {
         </h1>
       </div>
 
-      {/* Table Section */}
-      <div className="max-w-7xl mx-auto">
-        {/* Add Button Row */}
-        <div className="flex justify-end mb-6">
+      {/* Content Area */}
+      <div className="flex-1 flex flex-col max-w-7xl mx-auto w-full overflow-hidden">
+        {/* Add Button */}
+        <div className="flex justify-end mb-4 flex-shrink-0">
           <button
             onClick={() => navigate("/add-item")}
             className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm"
@@ -155,16 +131,10 @@ const InventoryItem = () => {
           </button>
         </div>
 
-        {/* Inventory Table */}
-        <InventoryTable columns={tableColumns} data={currentItems} />
-
-        {/* Pagination Component */}
-        <Pagination
-          totalItems={tableData.length}
-          itemsPerPage={itemsPerPage}
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-        />
+        {/* Table Area */}
+        <div className="flex-1 overflow-hidden">
+          <InventoryTable columns={tableColumns} data={tableData} />
+        </div>
       </div>
     </div>
   );
