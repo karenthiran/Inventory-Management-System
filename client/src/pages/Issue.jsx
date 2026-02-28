@@ -235,13 +235,21 @@ const Issue = () => {
   }, [currentPage, tableData]);
 
   return (
-    <div className="px-6 py-4">
+    <div
+      className="px-6 py-4 bg-white dark:bg-gray-900 
+  min-h-screen transition-colors duration-300"
+    >
       {/* ================= Header ================= */}
       <div className="flex items-center gap-3 mb-10">
-        <div className="bg-indigo-100 p-2 rounded-lg">
-          <LayoutGrid size={22} className="text-indigo-600" />
+        <div className="bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg">
+          <LayoutGrid
+            size={22}
+            className="text-indigo-600 dark:text-indigo-400"
+          />
         </div>
-        <h1 className="text-xl font-semibold text-gray-800">Overview</h1>
+        <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+          Overview
+        </h1>
       </div>
 
       {/* ================= Cards Section ================= */}
@@ -253,13 +261,16 @@ const Issue = () => {
         </div>
       </section>
 
-      {/* Table Section */}
+      {/* ================= Table Section ================= */}
       <div className="max-w-7xl mx-auto">
         {/* Top Bar */}
         <div className="flex items-center justify-between mb-6">
           {/* Left title */}
-          <div className="flex items-center gap-2 text-neutral-900">
-            <FileText size={25} className="text-indigo-600" />
+          <div className="flex items-center gap-2 text-neutral-900 dark:text-gray-200">
+            <FileText
+              size={25}
+              className="text-indigo-600 dark:text-indigo-400"
+            />
             <span className="text-xl font-semibold">Detailed Report</span>
           </div>
 
@@ -268,7 +279,12 @@ const Issue = () => {
             {/* Issue button */}
             <button
               onClick={() => navigate("/add-item")}
-              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 cursor-pointer text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm"
+              className="flex items-center gap-2 
+            bg-indigo-600 hover:bg-indigo-700 
+            dark:bg-indigo-500 dark:hover:bg-indigo-600
+            cursor-pointer text-white px-4 py-2 
+            rounded-lg text-sm font-medium 
+            transition-all duration-200 shadow-sm"
             >
               <Plus size={18} />
               Issue a New Item
@@ -276,7 +292,15 @@ const Issue = () => {
 
             {/* Filter dropdown */}
             <div className="relative">
-              <select className="appearance-none bg-white border border-gray-200 cursor-pointer rounded-lg px-4 py-2 pr-10 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <select
+                className="appearance-none 
+              bg-white dark:bg-gray-800 
+              border border-gray-200 dark:border-gray-700 
+              cursor-pointer rounded-lg 
+              px-4 py-2 pr-10 text-sm 
+              text-gray-700 dark:text-gray-200
+              focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
                 <option value="">Filter by</option>
                 <option value="issue date">Issue Date</option>
                 <option value="due date">Due Date</option>
@@ -286,7 +310,8 @@ const Issue = () => {
 
               <Filter
                 size={16}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+                className="absolute right-3 top-1/2 -translate-y-1/2 
+              text-gray-500 dark:text-gray-400 pointer-events-none"
               />
             </div>
 
@@ -295,16 +320,26 @@ const Issue = () => {
               <input
                 type="text"
                 placeholder="Search by name"
-                className="bg-white border border-gray-200 rounded-lg px-4 py-2 pr-10 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="bg-white dark:bg-gray-800 
+              border border-gray-200 dark:border-gray-700 
+              rounded-lg px-4 py-2 pr-10 text-sm 
+              text-gray-700 dark:text-gray-200
+              placeholder-gray-400 dark:placeholder-gray-500
+              focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               <Search
                 size={16}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                className="absolute right-3 top-1/2 -translate-y-1/2 
+              text-gray-500 dark:text-gray-400"
               />
             </div>
           </div>
         </div>
+
+        {/* Table */}
         <IssueTable columns={tableColumns} data={paginatedData} />
+
+        {/* Pagination */}
         <PaginationBar
           totalResults={totalResults}
           currentPage={currentPage}
