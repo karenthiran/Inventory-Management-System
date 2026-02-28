@@ -7,7 +7,7 @@ const Topbar = () => {
   const routeTitles = {
     "/home": "Home",
     "/inventory": "Inventory Item",
-    "/issue": "Issue Item",
+    "/issue": "Issue",
     "/return": "Return Item",
     "/maintenance": "Maintenance",
     "/report": "Reports",
