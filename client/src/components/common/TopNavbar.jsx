@@ -49,7 +49,7 @@ const Topbar = () => {
             className="w-72 bg-gray-100 dark:bg-gray-700 
                        rounded-lg py-2 pl-10 pr-4 text-sm 
                        text-black dark:text-white
-                       outline outline-1 outline-gray-300 dark:outline-gray-600
+                       outline outline-gray-300 dark:outline-gray-600
                        focus:ring-2 focus:ring-indigo-300"
           />
         </div>
