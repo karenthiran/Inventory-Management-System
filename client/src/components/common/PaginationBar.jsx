@@ -27,12 +27,28 @@ const PaginationBar = ({
 
     // If current page is near the end
     if (currentPage >= totalPages - 3) {
-      pages.push(1, 2, "…", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      pages.push(
+        1,
+        2,
+        "…",
+        totalPages - 3,
+        totalPages - 2,
+        totalPages - 1,
+        totalPages,
+      );
       return pages;
     }
 
     // Middle
-    pages.push(1, "…", currentPage - 1, currentPage, currentPage + 1, "…", totalPages);
+    pages.push(
+      1,
+      "…",
+      currentPage - 1,
+      currentPage,
+      currentPage + 1,
+      "…",
+      totalPages,
+    );
     return pages;
   };
 
@@ -73,13 +89,15 @@ const PaginationBar = ({
                 type="button"
                 onClick={() => goTo(p)}
                 className={`w-9 h-9 rounded-full text-sm font-medium ${
-                  p === currentPage ? "bg-indigo-600 text-white" : "text-gray-700"
+                  p === currentPage
+                    ? "bg-indigo-600 text-white"
+                    : "text-gray-700"
                 }`}
                 aria-label={`Go to page ${p}`}
               >
                 {p}
               </button>
-            )
+            ),
           )}
         </div>
 
