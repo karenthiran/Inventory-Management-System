@@ -22,9 +22,35 @@ const ThemeToggle = () => {
   return (
     <button
       onClick={() => setDark(!dark)}
-      className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 transition"
+      className="
+        relative p-2 rounded-lg
+        bg-gray-100 dark:bg-gray-800
+        
+        
+        
+        flex items-center justify-center
+      "
     >
-      {dark ? <Sun size={18} /> : <Moon size={18} />}
+      {dark ? (
+        <Sun
+          size={20}
+          strokeWidth={2.2}
+          className="
+            text-amber-500
+            drop-shadow-sm
+            transition-all duration-300
+          "
+        />
+      ) : (
+        <Moon
+          size={20}
+          strokeWidth={2.2}
+          className="
+            text-indigo-600
+            transition-all duration-300
+          "
+        />
+      )}
     </button>
   );
 };

@@ -44,7 +44,7 @@ const Maintenance = () => {
   return (
     <div
       className="px-6 py-4 
-    bg-white dark:bg-gray-900 
+    bg-gray-100 dark:bg-gray-900 
     min-h-screen transition-colors duration-300"
     >
       {/* Header */}

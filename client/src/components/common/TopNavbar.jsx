@@ -56,7 +56,7 @@ const Topbar = () => {
 
         <Bell size={20} className="text-indigo-500 cursor-pointer" />
 
-        {/* 🔥 Theme Toggle Here */}
+        {/*  Theme Toggle Here */}
         <ThemeToggle />
 
         <LogOut size={20} className="text-red-500 cursor-pointer" />
