@@ -2,64 +2,23 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import InventoryTable from "../components/layout/inventory/InventoryTable";
 import PaginationBar from "../components/common/PaginationBar";
-import { LayoutGrid, Plus, Filter, Search, ChevronRight } from "lucide-react";
+import AddItemform from "../components/layout/inventory/AddItemform";
+import { LayoutGrid, Filter, Search, ChevronRight } from "lucide-react";
 
 const InventoryItem = () => {
   const navigate = useNavigate();
 
+  /* ================= STATES ================= */
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilter, setShowFilter] = useState(false);
   const [activeFilterType, setActiveFilterType] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
-  const filterRef = useRef(null);
-  const ITEMS_PER_PAGE = 5;
-
-  /* ================= Click Outside Close ================= */
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (filterRef.current && !filterRef.current.contains(event.target)) {
-        setShowFilter(false);
-        setActiveFilterType(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  /* ================= Active Filter Label (NEW LOGIC) ================= */
-  const activeFilterLabel = useMemo(() => {
-    let labels = [];
-    if (selectedLocation) labels.push(selectedLocation);
-    if (selectedCategory) labels.push(selectedCategory);
-    return labels.join(" • ");
-  }, [selectedLocation, selectedCategory]);
-
-  /* ================= Table Columns ================= */
-  const tableColumns = [
-    { header: "NO.", accessor: "no" },
-    { header: "Item Number", accessor: "itemNumber" },
-    { header: "Item Name", accessor: "itemName" },
-    { header: "Category", accessor: "category" },
-    { header: "Location", accessor: "location" },
-    { header: "Quantity", accessor: "quantity" },
-    {
-      header: "View",
-      render: () => (
-        <button className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
-          Detail
-        </button>
-      ),
-    },
-  ];
-
-  /* ================= Table Data ================= */
-  const tableData = [
+  /* ================= INVENTORY STATE ================= */
+  const [tableData, setTableData] = useState([
     {
       no: "01",
       itemNumber: "228-3844-931-7689",
@@ -100,49 +59,68 @@ const InventoryItem = () => {
       location: "COL-01",
       quantity: 9,
     },
+  ]);
+
+  const filterRef = useRef(null);
+  const ITEMS_PER_PAGE = 5;
+
+  /* ================= CLICK OUTSIDE FILTER ================= */
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (filterRef.current && !filterRef.current.contains(event.target)) {
+        setShowFilter(false);
+        setActiveFilterType(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  /* ================= ADD ITEM HANDLER ================= */
+  const handleAddItem = (newItem) => {
+    const newEntry = {
+      no: String(tableData.length + 1).padStart(2, "0"),
+      itemNumber: newItem.itemCode,
+      itemName: newItem.itemName,
+      category: newItem.category,
+      location: newItem.location,
+      quantity: Number(newItem.quantity),
+    };
+
+    setTableData((prev) => [...prev, newEntry]);
+    setShowModal(false);
+  };
+
+  /* ================= FILTER LABEL ================= */
+  const activeFilterLabel = useMemo(() => {
+    let labels = [];
+    if (selectedLocation) labels.push(selectedLocation);
+    if (selectedCategory) labels.push(selectedCategory);
+    return labels.join(" • ");
+  }, [selectedLocation, selectedCategory]);
+
+  /* ================= TABLE COLUMNS ================= */
+  const tableColumns = [
+    { header: "NO.", accessor: "no" },
+    { header: "Item Number", accessor: "itemNumber" },
+    { header: "Item Name", accessor: "itemName" },
+    { header: "Category", accessor: "category" },
+    { header: "Location", accessor: "location" },
+    { header: "Quantity", accessor: "quantity" },
     {
-      no: "06",
-      itemNumber: "662-9033-781-5520",
-      itemName: "Multimeter",
-      category: "Electronic",
-      location: "COL-02",
-      quantity: 15,
-    },
-    {
-      no: "07",
-      itemNumber: "905-3321-667-4412",
-      itemName: "Desktop Computer",
-      category: "Computing",
-      location: "COL-04",
-      quantity: 6,
-    },
-    {
-      no: "08",
-      itemNumber: "318-7740-902-6631",
-      itemName: "Keyboard",
-      category: "Accessories",
-      location: "COL-03",
-      quantity: 25,
-    },
-    {
-      no: "09",
-      itemNumber: "440-1288-554-9902",
-      itemName: "Mouse",
-      category: "Accessories",
-      location: "COL-03",
-      quantity: 30,
-    },
-    {
-      no: "10",
-      itemNumber: "552-6671-223-8044",
-      itemName: "Power Supply Unit",
-      category: "Hardware",
-      location: "COL-02",
-      quantity: 8,
+      header: "View",
+      render: () => (
+        <button className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
+          Detail
+        </button>
+      ),
     },
   ];
 
-  /* ================= Dynamic Filter Options ================= */
+  /* ================= DYNAMIC FILTER OPTIONS ================= */
   const locationOptions = useMemo(
     () => [...new Set(tableData.map((item) => item.location))],
     [tableData],
@@ -153,7 +131,7 @@ const InventoryItem = () => {
     [tableData],
   );
 
-  /* ================= Filtering Logic ================= */
+  /* ================= FILTERING LOGIC ================= */
   let filteredData = tableData;
 
   if (selectedLocation) {
@@ -174,7 +152,7 @@ const InventoryItem = () => {
     );
   }
 
-  /* ================= Pagination ================= */
+  /* ================= PAGINATION ================= */
   const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedData = filteredData.slice(
@@ -182,8 +160,16 @@ const InventoryItem = () => {
     startIndex + ITEMS_PER_PAGE,
   );
 
+  /* Fix invalid page after filtering */
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(1);
+    }
+  }, [filteredData.length]);
+
   return (
     <div className="h-full flex flex-col px-6 py-4 bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+      {/* ================= HEADER ================= */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
         <div className="flex items-center gap-3">
           <div className="bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg">
@@ -198,39 +184,54 @@ const InventoryItem = () => {
         </div>
 
         <div className="flex items-center gap-4 flex-wrap">
+          {/* ================= ADD ITEM ================= */}
           <button
-            onClick={() => navigate("/add-item")}
-            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm"
+            onClick={() => setShowModal(true)}
+            className="bg-indigo-500 text-white px-4 py-1 rounded-lg hover:bg-indigo-600 transition flex items-center gap-2"
           >
-            <Plus size={18} />
+            <span className="text-lg font-bold">+</span>
             Add New Item
           </button>
+
+          {showModal && (
+            <AddItemform
+              onClose={() => setShowModal(false)}
+              onAddItem={handleAddItem}
+            />
+          )}
 
           {/* ================= FILTER ================= */}
           <div className="relative" ref={filterRef}>
             <button
               onClick={() => setShowFilter((prev) => !prev)}
-              className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+              className="flex items-center gap-2 
+    bg-white dark:bg-gray-800 
+    text-gray-700 dark:text-gray-200
+    border border-gray-200 dark:border-gray-700 
+    rounded-lg px-4 py-2 text-sm 
+    hover:bg-gray-50 dark:hover:bg-gray-700 
+    transition"
             >
               <Filter size={16} />
-              {activeFilterLabel ? (
-                <span className="text-indigo-600 dark:text-indigo-400 font-medium">
-                  {activeFilterLabel}
-                </span>
-              ) : (
-                <span>Filter</span>
-              )}
+              {activeFilterLabel ? activeFilterLabel : "Filter"}
             </button>
 
-            {/* 🔽 Your entire existing dropdown remains exactly the same below */}
-
             {showFilter && (
-              <div className="absolute right-0 mt-3 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50">
+              <div
+                className="absolute right-0 mt-3 w-72 
+    bg-white dark:bg-gray-800 
+    rounded-xl shadow-xl 
+    border border-gray-200 dark:border-gray-700 
+    z-50"
+              >
                 {!activeFilterType && (
                   <div className="p-4 space-y-3">
                     <div
                       onClick={() => setActiveFilterType("location")}
-                      className="flex justify-between px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="flex justify-between px-3 py-2 rounded-lg cursor-pointer 
+            text-gray-700 dark:text-gray-200
+            hover:bg-gray-100 dark:hover:bg-gray-700 
+            transition"
                     >
                       <span>Location</span>
                       <ChevronRight size={16} />
@@ -238,7 +239,10 @@ const InventoryItem = () => {
 
                     <div
                       onClick={() => setActiveFilterType("category")}
-                      className="flex justify-between px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="flex justify-between px-3 py-2 rounded-lg cursor-pointer 
+            text-gray-700 dark:text-gray-200
+            hover:bg-gray-100 dark:hover:bg-gray-700 
+            transition"
                     >
                       <span>Category</span>
                       <ChevronRight size={16} />
@@ -258,7 +262,11 @@ const InventoryItem = () => {
                           setShowFilter(false);
                           setActiveFilterType(null);
                         }}
-                        className="px-3 py-2 rounded-lg cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-900/40"
+                        className="px-3 py-2 rounded-lg cursor-pointer 
+              text-gray-700 dark:text-gray-200
+              hover:bg-indigo-100 dark:hover:bg-indigo-600 
+              hover:text-indigo-700 dark:hover:text-white
+              transition"
                       >
                         {loc}
                       </div>
@@ -278,7 +286,11 @@ const InventoryItem = () => {
                           setShowFilter(false);
                           setActiveFilterType(null);
                         }}
-                        className="px-3 py-2 rounded-lg cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-900/40"
+                        className="px-3 py-2 rounded-lg cursor-pointer 
+              text-gray-700 dark:text-gray-200
+              hover:bg-indigo-100 dark:hover:bg-indigo-600 
+              hover:text-indigo-700 dark:hover:text-white
+              transition"
                       >
                         {cat}
                       </div>
@@ -290,12 +302,15 @@ const InventoryItem = () => {
                   onClick={() => {
                     setSelectedLocation(null);
                     setSelectedCategory(null);
-                    setSearchTerm(""); // also clear search
-                    setActiveFilterType(null);
-                    setShowFilter(false);
+                    setSearchTerm("");
                     setCurrentPage(1);
+                    setShowFilter(false);
+                    setActiveFilterType(null);
                   }}
-                  className="text-red-500 text-sm px-4 py-3 cursor-pointer hover:underline border-t border-gray-200 dark:border-gray-700"
+                  className="text-red-500 dark:text-red-400 text-sm 
+        px-4 py-3 cursor-pointer 
+        hover:underline 
+        border-t border-gray-200 dark:border-gray-700"
                 >
                   Clear Filter
                 </div>
@@ -313,11 +328,17 @@ const InventoryItem = () => {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-2 pr-10 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="bg-white dark:bg-gray-800 
+    text-gray-700 dark:text-gray-200
+    border border-gray-200 dark:border-gray-700 
+    rounded-lg px-4 py-2 pr-10 text-sm 
+    focus:outline-none focus:ring-2 focus:ring-indigo-500
+    transition"
             />
             <Search
               size={16}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400"
+              className="absolute right-3 top-1/2 -translate-y-1/2 
+    text-gray-400 dark:text-gray-300"
             />
           </div>
         </div>
