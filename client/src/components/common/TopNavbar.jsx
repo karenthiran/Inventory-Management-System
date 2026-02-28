@@ -9,7 +9,7 @@ const Topbar = () => {
     "/home": "Home",
     "/inventory": "Inventory Item",
     "/issue": "Issue",
-    "/return": "Return Item",
+    "/return": "Return",
     "/maintenance": "Maintenance",
     "/report": "Reports",
     "/setting": "Settings",
