@@ -1,5 +1,4 @@
 const IssueTable = ({ columns, data }) => {
-  // Helper to auto-size columns based on header/accessor
   const getColWidth = (col) => {
     const key = (col.accessor || col.header || "").toLowerCase();
 
@@ -16,7 +15,6 @@ const IssueTable = ({ columns, data }) => {
     return "w-auto";
   };
 
-  // Helper for alignment (match screenshot)
   const getAlignClass = (col) => {
     const key = (col.accessor || col.header || "").toLowerCase();
 
@@ -28,17 +26,24 @@ const IssueTable = ({ columns, data }) => {
     return "text-left";
   };
 
-  // Prevent wrapping for dates/codes so it stays neat
   const getNoWrap = (col) => {
     const key = (col.accessor || col.header || "").toLowerCase();
-    if (key.includes("issue") || key.includes("due") || key.includes("location")) {
+    if (
+      key.includes("issue") ||
+      key.includes("due") ||
+      key.includes("location")
+    ) {
       return "whitespace-nowrap";
     }
     return "";
   };
 
   return (
-    <div className="bg-[#f9fafb] rounded-2xl border border-gray-200 overflow-hidden">
+    <div
+      className="bg-[#f9fafb] dark:bg-gray-800 
+    rounded-2xl border border-gray-200 dark:border-gray-700 
+    overflow-hidden transition-colors duration-300"
+    >
       <div className="overflow-x-auto">
         <table className="w-full table-fixed text-sm text-left">
           {/* Column widths */}
@@ -49,12 +54,17 @@ const IssueTable = ({ columns, data }) => {
           </colgroup>
 
           {/* Header */}
-          <thead className="bg-gray-200 text-gray-600 text-[15px] font-semibold uppercase">
+          <thead
+            className="bg-gray-200 dark:bg-gray-700 
+          text-gray-600 dark:text-gray-300 
+          text-[15px] font-semibold uppercase"
+          >
             <tr>
               {columns.map((col, index) => (
                 <th
                   key={index}
-                  className={`px-6 py-4 tracking-wide ${getAlignClass(col)} ${getNoWrap(col)}`}
+                  className={`px-6 py-4 tracking-wide 
+                  ${getAlignClass(col)} ${getNoWrap(col)}`}
                 >
                   {col.header}
                 </th>
@@ -67,12 +77,17 @@ const IssueTable = ({ columns, data }) => {
             {data.map((row, rowIndex) => (
               <tr
                 key={rowIndex}
-                className="border-t border-gray-200 hover:bg-gray-100 transition duration-200"
+                className="border-t border-gray-200 dark:border-gray-700 
+                hover:bg-gray-100 dark:hover:bg-gray-700/60 
+                transition duration-200"
               >
                 {columns.map((col, colIndex) => (
                   <td
                     key={colIndex}
-                    className={`px-6 py-4 text-neutral-900 text-[13px] font-medium align-middle ${getAlignClass(col)} ${getNoWrap(col)}`}
+                    className={`px-6 py-4 
+                    text-neutral-900 dark:text-gray-200 
+                    text-[13px] font-medium align-middle 
+                    ${getAlignClass(col)} ${getNoWrap(col)}`}
                   >
                     {col.render ? col.render(row) : row[col.accessor]}
                   </td>

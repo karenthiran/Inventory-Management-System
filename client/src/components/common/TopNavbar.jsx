@@ -1,5 +1,6 @@
-import { Bell, Moon, LogOut, Search } from "lucide-react";
+import { Bell, LogOut, Search } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import ThemeToggle from "./ThemeToggle";
 
 const Topbar = () => {
   const location = useLocation();
@@ -18,9 +19,20 @@ const Topbar = () => {
   const title = routeTitles[location.pathname] || "Dashboard";
 
   return (
-    <div className="fixed top-0 left-64 right-0 h-16 bg-gray-100 px-8 flex items-center justify-between border-b border-gray-300 z-40">
+    <div
+      className="fixed top-0 left-64 right-0 h-16 
+                    bg-gray-100 dark:bg-gray-800 
+                    px-8 flex items-center justify-between 
+                    border-b border-gray-300 dark:border-gray-700 
+                    z-40"
+    >
       {/* Dynamic Title */}
-      <h1 className="text-2xl font-semibold text-indigo-600">{title}</h1>
+      <h1
+        className="text-2xl font-semibold 
+                     text-indigo-600 dark:text-white"
+      >
+        {title}
+      </h1>
 
       {/* Right Section */}
       <div className="flex items-center gap-6">
@@ -28,17 +40,25 @@ const Topbar = () => {
         <div className="relative">
           <Search
             size={18}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            className="absolute left-3 top-1/2 -translate-y-1/2 
+                       text-gray-400 dark:text-gray-300"
           />
           <input
             type="text"
             placeholder="Search..."
-            className="w-72 bg-gray-100 rounded-lg py-2 pl-10 pr-4 text-sm outline outline-1 outline-gray-300 focus:ring-2 focus:ring-indigo-300"
+            className="w-72 bg-gray-100 dark:bg-gray-700 
+                       rounded-lg py-2 pl-10 pr-4 text-sm 
+                       text-black dark:text-white
+                       outline outline-1 outline-gray-300 dark:outline-gray-600
+                       focus:ring-2 focus:ring-indigo-300"
           />
         </div>
 
         <Bell size={20} className="text-indigo-500 cursor-pointer" />
-        <Moon size={20} className="text-black cursor-pointer" />
+
+        {/*  Theme Toggle Here */}
+        <ThemeToggle />
+
         <LogOut size={20} className="text-red-500 cursor-pointer" />
       </div>
     </div>

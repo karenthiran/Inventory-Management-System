@@ -38,7 +38,6 @@ const cardData = [
   },
 ];
 
-/* Table Configuration */
 const columns = [
   { header: "Item Id", accessor: "itemId" },
   { header: "Item Name", accessor: "itemName" },
@@ -46,7 +45,6 @@ const columns = [
   { header: "Due Date", accessor: "dueDate" },
 ];
 
-/*  Due Soon Data */
 const dueSoonItems = [
   {
     itemId: "UOJPC001",
@@ -80,7 +78,6 @@ const dueSoonItems = [
   },
 ];
 
-/*  Overdue Data */
 const overDueItems = [
   {
     itemId: "UOJPC001",
@@ -114,16 +111,21 @@ const overDueItems = [
   },
 ];
 
-/* =================Home Component================== */
+/* ================= Home Component ================== */
 const Home = () => {
   return (
-    <div className="px-6 py-4">
+    <div className="px-6 py-4 bg-gray-100 dark:bg-gray-900 min-h-screen transition-colors duration-300">
       {/* ================= Header ================= */}
       <div className="flex items-center gap-3 mb-10">
-        <div className="bg-indigo-100 p-2 rounded-lg">
-          <LayoutGrid size={22} className="text-indigo-600" />
+        <div className="bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg">
+          <LayoutGrid
+            size={22}
+            className="text-indigo-600 dark:text-indigo-400"
+          />
         </div>
-        <h1 className="text-xl font-semibold text-gray-800">Overview</h1>
+        <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+          Overview
+        </h1>
       </div>
 
       {/* ================= Cards Section ================= */}
@@ -141,10 +143,15 @@ const Home = () => {
           {/* 🔹 Due Soon */}
           <div>
             <div className="flex items-center gap-3 mb-5">
-              <div className="bg-indigo-100 p-2 rounded-lg">
-                <CalendarClock size={18} className="text-indigo-600" />
+              <div className="bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg">
+                <CalendarClock
+                  size={18}
+                  className="text-indigo-600 dark:text-indigo-400"
+                />
               </div>
-              <h2 className="text-lg font-semibold text-gray-800">Due Soon</h2>
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                Due Soon
+              </h2>
             </div>
 
             <HomeDataTable columns={columns} data={dueSoonItems} />
@@ -153,10 +160,15 @@ const Home = () => {
           {/* 🔹 Overdue */}
           <div>
             <div className="flex items-center gap-3 mb-5">
-              <div className="bg-red-100 p-2 rounded-lg">
-                <AlertTriangle size={18} className="text-red-600" />
+              <div className="bg-red-100 dark:bg-red-900/40 p-2 rounded-lg">
+                <AlertTriangle
+                  size={18}
+                  className="text-red-600 dark:text-red-400"
+                />
               </div>
-              <h2 className="text-lg font-semibold text-gray-800">Overdue</h2>
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                Overdue
+              </h2>
             </div>
 
             <HomeDataTable columns={columns} data={overDueItems} />

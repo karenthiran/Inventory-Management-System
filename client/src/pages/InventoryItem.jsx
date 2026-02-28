@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import InventoryTable from "../components/layout/inventory/InventoryTable";
+import PaginationBar from "../components/common/PaginationBar";
 import { LayoutGrid, Plus } from "lucide-react";
 
 const InventoryItem = () => {
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const ITEMS_PER_PAGE = 5;
 
   const tableColumns = [
     { header: "NO.", accessor: "no" },
@@ -16,7 +20,7 @@ const InventoryItem = () => {
     {
       header: "View",
       render: () => (
-        <button className="text-indigo-600 font-medium hover:underline">
+        <button className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
           Detail
         </button>
       ),
@@ -34,7 +38,7 @@ const InventoryItem = () => {
     },
     {
       no: "02",
-      itemNumber: "661-7963 - 661-7963",
+      itemNumber: "661-7963-661-7963",
       itemName: "Oscilloscope",
       category: "Electronic",
       location: "COL-02",
@@ -106,32 +110,59 @@ const InventoryItem = () => {
     },
   ];
 
+  const totalPages = Math.ceil(tableData.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedData = tableData.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE,
+  );
+
   return (
-    <div className="px-6 py-4">
-      {/* Page Header */}
-      <div className="flex items-center gap-3 mb-10">
-        <div className="bg-indigo-100 p-2 rounded-lg">
-          <LayoutGrid size={22} className="text-indigo-600" />
+    <div className="h-full flex flex-col px-6 py-4 bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6 flex-shrink-0">
+        {/* Left */}
+        <div className="flex items-center gap-3">
+          <div className="bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg">
+            <LayoutGrid
+              size={22}
+              className="text-indigo-600 dark:text-indigo-400"
+            />
+          </div>
+          <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+            Inventory Item List
+          </h1>
         </div>
-        <h1 className="text-xl font-semibold text-gray-800">
-          Inventory Item List
-        </h1>
+
+        {/* Right */}
+        <button
+          onClick={() => navigate("/add-item")}
+          className="flex items-center gap-2 
+          bg-indigo-600 hover:bg-indigo-700 
+          dark:bg-indigo-500 dark:hover:bg-indigo-600
+          text-white px-4 py-2 rounded-lg text-sm font-medium 
+          transition-all duration-200 shadow-sm"
+        >
+          <Plus size={18} />
+          Add New Item
+        </button>
       </div>
 
       {/* Table Section */}
-      <div className="max-w-7xl mx-auto">
-        {/* Add Button Row (Right Aligned) */}
-        <div className="flex justify-end mb-6">
-          <button
-            onClick={() => navigate("/add-item")}
-            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm"
-          >
-            <Plus size={18} />
-            Add New Item
-          </button>
+      <div className="flex-1 flex flex-col max-w-7xl mx-auto w-full pt-4">
+        <div className="flex-1 overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-sm dark:shadow-none transition-colors duration-300">
+          <InventoryTable columns={tableColumns} data={paginatedData} />
         </div>
 
-        <InventoryTable columns={tableColumns} data={tableData} />
+        {/* Pagination */}
+        <div className="mt-4">
+          <PaginationBar
+            totalResults={tableData.length}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        </div>
       </div>
     </div>
   );

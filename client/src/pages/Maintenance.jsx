@@ -42,17 +42,33 @@ const Maintenance = () => {
   ];
 
   return (
-    <div className="px-6 py-4">
+    <div
+      className="px-6 py-4 
+    bg-gray-100 dark:bg-gray-900 
+    min-h-screen transition-colors duration-300"
+    >
       {/* Header */}
       <div className="flex items-center gap-3 mb-10">
-        <div className="bg-indigo-100 p-2 rounded-lg">
-          <LayoutGrid size={22} className="text-indigo-600" />
+        <div className="bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg">
+          <LayoutGrid
+            size={22}
+            className="text-indigo-600 dark:text-indigo-400"
+          />
         </div>
-        <h1 className="text-xl font-semibold text-gray-800">Overview</h1>
+        <h1
+          className="text-xl font-semibold 
+        text-gray-800 dark:text-gray-200"
+        >
+          Overview
+        </h1>
       </div>
 
       {/* Cards */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+      <div
+        className="max-w-7xl mx-auto 
+      grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 
+      gap-8 mb-12"
+      >
         {cardData.map((card, index) => (
           <DashboardCard key={index} {...card} />
         ))}
