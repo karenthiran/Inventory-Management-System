@@ -20,7 +20,7 @@ const InventoryItem = () => {
     {
       header: "View",
       render: () => (
-        <button className="text-indigo-600 font-medium hover:underline">
+        <button className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
           Detail
         </button>
       ),
@@ -110,7 +110,6 @@ const InventoryItem = () => {
     },
   ];
 
-  // Pagination Logic
   const totalPages = Math.ceil(tableData.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedData = tableData.slice(
@@ -119,15 +118,18 @@ const InventoryItem = () => {
   );
 
   return (
-    <div className="h-full flex flex-col px-6 py-4">
-      {/* Header with Button */}
+    <div className="h-full flex flex-col px-6 py-4 bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+      {/* Header */}
       <div className="flex items-center justify-between mb-6 flex-shrink-0">
         {/* Left */}
         <div className="flex items-center gap-3">
-          <div className="bg-indigo-100 p-2 rounded-lg">
-            <LayoutGrid size={22} className="text-indigo-600" />
+          <div className="bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg">
+            <LayoutGrid
+              size={22}
+              className="text-indigo-600 dark:text-indigo-400"
+            />
           </div>
-          <h1 className="text-xl font-semibold text-gray-800">
+          <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
             Inventory Item List
           </h1>
         </div>
@@ -135,7 +137,11 @@ const InventoryItem = () => {
         {/* Right */}
         <button
           onClick={() => navigate("/add-item")}
-          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm"
+          className="flex items-center gap-2 
+          bg-indigo-600 hover:bg-indigo-700 
+          dark:bg-indigo-500 dark:hover:bg-indigo-600
+          text-white px-4 py-2 rounded-lg text-sm font-medium 
+          transition-all duration-200 shadow-sm"
         >
           <Plus size={18} />
           Add New Item
@@ -144,7 +150,7 @@ const InventoryItem = () => {
 
       {/* Table Section */}
       <div className="flex-1 flex flex-col max-w-7xl mx-auto w-full pt-4">
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-sm dark:shadow-none transition-colors duration-300">
           <InventoryTable columns={tableColumns} data={paginatedData} />
         </div>
 
