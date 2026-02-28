@@ -1,10 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import InventoryTable from "../components/layout/inventory/InventoryTable";
+import Pagination from "../components/common/Pagination";
 import { LayoutGrid, Plus } from "lucide-react";
 
 const InventoryItem = () => {
   const navigate = useNavigate();
+
+  /* ================= Pagination Setup ================= */
+
+  // Current active page
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // How many items per page
+  const itemsPerPage = 5;
+
+  /* ================= Table Columns ================= */
 
   const tableColumns = [
     { header: "NO.", accessor: "no" },
@@ -22,6 +33,8 @@ const InventoryItem = () => {
       ),
     },
   ];
+
+  /* ================= Table Data ================= */
 
   const tableData = [
     {
@@ -106,6 +119,17 @@ const InventoryItem = () => {
     },
   ];
 
+  /* ================= Simulate Backend Pagination ================= */
+
+  // Calculate index positions
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+
+  // Slice data for current page
+  const currentItems = tableData.slice(indexOfFirstItem, indexOfLastItem);
+
+  /* ================= Render ================= */
+
   return (
     <div className="px-6 py-4">
       {/* Page Header */}
@@ -120,7 +144,7 @@ const InventoryItem = () => {
 
       {/* Table Section */}
       <div className="max-w-7xl mx-auto">
-        {/* Add Button Row (Right Aligned) */}
+        {/* Add Button Row */}
         <div className="flex justify-end mb-6">
           <button
             onClick={() => navigate("/add-item")}
@@ -131,7 +155,16 @@ const InventoryItem = () => {
           </button>
         </div>
 
-        <InventoryTable columns={tableColumns} data={tableData} />
+        {/* Inventory Table */}
+        <InventoryTable columns={tableColumns} data={currentItems} />
+
+        {/* Pagination Component */}
+        <Pagination
+          totalItems={tableData.length}
+          itemsPerPage={itemsPerPage}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </div>
   );
