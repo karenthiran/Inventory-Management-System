@@ -7,14 +7,13 @@ const AddItemForm = ({ onClose, onAddItem }) => {
     itemCode: "",
     category: "",
     location: "",
-    quantity: 0, // ✅ default 0
+    quantity: 0,
     itemType: "",
     description: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -24,7 +23,6 @@ const AddItemForm = ({ onClose, onAddItem }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Simple validation
     if (
       !formData.itemName ||
       !formData.itemCode ||
@@ -38,20 +36,20 @@ const AddItemForm = ({ onClose, onAddItem }) => {
       return;
     }
 
-    // Send data to parent
     onAddItem(formData);
-
-    // Close modal
     onClose();
   };
 
   return (
     <div
-      className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/60 dark:bg-black/70 flex items-center justify-center z-50"
       onClick={onClose}
     >
       <div
-        className="bg-gray-100 w-full max-w-2xl rounded-2xl shadow-2xl p-8 relative"
+        className="bg-white dark:bg-gray-900 
+        text-gray-800 dark:text-gray-200
+        w-full max-w-2xl rounded-2xl shadow-2xl p-8 relative 
+        border border-gray-200 dark:border-gray-700"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
@@ -62,10 +60,10 @@ const AddItemForm = ({ onClose, onAddItem }) => {
           <X size={20} />
         </button>
 
-        <h2 className="text-3xl font-bold text-indigo-600 mb-2">
+        <h2 className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">
           Add A New Item
         </h2>
-        <p className="text-gray-600 mb-6">
+        <p className="text-gray-600 dark:text-gray-400 mb-6">
           Fill the Details to add a new inventory Item
         </p>
 
@@ -79,7 +77,11 @@ const AddItemForm = ({ onClose, onAddItem }) => {
               value={formData.itemName}
               onChange={handleChange}
               placeholder="Enter Item Name"
-              className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="bg-white dark:bg-gray-800
+              border border-gray-300 dark:border-gray-600
+              rounded-lg px-3 py-2
+              focus:outline-none focus:ring-2 focus:ring-indigo-500
+              transition"
             />
           </div>
 
@@ -92,7 +94,11 @@ const AddItemForm = ({ onClose, onAddItem }) => {
               value={formData.itemCode}
               onChange={handleChange}
               placeholder="Enter Item Code"
-              className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="bg-white dark:bg-gray-800
+              border border-gray-300 dark:border-gray-600
+              rounded-lg px-3 py-2
+              focus:outline-none focus:ring-2 focus:ring-indigo-500
+              transition"
             />
           </div>
 
@@ -103,7 +109,10 @@ const AddItemForm = ({ onClose, onAddItem }) => {
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="bg-white dark:bg-gray-800
+              border border-gray-300 dark:border-gray-600
+              rounded-lg px-3 py-2
+              focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <option value="">Select Category</option>
               <option>Electronics</option>
@@ -118,7 +127,10 @@ const AddItemForm = ({ onClose, onAddItem }) => {
               name="location"
               value={formData.location}
               onChange={handleChange}
-              className="border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="bg-white dark:bg-gray-800
+              border border-gray-300 dark:border-gray-600
+              rounded-lg px-3 py-2
+              focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <option value="">Select Location</option>
               <option>Lab 1</option>
@@ -126,12 +138,15 @@ const AddItemForm = ({ onClose, onAddItem }) => {
             </select>
           </div>
 
-          {/* Quantity (Updated) */}
+          {/* Quantity */}
           <div className="flex flex-col">
             <label className="text-sm font-semibold mb-1">Quantity</label>
-
-            <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-indigo-400">
-              {/* Decrease Button */}
+            <div
+              className="flex items-center 
+            border border-gray-300 dark:border-gray-600 
+            rounded-lg overflow-hidden 
+            focus-within:ring-2 focus-within:ring-indigo-500"
+            >
               <button
                 type="button"
                 onClick={() =>
@@ -140,12 +155,14 @@ const AddItemForm = ({ onClose, onAddItem }) => {
                     quantity: Math.max(0, Number(prev.quantity) - 1),
                   }))
                 }
-                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 font-bold"
+                className="px-4 py-2 
+                bg-gray-200 dark:bg-gray-700
+                hover:bg-gray-300 dark:hover:bg-gray-600
+                font-bold transition"
               >
                 −
               </button>
 
-              {/* Input */}
               <input
                 type="number"
                 name="quantity"
@@ -160,10 +177,11 @@ const AddItemForm = ({ onClose, onAddItem }) => {
                         : Math.max(0, Number(e.target.value)),
                   }))
                 }
-                className="w-full text-center outline-none py-2"
+                className="w-full text-center 
+                bg-white dark:bg-gray-800 
+                outline-none py-2"
               />
 
-              {/* Increase Button */}
               <button
                 type="button"
                 onClick={() =>
@@ -172,7 +190,10 @@ const AddItemForm = ({ onClose, onAddItem }) => {
                     quantity: Number(prev.quantity) + 1,
                   }))
                 }
-                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 font-bold"
+                className="px-4 py-2 
+                bg-gray-200 dark:bg-gray-700
+                hover:bg-gray-300 dark:hover:bg-gray-600
+                font-bold transition"
               >
                 +
               </button>
@@ -186,7 +207,10 @@ const AddItemForm = ({ onClose, onAddItem }) => {
               name="itemType"
               value={formData.itemType}
               onChange={handleChange}
-              className="border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="bg-white dark:bg-gray-800
+              border border-gray-300 dark:border-gray-600
+              rounded-lg px-3 py-2
+              focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <option value="">Select Type</option>
               <option>Permanent</option>
@@ -198,7 +222,9 @@ const AddItemForm = ({ onClose, onAddItem }) => {
           <div className="col-span-2 flex flex-col">
             <label className="text-sm font-semibold mb-1">
               Description{" "}
-              <span className="text-gray-500 text-xs">(Optional)</span>
+              <span className="text-gray-500 dark:text-gray-400 text-xs">
+                (Optional)
+              </span>
             </label>
             <textarea
               rows="3"
@@ -206,7 +232,10 @@ const AddItemForm = ({ onClose, onAddItem }) => {
               value={formData.description}
               onChange={handleChange}
               placeholder="Small Description"
-              className="border border-gray-300 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="bg-white dark:bg-gray-800
+              border border-gray-300 dark:border-gray-600
+              rounded-lg px-3 py-2 resize-none
+              focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
@@ -214,7 +243,9 @@ const AddItemForm = ({ onClose, onAddItem }) => {
           <div className="col-span-2 flex justify-center gap-8 mt-4">
             <button
               type="button"
-              className="bg-red-500 hover:bg-red-600 text-white px-8 py-2 rounded-lg font-semibold transition"
+              className="bg-red-500 hover:bg-red-600 
+              text-white px-8 py-2 rounded-lg 
+              font-semibold transition"
               onClick={onClose}
             >
               Cancel
@@ -222,7 +253,9 @@ const AddItemForm = ({ onClose, onAddItem }) => {
 
             <button
               type="submit"
-              className="bg-indigo-500 hover:bg-indigo-600 text-white px-8 py-2 rounded-lg font-semibold transition"
+              className="bg-indigo-500 hover:bg-indigo-600 
+              text-white px-8 py-2 rounded-lg 
+              font-semibold transition"
             >
               Add Item
             </button>
