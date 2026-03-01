@@ -1,0 +1,5 @@
+# application.properties.example
+spring.datasource.url=jdbc:postgresql://<your-rds-endpoint>:5432/inventory_db
+spring.datasource.username=REPLACE_WITH_USER
+spring.datasource.password=REPLACE_WITH_PASSWORD
+spring.jpa.hibernate.ddl-auto=update
