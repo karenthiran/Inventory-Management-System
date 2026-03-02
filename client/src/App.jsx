@@ -1,11 +1,14 @@
 import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./routes/AppRoutes";
+import { InventoryProvider } from "./context/InventoryContext";
 
 function App() {
   return (
-    <BrowserRouter>
-      <AppRoutes />
-    </BrowserRouter>
+    <InventoryProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </InventoryProvider>
   );
 }
 

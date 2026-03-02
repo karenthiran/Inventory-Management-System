@@ -50,7 +50,7 @@ const Sidebar = () => {
             className={({ isActive }) =>
               `flex items-center gap-4 px-5 py-3 rounded-2xl transition-all duration-300 ${
                 isActive
-                  ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md"
+                  ? "bg-linear-to-r from-indigo-500 to-purple-500 text-white shadow-md"
                   : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
               }`
             }
@@ -67,7 +67,7 @@ const Sidebar = () => {
         className={({ isActive }) =>
           `flex items-center border gap-4 px-2 py-1.5 rounded-2xl transition-all duration-300 ${
             isActive
-              ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md"
+              ? "bg-linear-to-r from-indigo-500 to-purple-500 text-white shadow-md"
               : "text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
           }`
         }
