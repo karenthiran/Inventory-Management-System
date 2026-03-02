@@ -3,6 +3,7 @@ package com.ims.server.controller;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,6 +51,20 @@ public class LocationController {
 
         // save the updated location back to the database
         return locationRepository.save(exisitingLocation);
+    }
+
+    // delete a location
+    @DeleteMapping("/delete/{id}")
+    public String deleteLocation(@PathVariable String id) {
+        // check if the location exists
+        if (!locationRepository.existsById(id)) {
+            throw new RuntimeException("Location not found with id: " + id);
+        }
+
+        // delete the location
+        locationRepository.deleteById(id);
+
+        return "Location with id: " + id + " has been deleted successfully.";
     }
 
 }
