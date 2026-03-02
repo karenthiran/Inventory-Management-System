@@ -16,8 +16,8 @@ import lombok.NoArgsConstructor;
 public class Location {
 
     @Id
-    @Column(length = 30)
-    private String id;
+    @Column(name = "location_id", length = 30)
+    private String locationId;
 
     @Column(name = "location_name", nullable = false, length = 255)
     private String locationName;
