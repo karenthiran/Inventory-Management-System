@@ -3,6 +3,7 @@ package com.ims.server.controller;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,15 +38,14 @@ public class IssuedItemController {
         return issuedItemRepository.findAll();
     }
 
-    // edit endpoints
-    // 8. Update an existing issued item record
+    // Update an existing issued item record
     @PutMapping("/update/{id}")
     public IssuedItem updateIssuedItem(@PathVariable Long id, @RequestBody IssuedItem updatedDetails) {
-        // 1. Find the existing record in the database
+        // Find the existing record in the database
         IssuedItem existingRecord = issuedItemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Issue record not found with id: " + id));
 
-        // 2. Update the fields with new data from the request body
+        // Update the fields with new data from the request body
         existingRecord.setItemName(updatedDetails.getItemName());
         existingRecord.setItemNumbers(updatedDetails.getItemNumbers());
         existingRecord.setQuantity(updatedDetails.getQuantity());
@@ -54,7 +54,22 @@ public class IssuedItemController {
         existingRecord.setDueDate(updatedDetails.getDueDate());
         existingRecord.setNotes(updatedDetails.getNotes());
 
-        // 3. Save the updated record (JPA handles the SQL UPDATE)
+        // Save the updated record (JPA handles the SQL UPDATE)
         return issuedItemRepository.save(existingRecord);
+    }
+
+    // Delete an issued item record by its unique ID
+    @DeleteMapping("/delete/{id}")
+    public String deleteIssuedItem(@PathVariable Long id) {
+        // Verify the record exists before attempting deletion
+        if (!issuedItemRepository.existsById(id)) {
+            throw new RuntimeException("Issue record not found with id: " + id);
+        }
+
+        // Remove the record from the database
+        issuedItemRepository.deleteById(id);
+
+        // Return a confirmation message
+        return "Issue record " + id + " has been deleted successfully.";
     }
 }
