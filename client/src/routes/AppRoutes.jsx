@@ -13,11 +13,13 @@ import Userprofile from "../pages/UserProfile";
 const AppRoutes = () => {
   return (
     <Routes>
+      {/* Login Page */}
       <Route path="/" element={<Login />} />
 
-      <Route path="dashboard" element={<DashboardLayout />}>
+      {/* Dashboard Layout */}
+      <Route path="/dashboard" element={<DashboardLayout />}>
         <Route index element={<Home />} />
-        <Route path="home" element={<Home />} />
+        <Route path="home" element={<Home />} /> {/* ✅ FIXED */}
         <Route path="inventory" element={<InventoryItem />} />
         <Route path="issue" element={<Issue />} />
         <Route path="return" element={<Return />} />

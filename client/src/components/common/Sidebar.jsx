@@ -12,13 +12,13 @@ import {
 
 const Sidebar = () => {
   const menuItems = [
-    { name: "Home", icon: HomeIcon, path: "/home" },
-    { name: "Inventory Item", icon: Box, path: "/inventory" },
-    { name: "Issue", icon: ArrowRight, path: "/issue" },
-    { name: "Return", icon: ArrowLeft, path: "/return" },
-    { name: "Maintenance", icon: Wrench, path: "/maintenance" },
-    { name: "Report", icon: FileText, path: "/report" },
-    { name: "Setting", icon: Settings, path: "/setting" },
+    { name: "Home", icon: HomeIcon, path: "/dashboard/home" },
+    { name: "Inventory Item", icon: Box, path: "/dashboard/inventory" },
+    { name: "Issue", icon: ArrowRight, path: "/dashboard/issue" },
+    { name: "Return", icon: ArrowLeft, path: "/dashboard/return" },
+    { name: "Maintenance", icon: Wrench, path: "/dashboard/maintenance" },
+    { name: "Report", icon: FileText, path: "/dashboard/report" },
+    { name: "Setting", icon: Settings, path: "/dashboard/setting" },
   ];
 
   return (
