@@ -17,7 +17,7 @@ import com.ims.server.repository.CategoryRepository;
 
 @RestController
 @RequestMapping("api/categories")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "${app.frontend.url}")
 public class CategoryController {
 
     private final CategoryRepository categoryRepository;

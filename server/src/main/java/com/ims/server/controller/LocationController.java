@@ -11,7 +11,7 @@ import com.ims.server.repository.LocationRepository;
 
 @RestController
 @RequestMapping("api/locations")
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "${app.frontend.url}")
 public class LocationController {
 
     private final LocationRepository locationRepository;
