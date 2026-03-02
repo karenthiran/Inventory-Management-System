@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
-import logo from "../../assets/Images/logoIMS2.png";
+import logoLight from "../../assets/Images/logoIMS2.png";
+import logoDark from "../../assets/Images/logoIMS21Darkmode.png";
 import {
   Box,
   ArrowRight,
@@ -32,9 +33,21 @@ const Sidebar = () => {
       {/* Logo Section */}
       <div
         className="flex flex-col items-center pt-2 pb-6 
-        border-b border-gray-300 dark:border-gray-700"
+  border-b border-gray-300 dark:border-gray-700"
       >
-        <img src={logo} alt="IMS Logo" className="h-15 object-contain" />
+        {/* Light Mode Logo */}
+        <img
+          src={logoLight}
+          alt="IMS Logo"
+          className="h-15 object-contain block dark:hidden"
+        />
+
+        {/* Dark Mode Logo */}
+        <img
+          src={logoDark}
+          alt="IMS Logo Dark"
+          className="h-15 object-contain hidden dark:block"
+        />
 
         <p className="text-center text-gray-600 dark:text-gray-300 text-[10px] font-medium whitespace-nowrap">
           University of Jaffna, Faculty of Engineering
@@ -63,7 +76,7 @@ const Sidebar = () => {
 
       {/* User Profile Section */}
       <NavLink
-        to="/userprofile"
+        to="/dashboard/userprofile"
         className={({ isActive }) =>
           `flex items-center border gap-4 px-2 py-1.5 rounded-2xl transition-all duration-300 ${
             isActive

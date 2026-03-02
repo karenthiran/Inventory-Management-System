@@ -224,19 +224,46 @@ const Issue = () => {
               <Plus size={18} />
               Issue a New Item
             </button>
-
             {/* Filter */}
             <div className="relative">
-              <select className="appearance-none bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-2 pr-10 text-sm focus:ring-2 focus:ring-indigo-500">
-                <option value="">Filter by</option>
-                <option value="issue date">Issue Date</option>
-                <option value="due date">Due Date</option>
-                <option value="due in soon">Due in Soon</option>
-                <option value="over due">Over Due</option>
+              <select
+                className="
+      appearance-none
+      bg-white dark:bg-gray-800
+      text-gray-700 dark:text-gray-200
+      border border-gray-200 dark:border-gray-700
+      rounded-lg px-4 py-2 pr-10 text-sm
+      focus:outline-none
+      focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400
+      transition
+    "
+              >
+                <option className="bg-white dark:bg-gray-800" value="">
+                  Filter by
+                </option>
+                <option
+                  className="bg-white dark:bg-gray-800"
+                  value="issue date"
+                >
+                  Issue Date
+                </option>
+                <option className="bg-white dark:bg-gray-800" value="due date">
+                  Due Date
+                </option>
+                <option
+                  className="bg-white dark:bg-gray-800"
+                  value="due in soon"
+                >
+                  Due in Soon
+                </option>
+                <option className="bg-white dark:bg-gray-800" value="over due">
+                  Over Due
+                </option>
               </select>
+
               <Filter
                 size={16}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 pointer-events-none"
               />
             </div>
 
@@ -245,11 +272,24 @@ const Issue = () => {
               <input
                 type="text"
                 placeholder="Search by name"
-                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-2 pr-10 text-sm focus:ring-2 focus:ring-indigo-500"
+                className="
+      bg-white dark:bg-gray-800
+      text-gray-700 dark:text-gray-200
+      placeholder-gray-400 dark:placeholder-gray-500
+      border border-gray-200 dark:border-gray-700
+      rounded-lg px-4 py-2 pr-10 text-sm
+      focus:outline-none
+      focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400
+      transition
+    "
               />
               <Search
                 size={16}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                className="
+      absolute right-3 top-1/2 -translate-y-1/2
+      text-gray-500 dark:text-gray-400
+      pointer-events-none
+    "
               />
             </div>
           </div>

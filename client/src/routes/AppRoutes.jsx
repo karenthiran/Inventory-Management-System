@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Login from "../pages/Login";
+import ForgotPassword from "../pages/ForgotPassword";
 import DashboardLayout from "../components/layout/DashboardLayout";
 import Home from "../pages/Home";
 import InventoryItem from "../pages/InventoryItem";
@@ -15,6 +16,7 @@ const AppRoutes = () => {
     <Routes>
       {/* Login Page */}
       <Route path="/" element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
 
       {/* Dashboard Layout */}
       <Route path="/dashboard" element={<DashboardLayout />}>
