@@ -10,7 +10,9 @@ import Maintenance from "../pages/Maintenance";
 import Report from "../pages/Report";
 import Setting from "../pages/Settings";
 import Userprofile from "../pages/UserProfile";
-
+import Category from "../pages/Category";
+import Location from "../pages/Location";
+import UserManagement from "../pages/UserManagement";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -29,6 +31,9 @@ const AppRoutes = () => {
         <Route path="report" element={<Report />} />
         <Route path="setting" element={<Setting />} />
         <Route path="userprofile" element={<Userprofile />} />
+        <Route path="category" element={<Category />} />
+  <Route path="location" element={<Location />} />
+  <Route path="usermanagement" element={<UserManagement />} />
       </Route>
     </Routes>
   );
