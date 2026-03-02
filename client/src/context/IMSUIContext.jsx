@@ -14,8 +14,13 @@ const initialState = {
     issueOpen: false,
     returnOpen: false,
     maintenanceOpen: false,
+    addItemOpen: false,
   },
 };
+
+
+
+
 
 function reducer(state, action) {
   switch (action.type) {

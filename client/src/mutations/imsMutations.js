@@ -22,6 +22,21 @@ export function useIssueItem() {
   });
 }
 
+export function useAddItem() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (newItem) => {
+      const res = await http.post("/api/items", newItem);
+      return res.data;
+    },
+    onSuccess: () => {
+      // refresh inventory list after adding
+      qc.invalidateQueries({ queryKey: queryKeys.items });
+    },
+  });
+}
+
 // POST /api/returns body: { issueId }
 export function useReturnItem() {
   const qc = useQueryClient();

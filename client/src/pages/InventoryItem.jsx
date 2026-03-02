@@ -365,29 +365,357 @@
 
 // export default InventoryItem;
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+// import React, { useState, useEffect, useRef, useMemo } from "react";
+// import { useNavigate } from "react-router-dom";
+// import InventoryTable from "../components/layout/inventory/InventoryTable";
+// import PaginationBar from "../components/common/PaginationBar";
+// import AddItemform from "../components/layout/inventory/AddItemform";
+// import { LayoutGrid, Filter, Search, ChevronRight } from "lucide-react";
+// import { useInventory } from "../context/InventoryContext";
+
+// const InventoryItem = () => {
+//   const navigate = useNavigate();
+//   const { tableData } = useInventory(); // ✅ FROM CONTEXT
+
+//   /* ================= STATES ================= */
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [showFilter, setShowFilter] = useState(false);
+//   const [activeFilterType, setActiveFilterType] = useState(null);
+//   const [selectedLocation, setSelectedLocation] = useState(null);
+//   const [selectedCategory, setSelectedCategory] = useState(null);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [showModal, setShowModal] = useState(false);
+
+//   const filterRef = useRef(null);
+//   const ITEMS_PER_PAGE = 5;
+
+//   /* ================= CLICK OUTSIDE FILTER ================= */
+//   useEffect(() => {
+//     const handleClickOutside = (event) => {
+//       if (filterRef.current && !filterRef.current.contains(event.target)) {
+//         setShowFilter(false);
+//         setActiveFilterType(null);
+//       }
+//     };
+
+//     document.addEventListener("mousedown", handleClickOutside);
+//     return () => {
+//       document.removeEventListener("mousedown", handleClickOutside);
+//     };
+//   }, []);
+
+//   /* ================= ADD ITEM HANDLER ================= */
+//   const handleAddItem = (newItem) => {
+//     addItem(newItem); // ✅ Context
+//     setShowModal(false);
+//   };
+
+//   /* ================= FILTER LABEL ================= */
+//   const activeFilterLabel = useMemo(() => {
+//     let labels = [];
+//     if (selectedLocation) labels.push(selectedLocation);
+//     if (selectedCategory) labels.push(selectedCategory);
+//     return labels.join(" • ");
+//   }, [selectedLocation, selectedCategory]);
+
+//   /* ================= TABLE COLUMNS ================= */
+//   const tableColumns = [
+//     { header: "NO.", accessor: "no" },
+//     { header: "Item Number", accessor: "itemNumber" },
+//     { header: "Item Name", accessor: "itemName" },
+//     { header: "Category", accessor: "category" },
+//     { header: "Location", accessor: "location" },
+//     { header: "Quantity", accessor: "quantity" },
+//     {
+//       header: "View",
+//       render: () => (
+//         <button className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
+//           Detail
+//         </button>
+//       ),
+//     },
+//   ];
+
+//   /* ================= DYNAMIC FILTER OPTIONS ================= */
+//   const locationOptions = useMemo(
+//     () => [...new Set(tableData.map((item) => item.location))],
+//     [tableData],
+//   );
+
+//   const categoryOptions = useMemo(
+//     () => [...new Set(tableData.map((item) => item.category))],
+//     [tableData],
+//   );
+
+//   /* ================= FILTERING LOGIC ================= */
+//   let filteredData = tableData;
+
+//   if (selectedLocation) {
+//     filteredData = filteredData.filter(
+//       (item) => item.location === selectedLocation,
+//     );
+//   }
+
+//   if (selectedCategory) {
+//     filteredData = filteredData.filter(
+//       (item) => item.category === selectedCategory,
+//     );
+//   }
+
+//   if (searchTerm.trim() !== "") {
+//     filteredData = filteredData.filter((item) =>
+//       item.itemName.toLowerCase().includes(searchTerm.toLowerCase()),
+//     );
+//   }
+
+//   /* ================= PAGINATION ================= */
+//   const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
+//   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+//   const paginatedData = filteredData.slice(
+//     startIndex,
+//     startIndex + ITEMS_PER_PAGE,
+//   );
+
+//   useEffect(() => {
+//     if (currentPage > totalPages) {
+//       setCurrentPage(1);
+//     }
+//   }, [filteredData.length]);
+
+//   return (
+//     <div className="h-full flex flex-col px-6 py-4 bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+//       {/* ================= HEADER ================= */}
+//       <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+//         <div className="flex items-center gap-3">
+//           <div className="bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg">
+//             <LayoutGrid
+//               size={22}
+//               className="text-indigo-600 dark:text-indigo-400"
+//             />
+//           </div>
+//           <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+//             Inventory Item List
+//           </h1>
+//         </div>
+
+//         <div className="flex items-center gap-4 flex-wrap">
+//           {/* ================= ADD ITEM ================= */}
+//           <button
+//             onClick={() => setShowModal(true)}
+//             className="bg-indigo-500 text-white px-4 py-1 rounded-lg hover:bg-indigo-600 transition flex items-center gap-2"
+//           >
+//             <span className="text-lg font-bold">+</span>
+//             Add New Item
+//           </button>
+
+//           {showModal && (
+//             <AddItemform
+//               onClose={() => setShowModal(false)}
+//               onAddItem={handleAddItem}
+//             />
+//           )}
+
+//           {/* ================= FILTER ================= */}
+//           <div className="relative" ref={filterRef}>
+//             <button
+//               onClick={() => setShowFilter((prev) => !prev)}
+//               className="flex items-center gap-2 
+//               bg-white dark:bg-gray-800 
+//               text-gray-700 dark:text-gray-200
+//               border border-gray-200 dark:border-gray-700 
+//               rounded-lg px-4 py-2 text-sm 
+//               hover:bg-gray-50 dark:hover:bg-gray-700 
+//               transition"
+//             >
+//               <Filter size={16} />
+//               {activeFilterLabel ? activeFilterLabel : "Filter"}
+//             </button>
+
+//             {showFilter && (
+//               <div
+//                 className="absolute right-0 mt-3 w-72 
+//                 bg-white dark:bg-gray-800 
+//                 rounded-xl shadow-xl 
+//                 border border-gray-200 dark:border-gray-700 
+//                 z-50"
+//               >
+//                 {!activeFilterType && (
+//                   <div className="p-4 space-y-3">
+//                     <div
+//                       onClick={() => setActiveFilterType("location")}
+//                       className="flex justify-between px-3 py-2 rounded-lg cursor-pointer 
+//                       text-gray-700 dark:text-gray-200
+//                       hover:bg-gray-100 dark:hover:bg-gray-700 
+//                       transition"
+//                     >
+//                       <span>Location</span>
+//                       <ChevronRight size={16} />
+//                     </div>
+
+//                     <div
+//                       onClick={() => setActiveFilterType("category")}
+//                       className="flex justify-between px-3 py-2 rounded-lg cursor-pointer 
+//                       text-gray-700 dark:text-gray-200
+//                       hover:bg-gray-100 dark:hover:bg-gray-700 
+//                       transition"
+//                     >
+//                       <span>Category</span>
+//                       <ChevronRight size={16} />
+//                     </div>
+//                   </div>
+//                 )}
+
+//                 {activeFilterType === "location" && (
+//                   <div className="p-4 space-y-2">
+//                     {locationOptions.map((loc) => (
+//                       <div
+//                         key={loc}
+//                         onClick={() => {
+//                           setSelectedLocation(loc);
+//                           setSelectedCategory(null);
+//                           setCurrentPage(1);
+//                           setShowFilter(false);
+//                           setActiveFilterType(null);
+//                         }}
+//                         className="px-3 py-2 rounded-lg cursor-pointer 
+//                         text-gray-700 dark:text-gray-200
+//                         hover:bg-indigo-100 dark:hover:bg-indigo-600 
+//                         hover:text-indigo-700 dark:hover:text-white
+//                         transition"
+//                       >
+//                         {loc}
+//                       </div>
+//                     ))}
+//                   </div>
+//                 )}
+
+//                 {activeFilterType === "category" && (
+//                   <div className="p-4 space-y-2">
+//                     {categoryOptions.map((cat) => (
+//                       <div
+//                         key={cat}
+//                         onClick={() => {
+//                           setSelectedCategory(cat);
+//                           setSelectedLocation(null);
+//                           setCurrentPage(1);
+//                           setShowFilter(false);
+//                           setActiveFilterType(null);
+//                         }}
+//                         className="px-3 py-2 rounded-lg cursor-pointer 
+//                         text-gray-700 dark:text-gray-200
+//                         hover:bg-indigo-100 dark:hover:bg-indigo-600 
+//                         hover:text-indigo-700 dark:hover:text-white
+//                         transition"
+//                       >
+//                         {cat}
+//                       </div>
+//                     ))}
+//                   </div>
+//                 )}
+
+//                 <div
+//                   onClick={() => {
+//                     setSelectedLocation(null);
+//                     setSelectedCategory(null);
+//                     setSearchTerm("");
+//                     setCurrentPage(1);
+//                     setShowFilter(false);
+//                     setActiveFilterType(null);
+//                   }}
+//                   className="text-red-500 dark:text-red-400 text-sm 
+//                   px-4 py-3 cursor-pointer 
+//                   hover:underline 
+//                   border-t border-gray-200 dark:border-gray-700"
+//                 >
+//                   Clear Filter
+//                 </div>
+//               </div>
+//             )}
+//           </div>
+
+//           {/* ================= SEARCH ================= */}
+//           <div className="relative">
+//             <input
+//               type="text"
+//               placeholder="Search by name"
+//               value={searchTerm}
+//               onChange={(e) => {
+//                 setSearchTerm(e.target.value);
+//                 setCurrentPage(1);
+//               }}
+//               className="bg-white dark:bg-gray-800 
+//               text-gray-700 dark:text-gray-200
+//               border border-gray-200 dark:border-gray-700 
+//               rounded-lg px-4 py-2 pr-10 text-sm 
+//               focus:outline-none focus:ring-2 focus:ring-indigo-500
+//               transition"
+//             />
+//             <Search
+//               size={16}
+//               className="absolute right-3 top-1/2 -translate-y-1/2 
+//               text-gray-400 dark:text-gray-300"
+//             />
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* ================= TABLE ================= */}
+//       <div className="flex-1 flex flex-col max-w-7xl mx-auto w-full pt-4">
+//         <div className="flex-1 overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-sm">
+//           <InventoryTable columns={tableColumns} data={paginatedData} />
+//         </div>
+
+//         <div className="mt-4">
+//           <PaginationBar
+//             totalResults={filteredData.length}
+//             currentPage={currentPage}
+//             totalPages={totalPages}
+//             onPageChange={(page) => setCurrentPage(page)}
+//           />
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default InventoryItem;
+
+import React, { useEffect, useRef, useMemo, useState } from "react";
 import InventoryTable from "../components/layout/inventory/InventoryTable";
 import PaginationBar from "../components/common/PaginationBar";
 import AddItemform from "../components/layout/inventory/AddItemform";
 import { LayoutGrid, Filter, Search, ChevronRight } from "lucide-react";
-import { useInventory } from "../context/InventoryContext";
+
+// ✅ TanStack Query
+import { useItems } from "../queries/imsQueries";
+
+// ✅ UI Context hook
+import { useIMSUI } from "../context/useIMSUI";
+
+// ✅ Mutation hook (you must have this)
+import { useAddItem } from "../mutations/imsMutations";
 
 const InventoryItem = () => {
-  const navigate = useNavigate();
-  const { tableData } = useInventory(); // ✅ FROM CONTEXT
+  // ✅ UI Context state
+  const { state, dispatch } = useIMSUI();
+  const currentPage = state.page;
+  const ITEMS_PER_PAGE = state.pageSize; // set default 5 in context if you want
+  const searchTerm = state.searchText;
+  const showModal = state.modals.addItemOpen;
 
-  /* ================= STATES ================= */
-  const [currentPage, setCurrentPage] = useState(1);
+  // ✅ TanStack Query data
+  const { data: tableData = [], isLoading, isError } = useItems();
+
+  // ✅ Add item mutation
+  const addItemMutation = useAddItem();
+
+  /* ================= LOCAL UI STATES (keep local for now) ================= */
   const [showFilter, setShowFilter] = useState(false);
   const [activeFilterType, setActiveFilterType] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showModal, setShowModal] = useState(false);
 
   const filterRef = useRef(null);
-  const ITEMS_PER_PAGE = 5;
 
   /* ================= CLICK OUTSIDE FILTER ================= */
   useEffect(() => {
@@ -399,15 +727,16 @@ const InventoryItem = () => {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   /* ================= ADD ITEM HANDLER ================= */
   const handleAddItem = (newItem) => {
-    addItem(newItem); // ✅ Context
-    setShowModal(false);
+    addItemMutation.mutate(newItem, {
+      onSuccess: () => {
+        dispatch({ type: "CLOSE_MODAL", payload: "addItemOpen" });
+      },
+    });
   };
 
   /* ================= FILTER LABEL ================= */
@@ -419,31 +748,36 @@ const InventoryItem = () => {
   }, [selectedLocation, selectedCategory]);
 
   /* ================= TABLE COLUMNS ================= */
-  const tableColumns = [
-    { header: "NO.", accessor: "no" },
-    { header: "Item Number", accessor: "itemNumber" },
-    { header: "Item Name", accessor: "itemName" },
-    { header: "Category", accessor: "category" },
-    { header: "Location", accessor: "location" },
-    { header: "Quantity", accessor: "quantity" },
-    {
-      header: "View",
-      render: () => (
-        <button className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
-          Detail
-        </button>
-      ),
-    },
-  ];
+  const tableColumns = useMemo(
+    () => [
+      { header: "NO.", accessor: "no" },
+      { header: "Item Number", accessor: "itemNumber" },
+      { header: "Item Name", accessor: "itemName" },
+      { header: "Category", accessor: "category" },
+      { header: "Location", accessor: "location" },
+      { header: "Quantity", accessor: "quantity" },
+      {
+        header: "View",
+        render: () => (
+          <button className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
+            Detail
+          </button>
+        ),
+      },
+    ],
+    [],
+  );
 
   /* ================= DYNAMIC FILTER OPTIONS ================= */
   const locationOptions = useMemo(
-    () => [...new Set(tableData.map((item) => item.location))],
+    () =>
+      [...new Set(tableData.map((item) => item.location).filter(Boolean))].sort(),
     [tableData],
   );
 
   const categoryOptions = useMemo(
-    () => [...new Set(tableData.map((item) => item.category))],
+    () =>
+      [...new Set(tableData.map((item) => item.category).filter(Boolean))].sort(),
     [tableData],
   );
 
@@ -464,23 +798,21 @@ const InventoryItem = () => {
 
   if (searchTerm.trim() !== "") {
     filteredData = filteredData.filter((item) =>
-      item.itemName.toLowerCase().includes(searchTerm.toLowerCase()),
+      (item.itemName || "").toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }
 
   /* ================= PAGINATION ================= */
-  const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
+  const totalPages = Math.max(1, Math.ceil(filteredData.length / ITEMS_PER_PAGE));
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedData = filteredData.slice(
-    startIndex,
-    startIndex + ITEMS_PER_PAGE,
-  );
+  const paginatedData = filteredData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
+  // ✅ MUST NOT be conditional (fixes your hook error)
   useEffect(() => {
     if (currentPage > totalPages) {
-      setCurrentPage(1);
+      dispatch({ type: "SET_PAGE", payload: 1 });
     }
-  }, [filteredData.length]);
+  }, [currentPage, totalPages, dispatch]);
 
   return (
     <div className="h-full flex flex-col px-6 py-4 bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
@@ -488,10 +820,7 @@ const InventoryItem = () => {
       <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
         <div className="flex items-center gap-3">
           <div className="bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg">
-            <LayoutGrid
-              size={22}
-              className="text-indigo-600 dark:text-indigo-400"
-            />
+            <LayoutGrid size={22} className="text-indigo-600 dark:text-indigo-400" />
           </div>
           <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
             Inventory Item List
@@ -501,7 +830,7 @@ const InventoryItem = () => {
         <div className="flex items-center gap-4 flex-wrap">
           {/* ================= ADD ITEM ================= */}
           <button
-            onClick={() => setShowModal(true)}
+            onClick={() => dispatch({ type: "OPEN_MODAL", payload: "addItemOpen" })}
             className="bg-indigo-500 text-white px-4 py-1 rounded-lg hover:bg-indigo-600 transition flex items-center gap-2"
           >
             <span className="text-lg font-bold">+</span>
@@ -510,7 +839,9 @@ const InventoryItem = () => {
 
           {showModal && (
             <AddItemform
-              onClose={() => setShowModal(false)}
+              onClose={() =>
+                dispatch({ type: "CLOSE_MODAL", payload: "addItemOpen" })
+              }
               onAddItem={handleAddItem}
             />
           )}
@@ -566,14 +897,14 @@ const InventoryItem = () => {
                 )}
 
                 {activeFilterType === "location" && (
-                  <div className="p-4 space-y-2">
+                  <div className="p-4 space-y-2 max-h-60 overflow-auto">
                     {locationOptions.map((loc) => (
                       <div
                         key={loc}
                         onClick={() => {
                           setSelectedLocation(loc);
                           setSelectedCategory(null);
-                          setCurrentPage(1);
+                          dispatch({ type: "SET_PAGE", payload: 1 });
                           setShowFilter(false);
                           setActiveFilterType(null);
                         }}
@@ -590,14 +921,14 @@ const InventoryItem = () => {
                 )}
 
                 {activeFilterType === "category" && (
-                  <div className="p-4 space-y-2">
+                  <div className="p-4 space-y-2 max-h-60 overflow-auto">
                     {categoryOptions.map((cat) => (
                       <div
                         key={cat}
                         onClick={() => {
                           setSelectedCategory(cat);
                           setSelectedLocation(null);
-                          setCurrentPage(1);
+                          dispatch({ type: "SET_PAGE", payload: 1 });
                           setShowFilter(false);
                           setActiveFilterType(null);
                         }}
@@ -617,8 +948,8 @@ const InventoryItem = () => {
                   onClick={() => {
                     setSelectedLocation(null);
                     setSelectedCategory(null);
-                    setSearchTerm("");
-                    setCurrentPage(1);
+                    dispatch({ type: "SET_SEARCH", payload: "" });
+                    dispatch({ type: "SET_PAGE", payload: 1 });
                     setShowFilter(false);
                     setActiveFilterType(null);
                   }}
@@ -638,11 +969,10 @@ const InventoryItem = () => {
             <input
               type="text"
               placeholder="Search by name"
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
+              value={state.searchText}
+              onChange={(e) =>
+                dispatch({ type: "SET_SEARCH", payload: e.target.value })
+              }
               className="bg-white dark:bg-gray-800 
               text-gray-700 dark:text-gray-200
               border border-gray-200 dark:border-gray-700 
@@ -662,17 +992,25 @@ const InventoryItem = () => {
       {/* ================= TABLE ================= */}
       <div className="flex-1 flex flex-col max-w-7xl mx-auto w-full pt-4">
         <div className="flex-1 overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-          <InventoryTable columns={tableColumns} data={paginatedData} />
+          {isLoading ? (
+            <div className="p-6">Loading items...</div>
+          ) : isError ? (
+            <div className="p-6">Error loading items</div>
+          ) : (
+            <InventoryTable columns={tableColumns} data={paginatedData} />
+          )}
         </div>
 
-        <div className="mt-4">
-          <PaginationBar
-            totalResults={filteredData.length}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={(page) => setCurrentPage(page)}
-          />
-        </div>
+        {!isLoading && !isError && (
+          <div className="mt-4">
+            <PaginationBar
+              totalResults={filteredData.length}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(page) => dispatch({ type: "SET_PAGE", payload: page })}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

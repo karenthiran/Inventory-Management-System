@@ -1,21 +1,37 @@
+// import { BrowserRouter } from "react-router-dom";
+// import AppRoutes from "./routes/AppRoutes";
+// import { InventoryProvider } from "./context/InventoryContext";
+
+// function App() {
+//   return (
+//     <InventoryProvider>
+//       <BrowserRouter>
+//         <AppRoutes />
+//       </BrowserRouter>
+//     </InventoryProvider>
+//   );
+// }
+
+// export default App;
+
 import { BrowserRouter } from "react-router-dom";
-import AppRoutes from "./routes/AppRoutes";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { IMSUIProvider } from "./context/IMSUIContext"; // <-- match your file name
 import { InventoryProvider } from "./context/InventoryContext";
+import AppRoutes from "./routes/AppRoutes";
 
-import { IMSUIProvider } from "./context/IMSUIContext";
+const queryClient = new QueryClient();
 
-function App() {
+export default function App() {
   return (
-    <IMSUIProvider>
-      {
+    <QueryClientProvider client={queryClient}>
+      <IMSUIProvider>
         <InventoryProvider>
           <BrowserRouter>
             <AppRoutes />
           </BrowserRouter>
         </InventoryProvider>
-      }
-    </IMSUIProvider>
+      </IMSUIProvider>
+    </QueryClientProvider>
   );
 }
-
-export default App;
