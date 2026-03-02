@@ -1,6 +1,9 @@
 package com.ims.server.controller;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +27,12 @@ public class IssuedItemController {
     @PostMapping("/add")
     public IssuedItem issueNewItem(@RequestBody IssuedItem issuedItem) {
         return issuedItemRepository.save(issuedItem);
+    }
+
+    // get all issued items
+    @GetMapping("/all")
+    public List<IssuedItem> getAllIssuedItems() {
+        return issuedItemRepository.findAll();
     }
 
 }
