@@ -58,4 +58,24 @@ public class MaintenanceController {
         return maintenanceRepository.save(maintenance);
     }
 
+    // 4. Edit full details of a maintenance request
+    @PutMapping("/edit/{id}")
+    public Maintenance editMaintenanceDetails(@PathVariable Long id, @RequestBody Maintenance updatedMaintenance) {
+        // 1. Find the existing record
+        return maintenanceRepository.findById(id).map(existingRecord -> {
+            // 2. Update all allowed fields
+            existingRecord.setItemName(updatedMaintenance.getItemName());
+            existingRecord.setItemCode(updatedMaintenance.getItemCode());
+            existingRecord.setItemType(updatedMaintenance.getItemType());
+            existingRecord.setQuantity(updatedMaintenance.getQuantity());
+            existingRecord.setReceivedFrom(updatedMaintenance.getReceivedFrom());
+            existingRecord.setDescription(updatedMaintenance.getDescription());
+            existingRecord.setRequestDate(updatedMaintenance.getRequestDate());
+            existingRecord.setStatus(updatedMaintenance.getStatus());
+
+            // 3. Save the changes
+            return maintenanceRepository.save(existingRecord);
+        }).orElseThrow(() -> new RuntimeException("Maintenance record not found with id: " + id));
+    }
+
 }
