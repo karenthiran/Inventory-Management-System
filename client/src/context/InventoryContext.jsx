@@ -70,6 +70,8 @@ export const InventoryProvider = ({ children }) => {
         category: newItem.category,
         location: newItem.location,
         quantity: Number(newItem.quantity),
+        itemType: newItem.itemType,
+        description: newItem.description,
       },
     ]);
   }, []);

@@ -1,9 +1,10 @@
 import { Bell, LogOut, Search } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle";
 
 const Topbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const routeTitles = {
     "/home": "Home",
@@ -17,6 +18,12 @@ const Topbar = () => {
   };
 
   const title = routeTitles[location.pathname] || "Dashboard";
+
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // remove token if stored
+    localStorage.removeItem("user"); // remove user data if stored
+    navigate("/"); // redirect to Login page
+  };
 
   return (
     <div
@@ -58,8 +65,12 @@ const Topbar = () => {
 
         {/*  Theme Toggle Here */}
         <ThemeToggle />
-
-        <LogOut size={20} className="text-red-500 cursor-pointer" />
+        {/* ✅ Logout Click */}
+        <LogOut
+          size={20}
+          className="text-red-500 cursor-pointer"
+          onClick={handleLogout}
+        />
       </div>
     </div>
   );
