@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,9 +54,37 @@ public class InventoryItemController {
         return inventoryItemRepository.save(item);
     }
 
+    // get all items
     @GetMapping("/all")
     public List<InventoryItem> getAllItems() {
         return inventoryItemRepository.findAll();
+    }
+
+    // update an item
+    @PutMapping("/update/{code}")
+    public InventoryItem updatItem(@PathVariable String code, @RequestBody InventoryItem itemDetails) {
+        // Find the existing item by code
+        InventoryItem existingItem = inventoryItemRepository.findById(code)
+                .orElseThrow(() -> new RuntimeException("Item not found"));
+
+        // Refatch the code to use the existing item and update its fields
+        // 2. Re-fetch Category and Location to ensure they are persistent (managed)
+        // objects
+        Category category = categoryRepository.findById(itemDetails.getCategory().getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+        Location location = locationRepository.findById(itemDetails.getLocation().getLocationId())
+                .orElseThrow(() -> new RuntimeException("Location not found"));
+
+        // 3. Update the existing item with new details
+        existingItem.setItemName(itemDetails.getItemName());
+        existingItem.setQuantity(itemDetails.getQuantity());
+        existingItem.setDescription(itemDetails.getDescription());
+        existingItem.setItemType(itemDetails.getItemType());
+        existingItem.setCategory(category);
+        existingItem.setLocation(location);
+
+        // save the updated item
+        return inventoryItemRepository.save(existingItem);
     }
 
 }
