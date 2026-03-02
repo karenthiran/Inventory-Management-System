@@ -1,6 +1,7 @@
 package com.ims.server.controller;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -40,5 +41,20 @@ public class CategoryController {
 
         // save the updated category back to the database
         return categoryRepository.save(exisitingCategory);
+    }
+
+    // delete a category
+    @DeleteMapping("/delete/{id}")
+    public String deleteCategory(@PathVariable String id) {
+
+        // check if the category exists
+        if (!categoryRepository.existsById(id)) {
+            throw new RuntimeException("Category not found with id: " + id);
+        }
+
+        // delete the category
+        categoryRepository.deleteById(id);
+
+        return "Category with id: " + id + " has been deleted successfully.";
     }
 }
