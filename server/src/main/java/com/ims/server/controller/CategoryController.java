@@ -1,7 +1,10 @@
 package com.ims.server.controller;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,13 +17,19 @@ import com.ims.server.repository.CategoryRepository;
 
 @RestController
 @RequestMapping("api/categories")
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "http://localhost:5173")
 public class CategoryController {
 
     private final CategoryRepository categoryRepository;
 
     public CategoryController(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
+    }
+
+    @GetMapping("/all")
+    public List<Category> getAllCategories() {
+        // This talks to the database and returns the whole list
+        return categoryRepository.findAll();
     }
 
     @PostMapping("/add")
