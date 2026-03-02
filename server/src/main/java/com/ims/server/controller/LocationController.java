@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,9 +31,25 @@ public class LocationController {
         return locationRepository.save(location);
     }
 
+    // get all locations
     @GetMapping("/all")
     public List<Location> getAllLocations() {
         return locationRepository.findAll();
+    }
+
+    // update an existing location
+    @PutMapping("/update/{id}")
+    public Location updateLocation(@PathVariable String id, @RequestBody Location locationDetails) {
+
+        // find the location by id
+        Location exisitingLocation = locationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Location not found with id: " + id));
+
+        // update the location details
+        exisitingLocation.setLocationName(locationDetails.getLocationName());
+
+        // save the updated location back to the database
+        return locationRepository.save(exisitingLocation);
     }
 
 }
