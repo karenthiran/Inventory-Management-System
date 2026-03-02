@@ -2,13 +2,19 @@ import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./routes/AppRoutes";
 import { InventoryProvider } from "./context/InventoryContext";
 
+import { IMSUIProvider } from "./context/IMSUIContext";
+
 function App() {
   return (
-    <InventoryProvider>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
-    </InventoryProvider>
+    <IMSUIProvider>
+      {
+        <InventoryProvider>
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </InventoryProvider>
+      }
+    </IMSUIProvider>
   );
 }
 
