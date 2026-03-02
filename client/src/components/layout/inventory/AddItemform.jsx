@@ -407,15 +407,33 @@ import React, { useState } from "react";
 import { X } from "lucide-react";
 import { useInventory } from "../../../context/InventoryContext";
 
-const AddItemForm = ({
-  onClose,
-  categories = [],
-  locations = [],
-  itemTypes = [],
-  loading = false,
-}) => {
-  const { addItem } = useInventory(); // ✅ Context added
+const AddItemForm = ({ onClose, loading = false }) => {
+  const { addItem } = useInventory();
 
+  /* =========================
+     TEMPORARY DUMMY DATA
+  ========================== */
+  const categories = [
+    "Electronics",
+    "Furniture",
+    "Stationery",
+    "Office Supplies",
+    "Accessories",
+  ];
+
+  const locations = [
+    "Main Store",
+    "Warehouse A",
+    "Warehouse B",
+    "Showroom",
+    "Online Stock",
+  ];
+
+  const itemTypes = ["Raw Material", "Finished Product", "Consumable", "Asset"];
+
+  /* =========================
+     STATE
+  ========================== */
   const [formData, setFormData] = useState({
     itemName: "",
     itemCode: "",
@@ -429,7 +447,7 @@ const AddItemForm = ({
   const [errors, setErrors] = useState({});
 
   /* =========================
-     Validation Function
+     VALIDATION
   ========================== */
   const validate = () => {
     const newErrors = {};
@@ -452,7 +470,7 @@ const AddItemForm = ({
   };
 
   /* =========================
-     Handle Change
+     HANDLE CHANGE
   ========================== */
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -471,7 +489,7 @@ const AddItemForm = ({
   };
 
   /* =========================
-     Submit (Using Context)
+     SUBMIT
   ========================== */
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -483,7 +501,7 @@ const AddItemForm = ({
       quantity: Number(formData.quantity),
     });
 
-    onClose(); // close modal after success
+    onClose();
   };
 
   return (
@@ -652,7 +670,9 @@ const AddItemForm = ({
   );
 };
 
-/* Reusable Components (unchanged) */
+/* =========================
+   REUSABLE COMPONENTS
+========================== */
 
 const InputField = ({ label, name, value, onChange, error, placeholder }) => (
   <div className="flex flex-col">
