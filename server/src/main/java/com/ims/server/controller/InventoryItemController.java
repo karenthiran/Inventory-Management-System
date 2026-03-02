@@ -3,6 +3,7 @@ package com.ims.server.controller;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -87,4 +88,17 @@ public class InventoryItemController {
         return inventoryItemRepository.save(existingItem);
     }
 
+    // Delete an item
+    @DeleteMapping("/delete/{code}")
+    public String deleteItem(@PathVariable String code) {
+        // check if the item exists
+        if (!inventoryItemRepository.existsById(code)) {
+            throw new RuntimeException("Item not found with code: " + code);
+        }
+
+        // perform deletion
+        inventoryItemRepository.deleteById(code);
+
+        return "Item with code " + code + " has been deleted successfully.";
+    }
 }
