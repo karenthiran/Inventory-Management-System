@@ -469,25 +469,37 @@ const AddItemForm = ({ onClose, loading = false }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  /* =========================
-     HANDLE CHANGE
-  ========================== */
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    if (name === "quantity") {
+      // Allow empty while typing
+      if (value === "") {
+        setFormData((prev) => ({
+          ...prev,
+          quantity: "",
+        }));
+        return;
+      }
+
+      const numericValue = Number(value);
+
+      // Only block negative numbers
+      if (isNaN(numericValue) || numericValue < 0) return;
+
+      setFormData((prev) => ({
+        ...prev,
+        quantity: numericValue,
+      }));
+
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
-      [name]:
-        name === "quantity"
-          ? value === ""
-            ? ""
-            : Math.max(0, Number(value))
-          : value,
+      [name]: value,
     }));
-
-    setErrors((prev) => ({ ...prev, [name]: "" }));
   };
-
   /* =========================
      SUBMIT
   ========================== */
@@ -572,21 +584,23 @@ const AddItemForm = ({ onClose, loading = false }) => {
           {/* Quantity */}
           <div className="flex flex-col">
             <label className="text-sm font-semibold mb-1">Quantity</label>
+
             <div
               className={`flex items-center border rounded-lg overflow-hidden 
-              ${
-                errors.quantity
-                  ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-600"
-              }
-              focus-within:ring-2 focus-within:ring-indigo-500`}
+    ${
+      errors.quantity
+        ? "border-red-500"
+        : "border-gray-300 dark:border-gray-600"
+    }
+    focus-within:ring-2 focus-within:ring-indigo-500`}
             >
+              {/* Minus */}
               <button
                 type="button"
                 onClick={() =>
                   setFormData((prev) => ({
                     ...prev,
-                    quantity: Math.max(0, Number(prev.quantity) - 1),
+                    quantity: Math.max(0, Number(prev.quantity || 0) - 1),
                   }))
                 }
                 className="px-4 py-2 bg-gray-200 dark:bg-gray-700 font-bold"
@@ -594,6 +608,7 @@ const AddItemForm = ({ onClose, loading = false }) => {
                 −
               </button>
 
+              {/* Input */}
               <input
                 type="number"
                 name="quantity"
@@ -603,12 +618,13 @@ const AddItemForm = ({ onClose, loading = false }) => {
                 className="w-full text-center bg-white dark:bg-gray-800 outline-none py-2"
               />
 
+              {/* Plus */}
               <button
                 type="button"
                 onClick={() =>
                   setFormData((prev) => ({
                     ...prev,
-                    quantity: Number(prev.quantity) + 1,
+                    quantity: Number(prev.quantity || 0) + 1,
                   }))
                 }
                 className="px-4 py-2 bg-gray-200 dark:bg-gray-700 font-bold"
@@ -616,6 +632,7 @@ const AddItemForm = ({ onClose, loading = false }) => {
                 +
               </button>
             </div>
+
             {errors.quantity && (
               <span className="text-red-500 text-xs mt-1">
                 {errors.quantity}

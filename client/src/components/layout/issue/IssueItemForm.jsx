@@ -250,6 +250,9 @@ import { useInventory } from "../../../context/InventoryContext";
 const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
   const { tableData, issueItem } = useInventory();
 
+  /* =========================
+     Available Items (Stock > 0)
+  ========================== */
   const availableItems = useMemo(
     () => tableData.filter((item) => item.quantity > 0),
     [tableData],
@@ -258,7 +261,7 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
   const [formData, setFormData] = useState({
     itemName: "",
     itemNo: "",
-    quantity: 1,
+    quantity: "",
     issueTo: "",
     issueDate: "",
     dueDate: "",
@@ -269,30 +272,49 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [errors, setErrors] = useState({});
 
-  const selectedItem = availableItems.find(
-    (item) => item.itemNumber === formData.itemNo,
+  /* =========================
+     Selected Item
+  ========================== */
+  const selectedItem = useMemo(
+    () => availableItems.find((item) => item.itemNumber === formData.itemNo),
+    [availableItems, formData.itemNo],
   );
 
-  const filteredItems = availableItems.filter((item) =>
-    item.itemName.toLowerCase().includes(searchTerm.toLowerCase()),
+  const filteredItems = useMemo(
+    () =>
+      availableItems.filter((item) =>
+        item.itemName.toLowerCase().includes(searchTerm.toLowerCase()),
+      ),
+    [availableItems, searchTerm],
   );
 
   /* =========================
-     Validation
+     Validation (Real-world safe)
   ========================== */
   const validate = () => {
     const newErrors = {};
+    const qty = Number(formData.quantity);
 
     if (!formData.itemNo) newErrors.itemNo = "Please select an item";
     if (!formData.issueTo.trim())
       newErrors.issueTo = "Issue To field is required";
     if (!formData.issueDate) newErrors.issueDate = "Issue Date is required";
     if (!formData.dueDate) newErrors.dueDate = "Due Date is required";
-    if (formData.quantity <= 0)
-      newErrors.quantity = "Quantity must be at least 1";
 
-    if (selectedItem && formData.quantity > selectedItem.quantity) {
+    if (!formData.quantity || isNaN(qty) || qty < 1) {
+      newErrors.quantity = "Quantity must be at least 1";
+    } else if (!selectedItem) {
+      newErrors.quantity = "Invalid item selected";
+    } else if (qty > selectedItem.quantity) {
       newErrors.quantity = `Only ${selectedItem.quantity} available`;
+    }
+
+    if (
+      formData.issueDate &&
+      formData.dueDate &&
+      formData.dueDate < formData.issueDate
+    ) {
+      newErrors.dueDate = "Due date cannot be before issue date";
     }
 
     setErrors(newErrors);
@@ -307,7 +329,7 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
       ...prev,
       itemName: item.itemName,
       itemNo: item.itemNumber,
-      quantity: 1,
+      quantity: "",
     }));
 
     setSearchTerm(item.itemName);
@@ -322,39 +344,67 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
     const { name, value } = e.target;
 
     if (name === "quantity") {
-      const qty = Math.max(1, Number(value));
+      if (value === "") {
+        setFormData((prev) => ({ ...prev, quantity: "" }));
+        setErrors((prev) => ({ ...prev, quantity: "" }));
+        return;
+      }
 
-      if (selectedItem && qty > selectedItem.quantity) {
-        setFormData((prev) => ({
+      if (!/^[0-9]+$/.test(value)) return;
+
+      const numericValue = Number(value);
+
+      if (selectedItem && numericValue > selectedItem.quantity) {
+        setErrors((prev) => ({
           ...prev,
-          quantity: selectedItem.quantity,
+          quantity: `Only ${selectedItem.quantity} available`,
         }));
         return;
       }
 
       setFormData((prev) => ({
         ...prev,
-        quantity: qty,
+        quantity: value,
       }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
+
+      setErrors((prev) => ({ ...prev, quantity: "" }));
+      return;
     }
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
 
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   /* =========================
-     Submit
+     Submit (Double Stock Safe)
   ========================== */
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
-    issueItem(formData.itemNo, formData.quantity);
-    await onIssueItem(formData);
+    const latestItem = tableData.find(
+      (item) => item.itemNumber === formData.itemNo,
+    );
+
+    const finalQuantity = Number(formData.quantity);
+
+    if (!latestItem || latestItem.quantity < finalQuantity) {
+      setErrors({
+        quantity: `Only ${latestItem?.quantity ?? 0} available`,
+      });
+      return;
+    }
+
+    issueItem(formData.itemNo, finalQuantity);
+
+    await onIssueItem({
+      ...formData,
+      quantity: finalQuantity,
+    });
   };
 
   return (
@@ -435,6 +485,7 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
           <div className="flex flex-col">
             <label className="text-sm font-semibold mb-1">Quantity</label>
             <input
+              placeholder="Enter the quantity"
               type="number"
               name="quantity"
               min="1"
@@ -455,7 +506,6 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
             )}
           </div>
 
-          {/* Issue To */}
           <InputField
             label="Issue To (User / Lab)"
             name="issueTo"
@@ -465,7 +515,6 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
             placeholder="COL - 01"
           />
 
-          {/* Issue Date */}
           <DateField
             label="Issue Date"
             name="issueDate"
@@ -474,7 +523,6 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
             error={errors.issueDate}
           />
 
-          {/* Due Date */}
           <DateField
             label="Due Date"
             name="dueDate"
@@ -483,7 +531,6 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
             error={errors.dueDate}
           />
 
-          {/* Notes */}
           <div className="col-span-2 flex flex-col">
             <label className="text-sm font-semibold mb-1">
               Notes
@@ -499,7 +546,6 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
             />
           </div>
 
-          {/* Buttons */}
           <div className="col-span-2 flex justify-center gap-8 mt-4">
             <button
               type="button"
@@ -523,7 +569,9 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
   );
 };
 
-/* Reusable Input */
+/* =========================
+   Reusable Input
+========================= */
 const InputField = ({ label, name, value, onChange, error, placeholder }) => (
   <div className="flex flex-col">
     <label className="text-sm font-semibold mb-1">{label}</label>
@@ -541,7 +589,9 @@ const InputField = ({ label, name, value, onChange, error, placeholder }) => (
   </div>
 );
 
-/* Reusable Date Field */
+/* =========================
+   Reusable Date Field
+========================= */
 const DateField = ({ label, name, value, onChange, error }) => (
   <div className="flex flex-col">
     <label className="text-sm font-semibold mb-1">{label}</label>
