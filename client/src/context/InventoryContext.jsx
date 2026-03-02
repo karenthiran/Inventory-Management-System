@@ -17,6 +17,9 @@ export const useInventory = () => {
 };
 
 export const InventoryProvider = ({ children }) => {
+  /* =========================================================
+     INVENTORY STOCK DATA
+  ========================================================== */
   const [tableData, setTableData] = useState([
     {
       no: "01",
@@ -60,6 +63,14 @@ export const InventoryProvider = ({ children }) => {
     },
   ]);
 
+  /* =========================================================
+     ISSUED ITEMS DATA
+  ========================================================== */
+  const [issuedItems, setIssuedItems] = useState([]);
+
+  /* =========================================================
+     ADD NEW INVENTORY ITEM
+  ========================================================== */
   const addItem = useCallback((newItem) => {
     setTableData((prev) => [
       ...prev,
@@ -76,12 +87,78 @@ export const InventoryProvider = ({ children }) => {
     ]);
   }, []);
 
+  /* =========================================================
+     REDUCE STOCK WHEN ITEM IS ISSUED
+  ========================================================== */
+  const issueItem = useCallback((itemNumber, quantity) => {
+    setTableData((prev) =>
+      prev.map((item) =>
+        item.itemNumber === itemNumber
+          ? {
+              ...item,
+              quantity: item.quantity - quantity,
+            }
+          : item,
+      ),
+    );
+  }, []);
+
+  /* =========================================================
+     STORE ISSUE RECORD
+  ========================================================== */
+  const addIssuedItem = useCallback((issueData) => {
+    setIssuedItems((prev) => [
+      {
+        id: Date.now(),
+        ...issueData,
+        status: new Date(issueData.dueDate) < new Date() ? "Overdue" : "Issued",
+      },
+      ...prev,
+    ]);
+  }, []);
+
+  /* =========================================================
+     RETURN ITEM (Optional Future Feature - Production Ready)
+  ========================================================== */
+  const returnItem = useCallback(
+    (id) => {
+      setIssuedItems((prev) =>
+        prev.map((item) =>
+          item.id === id ? { ...item, status: "Returned" } : item,
+        ),
+      );
+
+      const returnedItem = issuedItems.find((item) => item.id === id);
+
+      if (returnedItem) {
+        setTableData((prev) =>
+          prev.map((item) =>
+            item.itemNumber === returnedItem.itemNo
+              ? {
+                  ...item,
+                  quantity: item.quantity + returnedItem.quantity,
+                }
+              : item,
+          ),
+        );
+      }
+    },
+    [issuedItems],
+  );
+
+  /* =========================================================
+     CONTEXT VALUE (OPTIMIZED)
+  ========================================================== */
   const value = useMemo(
     () => ({
       tableData,
+      issuedItems,
       addItem,
+      issueItem,
+      addIssuedItem,
+      returnItem,
     }),
-    [tableData, addItem],
+    [tableData, issuedItems, addItem, issueItem, addIssuedItem, returnItem],
   );
 
   return (

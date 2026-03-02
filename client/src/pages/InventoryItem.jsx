@@ -375,7 +375,7 @@ import { useInventory } from "../context/InventoryContext";
 
 const InventoryItem = () => {
   const navigate = useNavigate();
-  const { tableData, addItem } = useInventory(); // ✅ FROM CONTEXT
+  const { tableData } = useInventory(); // ✅ FROM CONTEXT
 
   /* ================= STATES ================= */
   const [currentPage, setCurrentPage] = useState(1);
