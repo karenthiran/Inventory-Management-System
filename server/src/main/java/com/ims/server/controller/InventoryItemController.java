@@ -1,6 +1,9 @@
 package com.ims.server.controller;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,6 +50,11 @@ public class InventoryItemController {
 
         // 4. Now save the item
         return inventoryItemRepository.save(item);
+    }
+
+    @GetMapping("/all")
+    public List<InventoryItem> getAllItems() {
+        return inventoryItemRepository.findAll();
     }
 
 }
