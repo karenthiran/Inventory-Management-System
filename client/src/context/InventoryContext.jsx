@@ -1,9 +1,9 @@
-import React, {
+import {
   createContext,
-  useContext,
-  useState,
-  useMemo,
   useCallback,
+  useContext,
+  useMemo,
+  useState,
 } from "react";
 
 const InventoryContext = createContext();
@@ -18,50 +18,9 @@ export const useInventory = () => {
 
 export const InventoryProvider = ({ children }) => {
   /* =========================================================
-     INVENTORY STOCK DATA
+     INVENTORY STOCK DATA (Initialized as empty array)
   ========================================================== */
-  const [tableData, setTableData] = useState([
-    {
-      no: "01",
-      itemNumber: "228-3844-931-7689",
-      itemName: "Laptop",
-      category: "Computing",
-      location: "COL-01",
-      quantity: 5,
-    },
-    {
-      no: "02",
-      itemNumber: "661-7963-661-7963",
-      itemName: "Oscilloscope",
-      category: "Electronic",
-      location: "COL-02",
-      quantity: 7,
-    },
-    {
-      no: "03",
-      itemNumber: "958-4030-182-0187",
-      itemName: "Printer",
-      category: "Computing",
-      location: "COL-01",
-      quantity: 12,
-    },
-    {
-      no: "04",
-      itemNumber: "114-7821-556-9021",
-      itemName: "Projector",
-      category: "Electronic",
-      location: "COL-03",
-      quantity: 3,
-    },
-    {
-      no: "05",
-      itemNumber: "771-2290-443-1188",
-      itemName: "Router",
-      category: "Networking",
-      location: "COL-01",
-      quantity: 9,
-    },
-  ]);
+  const [tableData, setTableData] = useState([]);
 
   /* =========================================================
      ISSUED ITEMS DATA
@@ -69,20 +28,19 @@ export const InventoryProvider = ({ children }) => {
   const [issuedItems, setIssuedItems] = useState([]);
 
   /* =========================================================
-     ADD NEW INVENTORY ITEM
+     ADD NEW INVENTORY ITEM (Updated for Postman structure)
   ========================================================== */
   const addItem = useCallback((newItem) => {
     setTableData((prev) => [
       ...prev,
       {
-        no: String(prev.length + 1).padStart(2, "0"),
-        itemNumber: newItem.itemCode,
+        itemCode: newItem.itemCode,
         itemName: newItem.itemName,
-        category: newItem.category,
-        location: newItem.location,
         quantity: Number(newItem.quantity),
         itemType: newItem.itemType,
         description: newItem.description,
+        category: newItem.category, // Object: { categoryId, categoryName }
+        location: newItem.location, // Object: { locationId, locationName }
       },
     ]);
   }, []);
@@ -90,13 +48,13 @@ export const InventoryProvider = ({ children }) => {
   /* =========================================================
      REDUCE STOCK WHEN ITEM IS ISSUED
   ========================================================== */
-  const issueItem = useCallback((itemNumber, quantity) => {
+  const issueItem = useCallback((itemCode, quantity) => {
     setTableData((prev) =>
       prev.map((item) =>
-        item.itemNumber === itemNumber
+        item.itemCode === itemCode
           ? {
               ...item,
-              quantity: item.quantity - quantity,
+              quantity: Math.max(0, item.quantity - quantity),
             }
           : item,
       ),
@@ -118,22 +76,22 @@ export const InventoryProvider = ({ children }) => {
   }, []);
 
   /* =========================================================
-     RETURN ITEM (Optional Future Feature - Production Ready)
+     RETURN ITEM
   ========================================================== */
   const returnItem = useCallback(
     (id) => {
-      setIssuedItems((prev) =>
-        prev.map((item) =>
-          item.id === id ? { ...item, status: "Returned" } : item,
-        ),
-      );
-
       const returnedItem = issuedItems.find((item) => item.id === id);
 
       if (returnedItem) {
+        setIssuedItems((prev) =>
+          prev.map((item) =>
+            item.id === id ? { ...item, status: "Returned" } : item,
+          ),
+        );
+
         setTableData((prev) =>
           prev.map((item) =>
-            item.itemNumber === returnedItem.itemNo
+            item.itemCode === returnedItem.itemCode
               ? {
                   ...item,
                   quantity: item.quantity + returnedItem.quantity,
@@ -147,11 +105,12 @@ export const InventoryProvider = ({ children }) => {
   );
 
   /* =========================================================
-     CONTEXT VALUE (OPTIMIZED)
+     CONTEXT VALUE (Added setTableData)
   ========================================================== */
   const value = useMemo(
     () => ({
       tableData,
+      setTableData, // <--- CRITICAL: Allow components to update with API data
       issuedItems,
       addItem,
       issueItem,
