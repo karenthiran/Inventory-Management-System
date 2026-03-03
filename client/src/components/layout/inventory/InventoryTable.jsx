@@ -1,21 +1,21 @@
 const InventoryTable = ({ columns, data }) => {
   return (
     <div
-      className="bg-[#f9fafb] dark:bg-gray-800 
+      className='bg-[#f9fafb] dark:bg-gray-800 
     rounded-2xl border border-gray-200 dark:border-gray-700 
-    overflow-hidden transition-colors duration-300"
+    overflow-hidden transition-colors duration-300'
     >
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left">
+      <div className='overflow-x-auto'>
+        <table className='w-full text-sm text-left'>
           {/* Header */}
           <thead
-            className="bg-gray-100 dark:bg-gray-700 
+            className='bg-gray-100 dark:bg-gray-700 
           text-gray-500 dark:text-gray-300 
-          text-xs font-semibold uppercase"
+          text-xs font-semibold uppercase'
           >
             <tr>
               {columns.map((col, index) => (
-                <th key={index} className="px-8 py-5 tracking-wide">
+                <th key={index} className='px-8 py-5 tracking-wide'>
                   {col.header}
                 </th>
               ))}
@@ -26,19 +26,20 @@ const InventoryTable = ({ columns, data }) => {
           <tbody>
             {data.map((row, rowIndex) => (
               <tr
-                key={rowIndex}
-                className="border-t border-gray-100 dark:border-gray-700 
+                key={row.itemCode || rowIndex} // Best practice to use a unique ID like itemCode
+                className='border-t border-gray-100 dark:border-gray-700 
                 hover:bg-gray-50 dark:hover:bg-gray-700/60 
-                transition duration-200"
+                transition duration-200'
               >
                 {columns.map((col, colIndex) => (
                   <td
                     key={colIndex}
-                    className="px-8 py-6 
+                    className='px-8 py-6 
                     text-gray-700 dark:text-gray-200 
-                    font-medium"
+                    font-medium'
                   >
-                    {col.render ? col.render(row) : row[col.accessor]}
+                    {/* UPDATED LINE: Added rowIndex as the second argument */}
+                    {col.render ? col.render(row, rowIndex) : row[col.accessor]}
                   </td>
                 ))}
               </tr>
