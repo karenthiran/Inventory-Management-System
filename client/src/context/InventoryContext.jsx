@@ -1,3 +1,4 @@
+import axios from "axios";
 import {
   createContext,
   useCallback,
@@ -10,114 +11,68 @@ const InventoryContext = createContext();
 
 export const useInventory = () => {
   const context = useContext(InventoryContext);
-  if (!context) {
+  if (!context)
     throw new Error("useInventory must be used within InventoryProvider");
-  }
   return context;
 };
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+
 export const InventoryProvider = ({ children }) => {
-  /* =========================================================
-     INVENTORY STOCK DATA (Initialized as empty array)
-  ========================================================== */
   const [tableData, setTableData] = useState([]);
-
-  /* =========================================================
-     ISSUED ITEMS DATA
-  ========================================================== */
   const [issuedItems, setIssuedItems] = useState([]);
+  const [loading, setLoading] = useState(false); // Handles button disable/spinner states
 
   /* =========================================================
-     ADD NEW INVENTORY ITEM (Updated for Postman structure)
+      ADD NEW INVENTORY ITEM (API Call)
   ========================================================== */
-  const addItem = useCallback((newItem) => {
-    setTableData((prev) => [
-      ...prev,
-      {
-        itemCode: newItem.itemCode,
-        itemName: newItem.itemName,
-        quantity: Number(newItem.quantity),
-        itemType: newItem.itemType,
-        description: newItem.description,
-        category: newItem.category, // Object: { categoryId, categoryName }
-        location: newItem.location, // Object: { locationId, locationName }
-      },
-    ]);
-  }, []);
+  const addItem = async (itemPayload) => {
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/api/inventory/add`,
+        itemPayload,
+      );
 
-  /* =========================================================
-     REDUCE STOCK WHEN ITEM IS ISSUED
-  ========================================================== */
-  const issueItem = useCallback((itemCode, quantity) => {
-    setTableData((prev) =>
-      prev.map((item) =>
-        item.itemCode === itemCode
-          ? {
-              ...item,
-              quantity: Math.max(0, item.quantity - quantity),
-            }
-          : item,
-      ),
-    );
-  }, []);
-
-  /* =========================================================
-     STORE ISSUE RECORD
-  ========================================================== */
-  const addIssuedItem = useCallback((issueData) => {
-    setIssuedItems((prev) => [
-      {
-        id: Date.now(),
-        ...issueData,
-        status: new Date(issueData.dueDate) < new Date() ? "Overdue" : "Issued",
-      },
-      ...prev,
-    ]);
-  }, []);
-
-  /* =========================================================
-     RETURN ITEM
-  ========================================================== */
-  const returnItem = useCallback(
-    (id) => {
-      const returnedItem = issuedItems.find((item) => item.id === id);
-
-      if (returnedItem) {
-        setIssuedItems((prev) =>
-          prev.map((item) =>
-            item.id === id ? { ...item, status: "Returned" } : item,
-          ),
-        );
-
-        setTableData((prev) =>
-          prev.map((item) =>
-            item.itemCode === returnedItem.itemCode
-              ? {
-                  ...item,
-                  quantity: item.quantity + returnedItem.quantity,
-                }
-              : item,
-          ),
-        );
+      if (response.status === 200 || response.status === 201) {
+        setTableData((prev) => [...prev, response.data]);
+        return true;
       }
-    },
-    [issuedItems],
-  );
+    } catch (error) {
+      console.error("Database Error:", error.response?.data || error.message);
+      alert(
+        "Failed to save: " +
+          (error.response?.data?.message ||
+            "Check if Item Code already exists"),
+      );
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   /* =========================================================
-     CONTEXT VALUE (Added setTableData)
+      FETCH ALL ITEMS (Recommended to call on page load)
   ========================================================== */
+  const fetchInventory = useCallback(async () => {
+    try {
+      const res = await axios.get(`${API_BASE_URL}/api/inventory/all`);
+      setTableData(res.data);
+    } catch (err) {
+      console.error("Fetch Error:", err);
+    }
+  }, []);
+
   const value = useMemo(
     () => ({
       tableData,
-      setTableData, // <--- CRITICAL: Allow components to update with API data
+      setTableData,
       issuedItems,
+      loading,
       addItem,
-      issueItem,
-      addIssuedItem,
-      returnItem,
+      fetchInventory,
     }),
-    [tableData, issuedItems, addItem, issueItem, addIssuedItem, returnItem],
+    [tableData, issuedItems, loading, addItem, fetchInventory],
   );
 
   return (
