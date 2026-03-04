@@ -548,13 +548,15 @@ const InventoryItem = () => {
                       onClick={() => setActiveFilterType("location")}
                       className='flex justify-between p-3 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition'
                     >
-                      <span>Location</span> <ChevronRight size={16} />
+                      <span className='dark:text-gray-200'>Location</span>{" "}
+                      <ChevronRight size={16} />
                     </div>
                     <div
                       onClick={() => setActiveFilterType("category")}
                       className='flex justify-between p-3 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition'
                     >
-                      <span>Category</span> <ChevronRight size={16} />
+                      <span className='dark:text-gray-200'>Category</span>{" "}
+                      <ChevronRight size={16} />
                     </div>
                   </div>
                 ) : (
