@@ -1,20 +1,17 @@
 import React, { useState } from "react";
 import {
-  BookOpen,
-  MapPin,
   UserCircle,
   Pencil,
   Trash2,
   Plus,
   MapPinnedIcon,
-  LucideBookOpen
+  LucideBookOpen,
 } from "lucide-react";
-import { ArchiveBoxXMarkIcon, BookmarkSquareIcon } from "@heroicons/react/20/solid";
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState("category");
 
-  // ---------------- CATEGORY ----------------
+  // ---------------- STATE ----------------
   const [categories, setCategories] = useState([
     { id: "C-ID-001", name: "Electronic" },
   ]);
@@ -22,19 +19,14 @@ const Settings = () => {
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [editCategoryIndex, setEditCategoryIndex] = useState(null);
 
-  // ---------------- LOCATION ----------------
-  const [locations, setLocations] = useState([
-    { id: "L-ID-001", name: "Com" },
-  ]);
+  const [locations, setLocations] = useState([{ id: "L-ID-001", name: "Com" }]);
   const [locationForm, setLocationForm] = useState({ id: "", name: "" });
   const [showLocationForm, setShowLocationForm] = useState(false);
   const [editLocationIndex, setEditLocationIndex] = useState(null);
 
-  // ---------------- USER ----------------
   const [users, setUsers] = useState([
     { username: "Admin", email: "admin@eng.jfn.ac.lk", role: "Admin" },
   ]);
-
   const [userForm, setUserForm] = useState({
     username: "",
     email: "",
@@ -42,11 +34,11 @@ const Settings = () => {
     password: "",
     confirmPassword: "",
   });
-
   const [showUserForm, setShowUserForm] = useState(false);
   const [editUserIndex, setEditUserIndex] = useState(null);
   const [emailError, setEmailError] = useState("");
 
+  // ---------------- LOGIC ----------------
   const handleAddOrUpdate = (
     list,
     setList,
@@ -54,10 +46,10 @@ const Settings = () => {
     setForm,
     editIndex,
     setEditIndex,
-    setShowForm
+    setShowForm,
+    emptyForm,
   ) => {
-    if (!form.id || !form.name) return;
-
+    if (!form.id && !form.username) return;
     if (editIndex !== null) {
       const updated = [...list];
       updated[editIndex] = form;
@@ -66,8 +58,7 @@ const Settings = () => {
     } else {
       setList([...list, form]);
     }
-
-    setForm({ id: "", name: "" });
+    setForm(emptyForm);
     setShowForm(false);
   };
 
@@ -75,364 +66,394 @@ const Settings = () => {
     setList(list.filter((_, i) => i !== index));
   };
 
+  // ---------------- UI HELPERS ----------------
+  const tabBtnClass = (tab) =>
+    `flex items-center gap-2 px-6 py-2.5 rounded-lg transition-all font-medium ${
+      activeTab === tab
+        ? "bg-indigo-600 text-white shadow-md"
+        : "bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700"
+    }`;
+
+  const inputClass =
+    "w-full px-4 py-2 rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition";
+
+  const cardClass =
+    "bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6";
+
   return (
-    <div className="p-8 min-h-screen bg-gray-100 dark:bg-gray-900 dark:text-white">
-      <h1 className="text-2xl font-bold mb-6">Settings</h1>
-
-      {/* TOP BUTTONS */}
-      <div className="flex gap-6 mb-8">
-        <button onClick={() => setActiveTab("category")} className="px-6 py-3 border rounded-lg">
-          <LucideBookOpen className="inline mr-2" size={18} /> Category
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-slate-900 dark:text-white transition-colors duration-300 px-8 py-10 lg:px-24">
+      {/* TOP NAVIGATION */}
+      <div className="flex justify-center gap-4 mb-10">
+        <button
+          onClick={() => setActiveTab("category")}
+          className={tabBtnClass("category")}
+        >
+          <LucideBookOpen size={18} /> Category
         </button>
-
-        <button onClick={() => setActiveTab("location")} className="px-6 py-3 border rounded-lg">
-          <MapPinnedIcon className="inline mr-2" size={18} /> Location
+        <button
+          onClick={() => setActiveTab("location")}
+          className={tabBtnClass("location")}
+        >
+          <MapPinnedIcon size={18} /> Location
         </button>
-
-        <button onClick={() => setActiveTab("user")} className="px-6 py-3 border rounded-lg">
-          <UserCircle className="inline mr-2" size={18} /> User Management
+        <button
+          onClick={() => setActiveTab("user")}
+          className={tabBtnClass("user")}
+        >
+          <UserCircle size={18} /> Users
         </button>
       </div>
 
-      {/* CATEGORY */}
-      {activeTab === "category" && (
-        <div className="flex gap-6">
-          <div className="w-2/3 bg-white dark:bg-gray-800 p-6 rounded shadow">
-            <div className="flex justify-between mb-4">
-              <h2 className="font-semibold">Category List</h2>
-              {!showCategoryForm && (
-                <button
-                  onClick={() => setShowCategoryForm(true)}
-                  className="flex items-center gap-2 bg-indigo-500 text-white px-4 py-2 rounded"
-                >
-                  <Plus size={16} /> Add Category
-                </button>
-              )}
-            </div>
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* LEFT: TABLE SECTION */}
+        <div className="flex-1 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+          <div className="p-5 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gray-50/50 dark:bg-slate-800">
+            <h2 className="font-bold text-lg text-slate-700 dark:text-white capitalize">
+              {activeTab} List
+            </h2>
 
-            <table className="w-full border">
-              <thead className="bg-gray-200 dark:bg-gray-700">
-                <tr>
-                  <th className="p-3 border">ID</th>
-                  <th className="p-3 border">Name</th>
-                  <th className="p-3 border">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {categories.map((item, index) => (
-                  <tr key={index}>
-                    <td className="p-3 border">{item.id}</td>
-                    <td className="p-3 border">{item.name}</td>
-                    <td className="p-3 border flex gap-3">
-                      <div
-                        className="flex items-center gap-1 text-blue-500 cursor-pointer"
-                        onClick={() => {
-                          setCategoryForm(item);
-                          setEditCategoryIndex(index);
-                          setShowCategoryForm(true);
-                        }}
-                      >
-                        <Pencil size={16} /> Edit
-                      </div>
-                      <div
-                        className="flex items-center gap-1 text-red-500 cursor-pointer"
-                        onClick={() => handleDelete(categories, setCategories, index)}
-                      >
-                        <Trash2 size={16} /> Delete
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {!(
+              (activeTab === "category" && showCategoryForm) ||
+              (activeTab === "location" && showLocationForm) ||
+              (activeTab === "user" && showUserForm)
+            ) && (
+              <button
+                onClick={() => {
+                  if (activeTab === "category") setShowCategoryForm(true);
+                  else if (activeTab === "location") setShowLocationForm(true);
+                  else setShowUserForm(true);
+                }}
+                className="flex items-center gap-1 text-sm bg-indigo-600 text-white px-3 py-1.5 rounded-md hover:bg-indigo-700"
+              >
+                <Plus size={14} /> Add New
+              </button>
+            )}
           </div>
 
-          {showCategoryForm && (
-            <div className="w-1/3 bg-white dark:bg-gray-800 p-6 rounded shadow">
-              <input
-                placeholder="Category ID"
-                value={categoryForm.id}
-                onChange={(e) =>
-                  setCategoryForm({ ...categoryForm, id: e.target.value })
-                }
-                className="w-full mb-3 p-2 border rounded dark:bg-gray-700"
-              />
-              <input
-                placeholder="Category Name"
-                value={categoryForm.name}
-                onChange={(e) =>
-                  setCategoryForm({ ...categoryForm, name: e.target.value })
-                }
-                className="w-full mb-3 p-2 border rounded dark:bg-gray-700"
-              />
-              <button
-                onClick={() =>
-                  handleAddOrUpdate(
-                    categories,
-                    setCategories,
-                    categoryForm,
-                    setCategoryForm,
-                    editCategoryIndex,
-                    setEditCategoryIndex,
-                    setShowCategoryForm
-                  )
-                }
-                className="bg-indigo-500 text-white px-4 py-2 rounded"
-              >
-                {editCategoryIndex !== null ? "Update" : "Add"}
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-gray-50 dark:bg-slate-800 text-slate-500 dark:text-gray-300 text-sm uppercase">
+              <tr>
+                {activeTab === "user" ? (
+                  <>
+                    <th className="p-4 font-semibold text-center">Username</th>
+                    <th className="p-4 font-semibold text-center">Email</th>
+                    <th className="p-4 font-semibold text-center">Role</th>
+                  </>
+                ) : (
+                  <>
+                    <th className="p-4 font-semibold text-center">ID</th>
+                    <th className="p-4 font-semibold text-center">Name</th>
+                  </>
+                )}
+                <th className="p-4 font-semibold text-center">Actions</th>
+              </tr>
+            </thead>
 
-      {/* LOCATION */}
-      {activeTab === "location" && (
-        <div className="flex gap-6">
-          <div className="w-2/3 bg-white dark:bg-gray-800 p-6 rounded shadow">
-            <div className="flex justify-between mb-4">
-              <h2 className="font-semibold">Location List</h2>
-              {!showLocationForm && (
-                <button
-                  onClick={() => setShowLocationForm(true)}
-                  className="flex items-center gap-2 bg-indigo-500 text-white px-4 py-2 rounded"
+            <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
+              {(activeTab === "category"
+                ? categories
+                : activeTab === "location"
+                  ? locations
+                  : users
+              ).map((item, index) => (
+                <tr
+                  key={index}
+                  className="hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                 >
-                  <Plus size={16} /> Add Location
-                </button>
-              )}
-            </div>
+                  {activeTab === "user" ? (
+                    <>
+                      <td className="p-4 text-sm text-center">
+                        {item.username}
+                      </td>
+                      <td className="p-4 text-sm text-slate-500 dark:text-gray-400 text-center">
+                        {item.email}
+                      </td>
+                      <td className="p-4 text-sm text-center">
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs ${
+                            item.role === "Admin"
+                              ? "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300"
+                              : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                          }`}
+                        >
+                          {item.role}
+                        </span>
+                      </td>
+                    </>
+                  ) : (
+                    <>
+                      <td className="p-4 text-sm font-medium text-center">
+                        {item.id}
+                      </td>
+                      <td className="p-4 text-sm text-slate-600 dark:text-gray-300 text-center">
+                        {item.name}
+                      </td>
+                    </>
+                  )}
 
-            <table className="w-full border">
-              <thead className="bg-gray-200 dark:bg-gray-700">
-                <tr>
-                  <th className="p-3 border">ID</th>
-                  <th className="p-3 border">Name</th>
-                  <th className="p-3 border">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {locations.map((item, index) => (
-                  <tr key={index}>
-                    <td className="p-3 border">{item.id}</td>
-                    <td className="p-3 border">{item.name}</td>
-                    <td className="p-3 border flex gap-3">
-                      <div
-                        className="flex items-center gap-1 text-blue-500 cursor-pointer"
+                  <td className="p-4">
+                    <div className="flex justify-center gap-4">
+                      <button
                         onClick={() => {
-                          setLocationForm(item);
-                          setEditLocationIndex(index);
-                          setShowLocationForm(true);
+                          if (activeTab === "category") {
+                            setCategoryForm(item);
+                            setEditCategoryIndex(index);
+                            setShowCategoryForm(true);
+                          } else if (activeTab === "location") {
+                            setLocationForm(item);
+                            setEditLocationIndex(index);
+                            setShowLocationForm(true);
+                          } else {
+                            setUserForm({
+                              ...item,
+                              password: "",
+                              confirmPassword: "",
+                            });
+                            setEditUserIndex(index);
+                            setShowUserForm(true);
+                          }
                         }}
+                        className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 flex items-center gap-1 text-sm font-medium"
                       >
-                        <Pencil size={16} /> Edit
-                      </div>
+                        <Pencil size={14} /> Edit
+                      </button>
 
-                      <div
-                        className="flex items-center gap-1 text-red-500 cursor-pointer"
-                        onClick={() =>
-                          setLocations(locations.filter((_, i) => i !== index))
+                      <button
+                        onClick={() => {
+                          if (activeTab === "category")
+                            handleDelete(categories, setCategories, index);
+                          else if (activeTab === "location")
+                            handleDelete(locations, setLocations, index);
+                          else handleDelete(users, setUsers, index);
+                        }}
+                        className="text-rose-500 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300 flex items-center gap-1 text-sm font-medium"
+                      >
+                        <Trash2 size={14} /> Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* RIGHT: FORM SECTION */}
+        <div className="w-full lg:w-1/3">
+          {((activeTab === "category" && showCategoryForm) ||
+            (activeTab === "location" && showLocationForm) ||
+            (activeTab === "user" && showUserForm)) && (
+            <div className={cardClass}>
+              <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-6">
+                {editCategoryIndex !== null ||
+                editLocationIndex !== null ||
+                editUserIndex !== null
+                  ? "Update"
+                  : "Add New"}{" "}
+                {activeTab}
+              </h3>
+
+              <div className="space-y-4">
+                {activeTab === "user" ? (
+                  <>
+                    <input
+                      placeholder="Username"
+                      value={userForm.username}
+                      onChange={(e) =>
+                        setUserForm({ ...userForm, username: e.target.value })
+                      }
+                      className={inputClass}
+                    />
+                    <div>
+                      <input
+                        placeholder="Email (@eng.jfn.ac.lk)"
+                        value={userForm.email}
+                        onChange={(e) => {
+                          setUserForm({ ...userForm, email: e.target.value });
+                          setEmailError(
+                            !e.target.value.endsWith("@eng.jfn.ac.lk")
+                              ? "Only @eng.jfn.ac.lk emails allowed"
+                              : "",
+                          );
+                        }}
+                        className={inputClass}
+                      />
+                      {emailError && (
+                        <p className="text-rose-500 text-xs mt-1">
+                          {emailError}
+                        </p>
+                      )}
+                    </div>
+                    <select
+                      value={userForm.role}
+                      onChange={(e) =>
+                        setUserForm({ ...userForm, role: e.target.value })
+                      }
+                      className={inputClass}
+                    >
+                      <option value="User">User</option>
+                      <option value="Admin">Admin</option>
+                    </select>
+                    <input
+                      type="password"
+                      placeholder="Password"
+                      value={userForm.password}
+                      onChange={(e) =>
+                        setUserForm({ ...userForm, password: e.target.value })
+                      }
+                      className={inputClass}
+                    />
+                    <input
+                      type="password"
+                      placeholder="Confirm Password"
+                      value={userForm.confirmPassword}
+                      onChange={(e) =>
+                        setUserForm({
+                          ...userForm,
+                          confirmPassword: e.target.value,
+                        })
+                      }
+                      className={inputClass}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <input
+                      placeholder={`${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} ID`}
+                      value={
+                        activeTab === "category"
+                          ? categoryForm.id
+                          : locationForm.id
+                      }
+                      onChange={(e) =>
+                        activeTab === "category"
+                          ? setCategoryForm({
+                              ...categoryForm,
+                              id: e.target.value,
+                            })
+                          : setLocationForm({
+                              ...locationForm,
+                              id: e.target.value,
+                            })
+                      }
+                      className={inputClass}
+                    />
+                    <input
+                      placeholder="Name"
+                      value={
+                        activeTab === "category"
+                          ? categoryForm.name
+                          : locationForm.name
+                      }
+                      onChange={(e) =>
+                        activeTab === "category"
+                          ? setCategoryForm({
+                              ...categoryForm,
+                              name: e.target.value,
+                            })
+                          : setLocationForm({
+                              ...locationForm,
+                              name: e.target.value,
+                            })
+                      }
+                      className={inputClass}
+                    />
+                  </>
+                )}
+
+                <div className="flex gap-3 pt-2">
+                  <button
+                    onClick={() => {
+                      if (activeTab === "user") {
+                        if (
+                          emailError ||
+                          userForm.password !== userForm.confirmPassword
+                        ) {
+                          if (userForm.password !== userForm.confirmPassword)
+                            alert("Passwords do not match");
+                          return;
                         }
-                      >
-                        <Trash2 size={16} /> Delete
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {showLocationForm && (
-            <div className="w-1/3 bg-white dark:bg-gray-800 p-6 rounded shadow">
-              <input
-                placeholder="Location ID"
-                value={locationForm.id}
-                onChange={(e) =>
-                  setLocationForm({ ...locationForm, id: e.target.value })
-                }
-                className="w-full mb-3 p-2 border rounded dark:bg-gray-700"
-              />
-
-              <input
-                placeholder="Location Name"
-                value={locationForm.name}
-                onChange={(e) =>
-                  setLocationForm({ ...locationForm, name: e.target.value })
-                }
-                className="w-full mb-3 p-2 border rounded dark:bg-gray-700"
-              />
-
-              <button
-                onClick={() => {
-                  if (editLocationIndex !== null) {
-                    const updated = [...locations];
-                    updated[editLocationIndex] = locationForm;
-                    setLocations(updated);
-                    setEditLocationIndex(null);
-                  } else {
-                    setLocations([...locations, locationForm]);
-                  }
-
-                  setLocationForm({ id: "", name: "" });
-                  setShowLocationForm(false);
-                }}
-                className="bg-indigo-500 text-white px-4 py-2 rounded"
-              >
-                {editLocationIndex !== null ? "Update" : "Add"}
-              </button>
+                        handleAddOrUpdate(
+                          users,
+                          setUsers,
+                          userForm,
+                          setUserForm,
+                          editUserIndex,
+                          setEditUserIndex,
+                          setShowUserForm,
+                          {
+                            username: "",
+                            email: "",
+                            role: "User",
+                            password: "",
+                            confirmPassword: "",
+                          },
+                        );
+                      } else if (activeTab === "category") {
+                        handleAddOrUpdate(
+                          categories,
+                          setCategories,
+                          categoryForm,
+                          setCategoryForm,
+                          editCategoryIndex,
+                          setEditCategoryIndex,
+                          setShowCategoryForm,
+                          { id: "", name: "" },
+                        );
+                      } else {
+                        handleAddOrUpdate(
+                          locations,
+                          setLocations,
+                          locationForm,
+                          setLocationForm,
+                          editLocationIndex,
+                          setEditLocationIndex,
+                          setShowLocationForm,
+                          { id: "", name: "" },
+                        );
+                      }
+                    }}
+                    className="flex-1 bg-indigo-600 text-white py-2 rounded-md font-semibold 
+hover:bg-indigo-700 transition shadow-sm dark:shadow-md"
+                  >
+                    Save Changes
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (activeTab === "category") {
+                        setShowCategoryForm(false);
+                        setEditCategoryIndex(null);
+                        setCategoryForm({ id: "", name: "" });
+                      } else if (activeTab === "location") {
+                        setShowLocationForm(false);
+                        setEditLocationIndex(null);
+                        setLocationForm({ id: "", name: "" });
+                      } else {
+                        setShowUserForm(false);
+                        setEditUserIndex(null);
+                        setUserForm({
+                          username: "",
+                          email: "",
+                          role: "User",
+                          password: "",
+                          confirmPassword: "",
+                        });
+                      }
+                    }}
+                    className="px-4 py-2 border border-gray-300 dark:border-slate-600 
+bg-white dark:bg-slate-800 
+text-slate-700 dark:text-gray-200 
+hover:bg-gray-50 dark:hover:bg-slate-700 
+rounded-md transition"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>
-      )}
-
-      {/* USER MANAGEMENT */}
-      {activeTab === "user" && (
-        <div className="flex gap-6">
-          <div className="w-2/3 bg-white dark:bg-gray-800 p-6 rounded shadow">
-            <div className="flex justify-between mb-4">
-              <h2>User List</h2>
-              {!showUserForm && (
-                <button
-                  onClick={() => setShowUserForm(true)}
-                  className="flex items-center gap-2 bg-indigo-500 text-white px-4 py-2 rounded"
-                >
-                  <Plus size={16} /> Add User
-                </button>
-              )}
-            </div>
-
-            <table className="w-full border">
-              <thead className="bg-gray-200 dark:bg-gray-700">
-                <tr>
-                  <th className="p-3 border">Username</th>
-                  <th className="p-3 border">Email</th>
-                  <th className="p-3 border">Role</th>
-                  <th className="p-3 border">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user, index) => (
-                  <tr key={index}>
-                    <td className="p-3 border">{user.username}</td>
-                    <td className="p-3 border">{user.email}</td>
-                    <td className="p-3 border">{user.role}</td>
-                    <td className="p-3 border flex gap-3">
-                      <div
-                        className="flex items-center gap-1 text-blue-500 cursor-pointer"
-                        onClick={() => {
-                          setUserForm({ ...user, password: "", confirmPassword: "" });
-                          setEditUserIndex(index);
-                          setShowUserForm(true);
-                        }}
-                      >
-                        <Pencil size={16} /> Edit
-                      </div>
-                      <div
-                        className="flex items-center gap-1 text-red-500 cursor-pointer"
-                        onClick={() => handleDelete(users, setUsers, index)}
-                      >
-                        <Trash2 size={16} /> Delete
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {showUserForm && (
-            <div className="w-1/3 bg-white dark:bg-gray-800 p-6 rounded shadow">
-              <input
-                placeholder="Username"
-                value={userForm.username}
-                onChange={(e) =>
-                  setUserForm({ ...userForm, username: e.target.value })
-                }
-                className="w-full mb-3 p-2 border rounded dark:bg-gray-700"
-              />
-
-              <input
-                placeholder="Email"
-                value={userForm.email}
-                onChange={(e) => {
-                  setUserForm({ ...userForm, email: e.target.value });
-                  if (!e.target.value.endsWith("@eng.jfn.ac.lk")) {
-                    setEmailError("Only @eng.jfn.ac.lk emails allowed");
-                  } else {
-                    setEmailError("");
-                  }
-                }}
-                className="w-full mb-1 p-2 border rounded dark:bg-gray-700"
-              />
-
-              {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
-
-              <select
-                value={userForm.role}
-                onChange={(e) =>
-                  setUserForm({ ...userForm, role: e.target.value })
-                }
-                className="w-full mb-3 p-2 border rounded dark:bg-gray-700"
-              >
-                <option value="User">User</option>
-                <option value="Admin">Admin</option>
-              </select>
-
-              <input
-                type="password"
-                placeholder="Password"
-                value={userForm.password}
-                onChange={(e) =>
-                  setUserForm({ ...userForm, password: e.target.value })
-                }
-                className="w-full mb-3 p-2 border rounded dark:bg-gray-700"
-              />
-
-              <input
-                type="password"
-                placeholder="Confirm Password"
-                value={userForm.confirmPassword}
-                onChange={(e) =>
-                  setUserForm({ ...userForm, confirmPassword: e.target.value })
-                }
-                className="w-full mb-3 p-2 border rounded dark:bg-gray-700"
-              />
-
-              <button
-                onClick={() => {
-                  if (emailError) return;
-                  if (userForm.password !== userForm.confirmPassword) {
-                    alert("Passwords do not match");
-                    return;
-                  }
-
-                  if (editUserIndex !== null) {
-                    const updated = [...users];
-                    updated[editUserIndex] = userForm;
-                    setUsers(updated);
-                    setEditUserIndex(null);
-                  } else {
-                    setUsers([...users, userForm]);
-                  }
-
-                  setUserForm({
-                    username: "",
-                    email: "",
-                    role: "User",
-                    password: "",
-                    confirmPassword: "",
-                  });
-
-                  setShowUserForm(false);
-                }}
-                className="bg-indigo-500 text-white px-4 py-2 rounded w-full"
-              >
-                {editUserIndex !== null ? "Update User" : "Add User"}
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+      </div>
     </div>
   );
 };
