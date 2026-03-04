@@ -15,7 +15,7 @@ const Settings = () => {
 
   // ---------------- LOCATION ----------------
   const [locations, setLocations] = useState([
-    { id: "L-ID-001", name: "Colombo" },
+    { id: "L-ID-001", name: "Com" },
   ]);
   const [locationForm, setLocationForm] = useState({ id: "", name: "" });
   const [showLocationForm, setShowLocationForm] = useState(false);
