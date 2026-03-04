@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { BookOpen, MapPin, UserCircle, Pencil, Trash2, Plus, MapPinnedIcon, BookA, BookmarkCheck, Book, BlocksIcon, LucideBookSearch, LucideBookMarked, LucideBookOpen } from "lucide-react";
+import {
+  BookOpen,
+  MapPin,
+  UserCircle,
+  Pencil,
+  Trash2,
+  Plus,
+  MapPinnedIcon,
+  LucideBookOpen
+} from "lucide-react";
 import { ArchiveBoxXMarkIcon, BookmarkSquareIcon } from "@heroicons/react/20/solid";
 
 const Settings = () => {
@@ -38,7 +47,6 @@ const Settings = () => {
   const [editUserIndex, setEditUserIndex] = useState(null);
   const [emailError, setEmailError] = useState("");
 
-  // ---------------- COMMON FUNCTIONS ----------------
   const handleAddOrUpdate = (
     list,
     setList,
@@ -68,7 +76,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="p-8 min-h-screen bg-gray-100">
+    <div className="p-8 min-h-screen bg-gray-100 dark:bg-gray-900 dark:text-white">
       <h1 className="text-2xl font-bold mb-6">Settings</h1>
 
       {/* TOP BUTTONS */}
@@ -89,7 +97,7 @@ const Settings = () => {
       {/* CATEGORY */}
       {activeTab === "category" && (
         <div className="flex gap-6">
-          <div className="w-2/3 bg-white p-6 rounded shadow">
+          <div className="w-2/3 bg-white dark:bg-gray-800 p-6 rounded shadow">
             <div className="flex justify-between mb-4">
               <h2 className="font-semibold">Category List</h2>
               {!showCategoryForm && (
@@ -103,7 +111,7 @@ const Settings = () => {
             </div>
 
             <table className="w-full border">
-              <thead className="bg-gray-200">
+              <thead className="bg-gray-200 dark:bg-gray-700">
                 <tr>
                   <th className="p-3 border">ID</th>
                   <th className="p-3 border">Name</th>
@@ -140,14 +148,14 @@ const Settings = () => {
           </div>
 
           {showCategoryForm && (
-            <div className="w-1/3 bg-white p-6 rounded shadow">
+            <div className="w-1/3 bg-white dark:bg-gray-800 p-6 rounded shadow">
               <input
                 placeholder="Category ID"
                 value={categoryForm.id}
                 onChange={(e) =>
                   setCategoryForm({ ...categoryForm, id: e.target.value })
                 }
-                className="w-full mb-3 p-2 border rounded"
+                className="w-full mb-3 p-2 border rounded dark:bg-gray-700"
               />
               <input
                 placeholder="Category Name"
@@ -155,7 +163,7 @@ const Settings = () => {
                 onChange={(e) =>
                   setCategoryForm({ ...categoryForm, name: e.target.value })
                 }
-                className="w-full mb-3 p-2 border rounded"
+                className="w-full mb-3 p-2 border rounded dark:bg-gray-700"
               />
               <button
                 onClick={() =>
@@ -177,115 +185,110 @@ const Settings = () => {
           )}
         </div>
       )}
+
       {/* LOCATION */}
-{activeTab === "location" && (
-  <div className="flex gap-6">
-    
-    {/* LEFT TABLE */}
-    <div className="w-2/3 bg-white p-6 rounded shadow">
-      <div className="flex justify-between mb-4">
-        <h2 className="font-semibold">Location List</h2>
-
-        {!showLocationForm && (
-          <button
-            onClick={() => setShowLocationForm(true)}
-            className="flex items-center gap-2 bg-indigo-500 text-white px-4 py-2 rounded"
-          >
-            <Plus size={16} /> Add Location
-          </button>
-        )}
-      </div>
-
-      <table className="w-full border">
-        <thead className="bg-gray-200">
-          <tr>
-            <th className="p-3 border">ID</th>
-            <th className="p-3 border">Name</th>
-            <th className="p-3 border">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {locations.map((item, index) => (
-            <tr key={index}>
-              <td className="p-3 border">{item.id}</td>
-              <td className="p-3 border">{item.name}</td>
-              <td className="p-3 border flex gap-3">
-                <div
-                  className="flex items-center gap-1 text-blue-500 cursor-pointer"
-                  onClick={() => {
-                    setLocationForm(item);
-                    setEditLocationIndex(index);
-                    setShowLocationForm(true);
-                  }}
+      {activeTab === "location" && (
+        <div className="flex gap-6">
+          <div className="w-2/3 bg-white dark:bg-gray-800 p-6 rounded shadow">
+            <div className="flex justify-between mb-4">
+              <h2 className="font-semibold">Location List</h2>
+              {!showLocationForm && (
+                <button
+                  onClick={() => setShowLocationForm(true)}
+                  className="flex items-center gap-2 bg-indigo-500 text-white px-4 py-2 rounded"
                 >
-                  <Pencil size={16} /> Edit
-                </div>
+                  <Plus size={16} /> Add Location
+                </button>
+              )}
+            </div>
 
-                <div
-                  className="flex items-center gap-1 text-red-500 cursor-pointer"
-                  onClick={() =>
-                    setLocations(locations.filter((_, i) => i !== index))
+            <table className="w-full border">
+              <thead className="bg-gray-200 dark:bg-gray-700">
+                <tr>
+                  <th className="p-3 border">ID</th>
+                  <th className="p-3 border">Name</th>
+                  <th className="p-3 border">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {locations.map((item, index) => (
+                  <tr key={index}>
+                    <td className="p-3 border">{item.id}</td>
+                    <td className="p-3 border">{item.name}</td>
+                    <td className="p-3 border flex gap-3">
+                      <div
+                        className="flex items-center gap-1 text-blue-500 cursor-pointer"
+                        onClick={() => {
+                          setLocationForm(item);
+                          setEditLocationIndex(index);
+                          setShowLocationForm(true);
+                        }}
+                      >
+                        <Pencil size={16} /> Edit
+                      </div>
+
+                      <div
+                        className="flex items-center gap-1 text-red-500 cursor-pointer"
+                        onClick={() =>
+                          setLocations(locations.filter((_, i) => i !== index))
+                        }
+                      >
+                        <Trash2 size={16} /> Delete
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {showLocationForm && (
+            <div className="w-1/3 bg-white dark:bg-gray-800 p-6 rounded shadow">
+              <input
+                placeholder="Location ID"
+                value={locationForm.id}
+                onChange={(e) =>
+                  setLocationForm({ ...locationForm, id: e.target.value })
+                }
+                className="w-full mb-3 p-2 border rounded dark:bg-gray-700"
+              />
+
+              <input
+                placeholder="Location Name"
+                value={locationForm.name}
+                onChange={(e) =>
+                  setLocationForm({ ...locationForm, name: e.target.value })
+                }
+                className="w-full mb-3 p-2 border rounded dark:bg-gray-700"
+              />
+
+              <button
+                onClick={() => {
+                  if (editLocationIndex !== null) {
+                    const updated = [...locations];
+                    updated[editLocationIndex] = locationForm;
+                    setLocations(updated);
+                    setEditLocationIndex(null);
+                  } else {
+                    setLocations([...locations, locationForm]);
                   }
-                >
-                  <Trash2 size={16} /> Delete
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
 
-    {/* RIGHT FORM */}
-    {showLocationForm && (
-      <div className="w-1/3 bg-white p-6 rounded shadow">
-        <input
-          placeholder="Location ID"
-          value={locationForm.id}
-          onChange={(e) =>
-            setLocationForm({ ...locationForm, id: e.target.value })
-          }
-          className="w-full mb-3 p-2 border rounded"
-        />
+                  setLocationForm({ id: "", name: "" });
+                  setShowLocationForm(false);
+                }}
+                className="bg-indigo-500 text-white px-4 py-2 rounded"
+              >
+                {editLocationIndex !== null ? "Update" : "Add"}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
-        <input
-          placeholder="Location Name"
-          value={locationForm.name}
-          onChange={(e) =>
-            setLocationForm({ ...locationForm, name: e.target.value })
-          }
-          className="w-full mb-3 p-2 border rounded"
-        />
-
-        <button
-          onClick={() => {
-            if (editLocationIndex !== null) {
-              const updated = [...locations];
-              updated[editLocationIndex] = locationForm;
-              setLocations(updated);
-              setEditLocationIndex(null);
-            } else {
-              setLocations([...locations, locationForm]);
-            }
-
-            setLocationForm({ id: "", name: "" });
-            setShowLocationForm(false);
-          }}
-          className="bg-indigo-500 text-white px-4 py-2 rounded"
-        >
-          {editLocationIndex !== null ? "Update" : "Add"}
-        </button>
-      </div>
-    )}
-  </div>
-)}
-
-      {/* USER SECTION */}
+      {/* USER MANAGEMENT */}
       {activeTab === "user" && (
         <div className="flex gap-6">
-
-          {/* TABLE */}
-          <div className="w-2/3 bg-white p-6 rounded shadow">
+          <div className="w-2/3 bg-white dark:bg-gray-800 p-6 rounded shadow">
             <div className="flex justify-between mb-4">
               <h2>User List</h2>
               {!showUserForm && (
@@ -299,7 +302,7 @@ const Settings = () => {
             </div>
 
             <table className="w-full border">
-              <thead className="bg-gray-200">
+              <thead className="bg-gray-200 dark:bg-gray-700">
                 <tr>
                   <th className="p-3 border">Username</th>
                   <th className="p-3 border">Email</th>
@@ -337,16 +340,15 @@ const Settings = () => {
             </table>
           </div>
 
-          {/* FORM */}
           {showUserForm && (
-            <div className="w-1/3 bg-white p-6 rounded shadow">
+            <div className="w-1/3 bg-white dark:bg-gray-800 p-6 rounded shadow">
               <input
                 placeholder="Username"
                 value={userForm.username}
                 onChange={(e) =>
                   setUserForm({ ...userForm, username: e.target.value })
                 }
-                className="w-full mb-3 p-2 border rounded"
+                className="w-full mb-3 p-2 border rounded dark:bg-gray-700"
               />
 
               <input
@@ -360,8 +362,9 @@ const Settings = () => {
                     setEmailError("");
                   }
                 }}
-                className="w-full mb-1 p-2 border rounded"
+                className="w-full mb-1 p-2 border rounded dark:bg-gray-700"
               />
+
               {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
 
               <select
@@ -369,7 +372,7 @@ const Settings = () => {
                 onChange={(e) =>
                   setUserForm({ ...userForm, role: e.target.value })
                 }
-                className="w-full mb-3 p-2 border rounded"
+                className="w-full mb-3 p-2 border rounded dark:bg-gray-700"
               >
                 <option value="User">User</option>
                 <option value="Admin">Admin</option>
@@ -382,7 +385,7 @@ const Settings = () => {
                 onChange={(e) =>
                   setUserForm({ ...userForm, password: e.target.value })
                 }
-                className="w-full mb-3 p-2 border rounded"
+                className="w-full mb-3 p-2 border rounded dark:bg-gray-700"
               />
 
               <input
@@ -392,7 +395,7 @@ const Settings = () => {
                 onChange={(e) =>
                   setUserForm({ ...userForm, confirmPassword: e.target.value })
                 }
-                className="w-full mb-3 p-2 border rounded"
+                className="w-full mb-3 p-2 border rounded dark:bg-gray-700"
               />
 
               <button
