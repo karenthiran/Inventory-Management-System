@@ -537,7 +537,7 @@ const Report = () => {
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
         <table className="w-full text-left text-sm">
           <thead className="bg-gray-200 dark:bg-gray-700 text-xs uppercase">
-            <tr className="text-indigo-600 dark:text-indigo-400">
+            <tr className="text-gray-700 dark:text-indigo-400">
               <th className="px-6 py-4">No.</th>
               <th className="px-6 py-4">Report Type</th>
               <th className="px-6 py-4">Date</th>
