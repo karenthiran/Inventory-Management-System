@@ -455,7 +455,7 @@ const InventoryItem = () => {
     },
     { header: "Qty", accessor: "quantity" },
     {
-      header: "Action",
+      header: "Details",
       render: (row) => (
         <button
           onClick={() => navigate(`/inventory/${row.itemCode}`)}
