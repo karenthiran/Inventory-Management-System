@@ -1,6 +1,11 @@
 package com.ims.server.controller;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +34,20 @@ public class ItemTypeController {
         }
 
         return itemTypeRepository.save(itemType);
+    }
+
+    @GetMapping("/all")
+    public List<ItemType> getAllItemTypes() {
+        return itemTypeRepository.findAll();
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public String deleteItemType(@PathVariable String id) {
+        if (!itemTypeRepository.existsById(id)) {
+            throw new RuntimeException("Item Type not found with id: " + id);
+        }
+        itemTypeRepository.deleteById(id);
+        return "Item Type with ID " + id + " has been deleted.";
     }
 
 }
