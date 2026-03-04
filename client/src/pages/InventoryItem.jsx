@@ -378,6 +378,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PaginationBar from "../components/common/PaginationBar";
 import AddItemform from "../components/layout/inventory/AddItemform";
+import EditItemForm from "../components/layout/inventory/EditItemForm";
+import InventoryDetails from "../components/layout/inventory/InventoryDetails";
 import InventoryTable from "../components/layout/inventory/InventoryTable";
 import { useInventory } from "../context/InventoryContext";
 
@@ -396,6 +398,10 @@ const InventoryItem = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [itemToEdit, setItemToEdit] = useState(null);
 
   const filterRef = useRef(null);
   const ITEMS_PER_PAGE = 5;
@@ -431,7 +437,15 @@ const InventoryItem = () => {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  /* ================= TABLE COLUMNS (Updated for Nesting) ================= */
+  // Helper to update the context state locally after successful API call
+  const handleUpdateLocalData = (updatedItem) => {
+    setTableData((prev) =>
+      prev.map((item) =>
+        item.itemCode === updatedItem.itemCode ? updatedItem : item,
+      ),
+    );
+  };
+
   /* ================= TABLE COLUMNS ================= */
   const tableColumns = [
     {
@@ -460,7 +474,15 @@ const InventoryItem = () => {
       header: "Details",
       render: (row) => (
         <button
-          onClick={() => navigate(`/inventory/${row.itemCode}`)}
+          onClick={() => {
+            const flattenedItem = {
+              ...row,
+              category: row.category?.categoryName || "N/A",
+              location: row.location?.locationName || "N/A",
+            };
+            setSelectedItem(flattenedItem);
+            setShowDetailModal(true);
+          }}
           className='text-indigo-600 dark:text-indigo-400 font-medium hover:underline'
         >
           Detail
@@ -471,9 +493,11 @@ const InventoryItem = () => {
       header: "Actions",
       render: (row) => (
         <div className='flex items-center gap-3'>
-          {/* Edit Button */}
           <button
-            onClick={() => navigate(`/inventory/edit/${row.itemCode}`)}
+            onClick={() => {
+              setItemToEdit(row); // Set the row data
+              setShowEditModal(true); // Open Popup
+            }}
             className='text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 transition-colors'
             title='Edit'
           >
@@ -684,6 +708,27 @@ const InventoryItem = () => {
             addItem(newItem);
             setShowModal(false);
           }}
+        />
+      )}
+
+      {showDetailModal && (
+        <InventoryDetails
+          item={selectedItem}
+          onClose={() => {
+            setShowDetailModal(false);
+            setSelectedItem(null);
+          }}
+        />
+      )}
+
+      {showEditModal && itemToEdit && (
+        <EditItemForm
+          item={itemToEdit}
+          onClose={() => {
+            setShowEditModal(false);
+            setItemToEdit(null);
+          }}
+          onUpdate={handleUpdateLocalData}
         />
       )}
     </div>
