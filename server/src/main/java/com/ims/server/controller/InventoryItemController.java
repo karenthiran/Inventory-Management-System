@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ims.server.model.Category;
 import com.ims.server.model.InventoryItem;
+import com.ims.server.model.ItemType;
 import com.ims.server.model.Location;
 import com.ims.server.repository.CategoryRepository;
 import com.ims.server.repository.InventoryItemRepository;
+import com.ims.server.repository.ItemTypeRepository;
 import com.ims.server.repository.LocationRepository;
 
 @RestController
@@ -27,12 +29,15 @@ public class InventoryItemController {
     public final InventoryItemRepository inventoryItemRepository;
     public final CategoryRepository categoryRepository;
     public final LocationRepository locationRepository;
+    public final ItemTypeRepository itemTypeRepository;
 
     public InventoryItemController(InventoryItemRepository inventoryItemRepository,
-            CategoryRepository categoryRepository, LocationRepository locationRepository) {
+            CategoryRepository categoryRepository, LocationRepository locationRepository,
+            ItemTypeRepository itemTypeRepository) {
         this.inventoryItemRepository = inventoryItemRepository;
         this.categoryRepository = categoryRepository;
         this.locationRepository = locationRepository;
+        this.itemTypeRepository = itemTypeRepository;
     }
 
     // add the repositories for Category and Location
@@ -47,9 +52,13 @@ public class InventoryItemController {
         Location location = locationRepository.findById(item.getLocation().getLocationId())
                 .orElseThrow(() -> new RuntimeException("Location not found"));
 
+        ItemType itemType = itemTypeRepository.findById(item.getItemType().getTypeId())
+                .orElseThrow(() -> new RuntimeException("Item Type not found"));
+
         // 3. Attach the REAL database-managed objects to the item
         item.setCategory(category);
         item.setLocation(location);
+        item.setItemType(itemType);
 
         // 4. Now save the item
         return inventoryItemRepository.save(item);
@@ -75,12 +84,14 @@ public class InventoryItemController {
                 .orElseThrow(() -> new RuntimeException("Category not found"));
         Location location = locationRepository.findById(itemDetails.getLocation().getLocationId())
                 .orElseThrow(() -> new RuntimeException("Location not found"));
+        ItemType itemType = itemTypeRepository.findById(itemDetails.getItemType().getTypeId())
+                .orElseThrow(() -> new RuntimeException("Item Type not found"));
 
         // 3. Update the existing item with new details
         existingItem.setItemName(itemDetails.getItemName());
         existingItem.setQuantity(itemDetails.getQuantity());
         existingItem.setDescription(itemDetails.getDescription());
-        existingItem.setItemType(itemDetails.getItemType());
+        existingItem.setItemType(itemType);
         existingItem.setCategory(category);
         existingItem.setLocation(location);
 
