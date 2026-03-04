@@ -71,7 +71,7 @@ const EditItemForm = ({ item, onClose, onUpdate }) => {
     "block text-[10px] font-bold uppercase text-gray-500 mb-1 tracking-tight";
 
   return (
-    <div className='fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4'>
+    <div className='fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-60 p-4'>
       <div className='bg-white dark:bg-gray-900 w-full max-w-lg rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden'>
         <div className='flex justify-between items-center p-5 border-b dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50'>
           <div>
