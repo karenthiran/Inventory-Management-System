@@ -367,10 +367,12 @@
 
 import {
   ChevronRight,
+  Edit,
   Filter,
   LayoutGrid,
   Loader2,
   Search,
+  Trash2,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -463,6 +465,30 @@ const InventoryItem = () => {
         >
           Detail
         </button>
+      ),
+    },
+    {
+      header: "Actions",
+      render: (row) => (
+        <div className='flex items-center gap-3'>
+          {/* Edit Button */}
+          <button
+            onClick={() => navigate(`/inventory/edit/${row.itemCode}`)}
+            className='text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 transition-colors'
+            title='Edit'
+          >
+            <Edit size={20} strokeWidth={1.25} />
+          </button>
+
+          {/* Delete Button */}
+          <button
+            onClick={() => handleDelete(row.itemCode)} // Typically you'd have a delete function
+            className='text-red-600 dark:text-red-400 hover:text-red-800 transition-colors'
+            title='Delete'
+          >
+            <Trash2 size={20} strokeWidth={1.25} />
+          </button>
+        </div>
       ),
     },
   ];
