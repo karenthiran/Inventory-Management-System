@@ -378,6 +378,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PaginationBar from "../components/common/PaginationBar";
 import AddItemform from "../components/layout/inventory/AddItemform";
+import InventoryDetails from "../components/layout/inventory/InventoryDetails";
 import InventoryTable from "../components/layout/inventory/InventoryTable";
 import { useInventory } from "../context/InventoryContext";
 
@@ -396,6 +397,8 @@ const InventoryItem = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   const filterRef = useRef(null);
   const ITEMS_PER_PAGE = 5;
@@ -460,7 +463,15 @@ const InventoryItem = () => {
       header: "Details",
       render: (row) => (
         <button
-          onClick={() => navigate(`/inventory/${row.itemCode}`)}
+          onClick={() => {
+            const flattenedItem = {
+              ...row,
+              category: row.category?.categoryName || "N/A",
+              location: row.location?.locationName || "N/A",
+            };
+            setSelectedItem(flattenedItem);
+            setShowDetailModal(true);
+          }}
           className='text-indigo-600 dark:text-indigo-400 font-medium hover:underline'
         >
           Detail
@@ -683,6 +694,16 @@ const InventoryItem = () => {
           onAddItem={(newItem) => {
             addItem(newItem);
             setShowModal(false);
+          }}
+        />
+      )}
+
+      {showDetailModal && (
+        <InventoryDetails
+          item={selectedItem}
+          onClose={() => {
+            setShowDetailModal(false);
+            setSelectedItem(null);
           }}
         />
       )}
