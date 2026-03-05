@@ -6,6 +6,7 @@ import {
   Hourglass,
   LayoutGrid,
   Plus,
+  RotateCcw,
   Search,
   SquarePen,
 } from "lucide-react";
@@ -156,13 +157,22 @@ const Issue = () => {
     {
       header: "Action",
       render: () => (
-        <button
-          type='button'
-          onClick={() => navigate("/edit-item")}
-          className='text-red-700 px-2 py-1 rounded-lg text-sm font-medium hover:bg-red-100 transition-all'
-        >
-          <SquarePen size={16} />
-        </button>
+        <div className='flex justify-center items-center'>
+          <button
+            type='button'
+            onClick={() => navigate("/edit-item")}
+            className='text-red-700 px-2 py-1 rounded-lg text-sm font-medium hover:bg-red-100 transition-all'
+          >
+            <SquarePen size={16} />
+          </button>
+          <button
+            type='button'
+            onClick={() => navigate("/edit-item")}
+            className='text-indigo-600 px-2 py-1 rounded-lg text-sm font-medium hover:bg-gray-400  transition-all'
+          >
+            <RotateCcw size={16} />
+          </button>
+        </div>
       ),
     },
     {
