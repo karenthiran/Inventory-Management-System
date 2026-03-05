@@ -30,8 +30,9 @@ public class InventoryItem {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "item_type", length = 100)
-    private String itemType;
+    @ManyToOne
+    @JoinColumn(name = "type_id", nullable = false)
+    private ItemType itemType;
 
     // Relationship to Category Table
     @ManyToOne
