@@ -433,52 +433,71 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
         </p>
 
         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
-          {/* Searchable Select */}
-          <div className="col-span-2 flex flex-col relative">
-            <label className="text-sm font-semibold mb-1">Select Item</label>
+          {/* Item Select + Item Code */}
+          <div className="col-span-2 grid grid-cols-2 gap-6">
+            {/* Searchable Select */}
+            <div className="flex flex-col relative">
+              <label className="text-sm font-semibold mb-1">Select Item</label>
 
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setShowDropdown(true);
-              }}
-              onFocus={() => setShowDropdown(true)}
-              placeholder="Search item..."
-              className={`rounded-lg px-3 py-2 border ${
-                errors.itemNo
-                  ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-600"
-              } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
-            />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setShowDropdown(true);
+                }}
+                onFocus={() => setShowDropdown(true)}
+                placeholder="Search item..."
+                className={`rounded-lg px-3 py-2 border ${
+                  errors.itemNo
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-gray-600"
+                } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
+              />
 
-            {showDropdown && filteredItems.length > 0 && (
-              <div className="absolute top-full mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-48 overflow-y-auto z-50">
-                {filteredItems.map((item) => (
-                  <div
-                    key={item.itemNumber}
-                    onClick={() => handleItemSelect(item)}
-                    className="px-3 py-2 cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-700"
-                  >
-                    {item.itemName}
-                    <span className="text-xs text-gray-500 ml-2">
-                      ({item.quantity} available)
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
+              {showDropdown && filteredItems.length > 0 && (
+                <div className="absolute top-full mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-48 overflow-y-auto z-50">
+                  {filteredItems.map((item) => (
+                    <div
+                      key={item.itemNumber}
+                      onClick={() => handleItemSelect(item)}
+                      className="px-3 py-2 cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-700"
+                    >
+                      {item.itemName}
+                      <span className="text-xs text-gray-500 ml-2">
+                        ({item.quantity} available)
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
 
-            {errors.itemNo && (
-              <span className="text-red-500 text-xs mt-1">{errors.itemNo}</span>
-            )}
+              {errors.itemNo && (
+                <span className="text-red-500 text-xs mt-1">
+                  {errors.itemNo}
+                </span>
+              )}
 
-            {selectedItem && (
-              <span className="text-xs text-green-500 mt-1">
-                Available: {selectedItem.quantity}
-              </span>
-            )}
+              {selectedItem && (
+                <span className="text-xs text-green-500 mt-1">
+                  Available: {selectedItem.quantity}
+                </span>
+              )}
+            </div>
+
+            {/* Item Code */}
+            <div className="flex flex-col">
+              <label className="text-sm font-semibold mb-1">Item Code</label>
+
+              <input
+                type="text"
+                value={formData.itemNo}
+                readOnly
+                placeholder="Auto generated"
+                className="rounded-lg px-3 py-2 border border-gray-300 dark:border-gray-600
+      bg-gray-100 dark:bg-gray-700 cursor-not-allowed"
+              />
+            </div>
           </div>
 
           {/* Quantity */}
