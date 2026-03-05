@@ -4,18 +4,24 @@ import { useEffect, useState } from "react";
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 const EditItemForm = ({ item, onClose, onUpdate }) => {
+  // 1. Initialize formData with item data
   const [formData, setFormData] = useState({
     ...item,
     itemName: item.itemName || "",
     quantity: item.quantity || 0,
     description: item.description || "",
-    // Store IDs for the selections
     categoryId: item.category?.id || "",
     locationId: item.location?.id || "",
-    itemType: item.itemType || "STOCK", // Assuming a default or existing type
+    itemTypeId: item.itemType?.typeId || "",
   });
 
-  const [options, setOptions] = useState({ categories: [], locations: [] });
+  // 2. State for dropdown options
+  const [options, setOptions] = useState({
+    categories: [],
+    locations: [],
+    itemTypes: [], // Ensure this matches the .map() key below
+  });
+
   const [loadingOptions, setLoadingOptions] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -23,13 +29,17 @@ const EditItemForm = ({ item, onClose, onUpdate }) => {
   useEffect(() => {
     const fetchOptions = async () => {
       try {
-        const [catRes, locRes] = await Promise.all([
+        const [catRes, locRes, typeRes] = await Promise.all([
           fetch(`${API_BASE_URL}/api/categories/all`),
           fetch(`${API_BASE_URL}/api/locations/all`),
+          fetch(`${API_BASE_URL}/api/itemtypes/all`),
         ]);
+
         const categories = await catRes.json();
         const locations = await locRes.json();
-        setOptions({ categories, locations });
+        const itemTypes = await typeRes.json();
+
+        setOptions({ categories, locations, itemTypes });
       } catch (err) {
         console.error("Failed to fetch dropdown options:", err);
       } finally {
@@ -39,6 +49,7 @@ const EditItemForm = ({ item, onClose, onUpdate }) => {
     fetchOptions();
   }, []);
 
+  /* ================= HANDLE SUBMIT ================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -73,6 +84,7 @@ const EditItemForm = ({ item, onClose, onUpdate }) => {
   return (
     <div className='fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-60 p-4'>
       <div className='bg-white dark:bg-gray-900 w-full max-w-lg rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden'>
+        {/* Header */}
         <div className='flex justify-between items-center p-5 border-b dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50'>
           <div>
             <h3 className='text-lg font-bold text-gray-800 dark:text-white'>
@@ -94,7 +106,7 @@ const EditItemForm = ({ item, onClose, onUpdate }) => {
           onSubmit={handleSubmit}
           className='p-5 space-y-4 max-h-[80vh] overflow-y-auto'
         >
-          {/* Row 1: Name & Type */}
+          {/* Item Name & Item Type */}
           <div className='grid grid-cols-2 gap-4'>
             <div>
               <label className={labelClass}>Item Name</label>
@@ -112,19 +124,24 @@ const EditItemForm = ({ item, onClose, onUpdate }) => {
               <label className={labelClass}>Item Type</label>
               <select
                 className={inputClass}
-                value={formData.itemType}
+                disabled={loadingOptions}
+                value={formData.itemTypeId}
                 onChange={(e) =>
-                  setFormData({ ...formData, itemType: e.target.value })
+                  setFormData({ ...formData, itemTypeId: e.target.value })
                 }
+                required
               >
-                <option value='STOCK'>Stock Item</option>
-                <option value='ASSET'>Fixed Asset</option>
-                <option value='CONSUMABLE'>Consumable</option>
+                <option value=''>Select Type</option>
+                {options.itemTypes.map((type) => (
+                  <option key={type.typeId} value={type.typeId}>
+                    {type.typeName}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
 
-          {/* Row 2: Category & Location */}
+          {/* Category & Location */}
           <div className='grid grid-cols-2 gap-4'>
             <div>
               <label className={labelClass}>Category</label>
@@ -135,6 +152,7 @@ const EditItemForm = ({ item, onClose, onUpdate }) => {
                 onChange={(e) =>
                   setFormData({ ...formData, categoryId: e.target.value })
                 }
+                required
               >
                 <option value=''>Select Category</option>
                 {options.categories.map((cat) => (
@@ -153,6 +171,7 @@ const EditItemForm = ({ item, onClose, onUpdate }) => {
                 onChange={(e) =>
                   setFormData({ ...formData, locationId: e.target.value })
                 }
+                required
               >
                 <option value=''>Select Location</option>
                 {options.locations.map((loc) => (
@@ -164,7 +183,7 @@ const EditItemForm = ({ item, onClose, onUpdate }) => {
             </div>
           </div>
 
-          {/* Row 3: Quantity */}
+          {/* Stock Quantity */}
           <div>
             <label className={labelClass}>Stock Quantity</label>
             <input
@@ -195,7 +214,8 @@ const EditItemForm = ({ item, onClose, onUpdate }) => {
             />
           </div>
 
-          <div className='flex justify-end gap-3 pt-4 dark:border-gray-800'>
+          {/* Actions */}
+          <div className='flex justify-end gap-3 pt-4 border-t dark:border-gray-800'>
             <button
               type='button'
               onClick={onClose}
