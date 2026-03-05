@@ -1,408 +1,3 @@
-// // import React, { useState } from "react";
-// // import { X } from "lucide-react";
-
-// // const AddItemForm = ({
-// //   onClose,
-// //   onAddItem,
-// //   categories = [],
-// //   locations = [],
-// //   itemTypes = [],
-// //   loading = false,
-// // }) => {
-// //   const [formData, setFormData] = useState({
-// //     itemName: "",
-// //     itemCode: "",
-// //     category: "",
-// //     location: "",
-// //     quantity: 0,
-// //     itemType: "",
-// //     description: "",
-// //   });
-
-// //   const [errors, setErrors] = useState({});
-
-// //   /* =========================
-// //      Validation Function
-// //   ========================== */
-// //   const validate = () => {
-// //     const newErrors = {};
-
-// //     if (!formData.itemName.trim()) newErrors.itemName = "Item Name is required";
-
-// //     if (!formData.itemCode.trim()) newErrors.itemCode = "Item Code is required";
-
-// //     if (!formData.category) newErrors.category = "Please select a category";
-
-// //     if (!formData.location) newErrors.location = "Please select a location";
-
-// //     if (formData.quantity === "" || formData.quantity < 0)
-// //       newErrors.quantity = "Quantity must be 0 or more";
-
-// //     if (!formData.itemType) newErrors.itemType = "Please select item type";
-
-// //     setErrors(newErrors);
-// //     return Object.keys(newErrors).length === 0;
-// //   };
-
-// //   /* =========================
-// //      Handle Change
-// //   ========================== */
-// //   const handleChange = (e) => {
-// //     const { name, value } = e.target;
-
-// //     setFormData((prev) => ({
-// //       ...prev,
-// //       [name]:
-// //         name === "quantity"
-// //           ? value === ""
-// //             ? ""
-// //             : Math.max(0, Number(value))
-// //           : value,
-// //     }));
-
-// //     // remove error when user types
-// //     setErrors((prev) => ({ ...prev, [name]: "" }));
-// //   };
-
-// //   /* =========================
-// //      Submit
-// //   ========================== */
-// //   const handleSubmit = async (e) => {
-// //     e.preventDefault();
-
-// //     if (!validate()) return;
-
-// //     await onAddItem({
-// //       ...formData,
-// //       quantity: Number(formData.quantity),
-// //     });
-// //   };
-
-// //   return (
-// //     <div
-// //       className="fixed inset-0 bg-black/60 dark:bg-black/70 flex items-center justify-center z-50"
-// //       onClick={onClose}
-// //     >
-// //       <div
-// //         className="bg-white dark:bg-gray-900
-// //         text-gray-800 dark:text-gray-200
-// //         w-full max-w-2xl rounded-2xl shadow-2xl p-8 relative
-// //         border border-gray-200 dark:border-gray-700"
-// //         onClick={(e) => e.stopPropagation()}
-// //       >
-// //         {/* Close Button */}
-// //         <button
-// //           onClick={onClose}
-// //           aria-label="Close Modal"
-// //           className="absolute top-4 right-4 text-red-500 hover:text-red-600"
-// //         >
-// //           <X size={20} />
-// //         </button>
-
-// //         <h2 className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">
-// //           Add A New Item
-// //         </h2>
-// //         <p className="text-gray-600 dark:text-gray-400 mb-6">
-// //           Fill the details to add a new inventory item
-// //         </p>
-
-// //         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
-// //           {/* ================= Item Name ================= */}
-// //           <InputField
-// //             label="Item Name"
-// //             name="itemName"
-// //             value={formData.itemName}
-// //             onChange={handleChange}
-// //             error={errors.itemName}
-// //             placeholder="Enter Item Name"
-// //           />
-
-// //           {/* ================= Item Code ================= */}
-// //           <InputField
-// //             label="Item Code"
-// //             name="itemCode"
-// //             value={formData.itemCode}
-// //             onChange={handleChange}
-// //             error={errors.itemCode}
-// //             placeholder="Enter Item Code"
-// //           />
-
-// //           {/* ================= Category ================= */}
-// //           <SelectField
-// //             label="Category"
-// //             name="category"
-// //             value={formData.category}
-// //             onChange={handleChange}
-// //             error={errors.category}
-// //             options={categories}
-// //           />
-
-// //           {/* ================= Location ================= */}
-// //           <SelectField
-// //             label="Location"
-// //             name="location"
-// //             value={formData.location}
-// //             onChange={handleChange}
-// //             error={errors.location}
-// //             options={locations}
-// //           />
-
-// //           {/* ================= Quantity ================= */}
-// //           <div className="flex flex-col">
-// //             <label className="text-sm font-semibold mb-1">Quantity</label>
-// //             <div
-// //               className={`flex items-center border rounded-lg overflow-hidden
-// //               ${
-// //                 errors.quantity
-// //                   ? "border-red-500"
-// //                   : "border-gray-300 dark:border-gray-600"
-// //               }
-// //               focus-within:ring-2 focus-within:ring-indigo-500`}
-// //             >
-// //               <button
-// //                 type="button"
-// //                 onClick={() =>
-// //                   setFormData((prev) => ({
-// //                     ...prev,
-// //                     quantity: Math.max(0, Number(prev.quantity) - 1),
-// //                   }))
-// //                 }
-// //                 className="px-4 py-2 bg-gray-200 dark:bg-gray-700 font-bold"
-// //               >
-// //                 −
-// //               </button>
-
-// //               <input
-// //                 type="number"
-// //                 name="quantity"
-// //                 min="0"
-// //                 value={formData.quantity}
-// //                 onChange={handleChange}
-// //                 className="w-full text-center bg-white dark:bg-gray-800 outline-none py-2"
-// //               />
-
-// //               <button
-// //                 type="button"
-// //                 onClick={() =>
-// //                   setFormData((prev) => ({
-// //                     ...prev,
-// //                     quantity: Number(prev.quantity) + 1,
-// //                   }))
-// //                 }
-// //                 className="px-4 py-2 bg-gray-200 dark:bg-gray-700 font-bold"
-// //               >
-// //                 +
-// //               </button>
-// //             </div>
-// //             {errors.quantity && (
-// //               <span className="text-red-500 text-xs mt-1">
-// //                 {errors.quantity}
-// //               </span>
-// //             )}
-// //           </div>
-
-// //           {/* ================= Item Type ================= */}
-// //           <SelectField
-// //             label="Item Type"
-// //             name="itemType"
-// //             value={formData.itemType}
-// //             onChange={handleChange}
-// //             error={errors.itemType}
-// //             options={itemTypes}
-// //           />
-
-// //           {/* ================= Description ================= */}
-// //           <div className="col-span-2 flex flex-col">
-// //             <label className="text-sm font-semibold mb-1">
-// //               Description
-// //               <span className="text-gray-500 text-xs ml-1">(Optional)</span>
-// //             </label>
-// //             <textarea
-// //               rows="3"
-// //               name="description"
-// //               value={formData.description}
-// //               onChange={handleChange}
-// //               placeholder="Small Description"
-// //               className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 resize-none focus:ring-2 focus:ring-indigo-500"
-// //             />
-// //           </div>
-
-// //           {/* ================= Buttons ================= */}
-// //           <div className="col-span-2 flex justify-center gap-8 mt-4">
-// //             <button
-// //               type="button"
-// //               className="bg-red-500 hover:bg-red-600 text-white px-8 py-2 rounded-lg font-semibold"
-// //               onClick={onClose}
-// //             >
-// //               Cancel
-// //             </button>
-
-// //             <button
-// //               type="submit"
-// //               disabled={loading}
-// //               className="bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white px-8 py-2 rounded-lg font-semibold"
-// //             >
-// //               {loading ? "Adding..." : "Add Item"}
-// //             </button>
-// //           </div>
-// //         </form>
-// //       </div>
-// //     </div>
-// //   );
-// // };
-
-// // /* =========================
-// //    Reusable Input Component
-// // ========================= */
-// // const InputField = ({ label, name, value, onChange, error, placeholder }) => (
-// //   <div className="flex flex-col">
-// //     <label className="text-sm font-semibold mb-1">{label}</label>
-// //     <input
-// //       type="text"
-// //       name={name}
-// //       value={value}
-// //       onChange={onChange}
-// //       placeholder={placeholder}
-// //       className={`rounded-lg px-3 py-2 border ${
-// //         error ? "border-red-500" : "border-gray-300 dark:border-gray-600"
-// //       } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
-// //     />
-// //     {error && <span className="text-red-500 text-xs mt-1">{error}</span>}
-// //   </div>
-// // );
-
-// // /* =========================
-// //    Reusable Select Component
-// // ========================= */
-// // const SelectField = ({ label, name, value, onChange, error, options = [] }) => (
-// //   <div className="flex flex-col">
-// //     <label className="text-sm font-semibold mb-1">{label}</label>
-// //     <select
-// //       name={name}
-// //       value={value}
-// //       onChange={onChange}
-// //       className={`rounded-lg px-3 py-2 border ${
-// //         error ? "border-red-500" : "border-gray-300 dark:border-gray-600"
-// //       } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
-// //     >
-// //       <option value="">Select {label}</option>
-// //       {options.map((option) => (
-// //         <option key={option} value={option}>
-// //           {option}
-// //         </option>
-// //       ))}
-// //     </select>
-// //     {error && <span className="text-red-500 text-xs mt-1">{error}</span>}
-// //   </div>
-// // );
-
-// // export default AddItemForm;
-
-// import React, { useState } from "react";
-// import { useInventory } from "../../context/InventoryContext";
-
-// const AddItemForm = ({ onClose }) => {
-//   const { addItem } = useInventory();
-
-//   const [formData, setFormData] = useState({
-//     name: "",
-//     category: "",
-//     quantity: "",
-//     price: "",
-//   });
-
-//   const [errors, setErrors] = useState({});
-
-//   const validate = () => {
-//     const newErrors = {};
-
-//     if (!formData.name.trim()) newErrors.name = "Name is required";
-//     if (!formData.category.trim()) newErrors.category = "Category is required";
-//     if (!formData.quantity || formData.quantity <= 0)
-//       newErrors.quantity = "Quantity must be greater than 0";
-//     if (!formData.price || formData.price <= 0)
-//       newErrors.price = "Price must be greater than 0";
-
-//     setErrors(newErrors);
-//     return Object.keys(newErrors).length === 0;
-//   };
-
-//   const handleChange = (e) => {
-//     setFormData({
-//       ...formData,
-//       [e.target.name]: e.target.value,
-//     });
-//   };
-
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-//     if (!validate()) return;
-
-//     addItem({
-//       ...formData,
-//       quantity: Number(formData.quantity),
-//       price: Number(formData.price),
-//     });
-
-//     onClose();
-//   };
-
-//   return (
-//     <div className="modal">
-//       <div className="modal-content">
-//         <h2>Add New Item</h2>
-
-//         <form onSubmit={handleSubmit}>
-//           <input
-//             type="text"
-//             name="name"
-//             placeholder="Item Name"
-//             value={formData.name}
-//             onChange={handleChange}
-//           />
-//           {errors.name && <p className="error">{errors.name}</p>}
-
-//           <input
-//             type="text"
-//             name="category"
-//             placeholder="Category"
-//             value={formData.category}
-//             onChange={handleChange}
-//           />
-//           {errors.category && <p className="error">{errors.category}</p>}
-
-//           <input
-//             type="number"
-//             name="quantity"
-//             placeholder="Quantity"
-//             value={formData.quantity}
-//             onChange={handleChange}
-//           />
-//           {errors.quantity && <p className="error">{errors.quantity}</p>}
-
-//           <input
-//             type="number"
-//             name="price"
-//             placeholder="Price"
-//             value={formData.price}
-//             onChange={handleChange}
-//           />
-//           {errors.price && <p className="error">{errors.price}</p>}
-
-//           <div className="modal-buttons">
-//             <button type="submit">Add Item</button>
-//             <button type="button" onClick={onClose}>
-//               Cancel
-//             </button>
-//           </div>
-//         </form>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default AddItemForm;
-
 import axios from "axios";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -418,12 +13,7 @@ const AddItemForm = ({ onClose }) => {
   ========================== */
   const [categories, setCategories] = useState([]);
   const [locations, setLocations] = useState([]);
-  const [itemTypes] = useState([
-    "Raw Material",
-    "Finished Product",
-    "Consumable",
-    "Asset",
-  ]);
+  const [itemTypes, setItemTypes] = useState([]); // Fixed: Was a constant []
 
   const [formData, setFormData] = useState({
     itemName: "",
@@ -443,12 +33,14 @@ const AddItemForm = ({ onClose }) => {
   useEffect(() => {
     const fetchDropdowns = async () => {
       try {
-        const [catRes, locRes] = await Promise.all([
+        const [catRes, locRes, itmRes] = await Promise.all([
           axios.get(`${API_BASE_URL}/api/categories/all`),
           axios.get(`${API_BASE_URL}/api/locations/all`),
+          axios.get(`${API_BASE_URL}/api/itemtypes/all`),
         ]);
         setCategories(catRes.data);
         setLocations(locRes.data);
+        setItemTypes(itmRes.data);
       } catch (err) {
         console.error("Failed to load backend data:", err);
       }
@@ -475,12 +67,18 @@ const AddItemForm = ({ onClose }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+
     if (name === "quantity") {
       if (value === "") {
         setFormData((prev) => ({ ...prev, quantity: "" }));
         return;
       }
-      const numericValue = Number(value);
+      const numericValue = parseInt(value, 10);
       if (isNaN(numericValue) || numericValue < 0) return;
       setFormData((prev) => ({ ...prev, quantity: numericValue }));
       return;
@@ -498,12 +96,11 @@ const AddItemForm = ({ onClose }) => {
       itemName: formData.itemName,
       quantity: Number(formData.quantity),
       description: formData.description,
-      itemType: formData.itemType,
+      itemType: { typeId: formData.itemType },
       category: { categoryId: formData.category },
       location: { locationId: formData.location },
     };
 
-    // Call the context function and wait for success
     const success = await addItem(payload);
     if (success) {
       onClose();
@@ -519,10 +116,9 @@ const AddItemForm = ({ onClose }) => {
         className='bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 w-full max-w-2xl rounded-2xl shadow-2xl p-8 relative border border-gray-200 dark:border-gray-700'
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button */}
         <button
           onClick={onClose}
-          className='absolute top-4 right-4 text-red-500 border border-red-500 rounded-sm hover:text-white hover:bg-red-500'
+          className='absolute top-4 right-4 text-red-500 border border-red-500 rounded-sm hover:text-white hover:bg-red-500 transition-colors'
         >
           <X size={20} />
         </button>
@@ -573,7 +169,6 @@ const AddItemForm = ({ onClose }) => {
             displayKey='locationName'
           />
 
-          {/* Quantity with +/- Buttons */}
           <div className='flex flex-col'>
             <label className='text-sm font-semibold mb-1'>Quantity</label>
             <div
@@ -587,7 +182,7 @@ const AddItemForm = ({ onClose }) => {
                     quantity: Math.max(0, Number(p.quantity || 0) - 1),
                   }))
                 }
-                className='px-4 py-2 bg-gray-200 dark:bg-gray-700 font-bold'
+                className='px-4 py-2 bg-gray-200 dark:bg-gray-700 font-bold hover:bg-gray-300 dark:hover:bg-gray-600'
               >
                 −
               </button>
@@ -606,7 +201,7 @@ const AddItemForm = ({ onClose }) => {
                     quantity: Number(p.quantity || 0) + 1,
                   }))
                 }
-                className='px-4 py-2 bg-gray-200 dark:bg-gray-700 font-bold'
+                className='px-4 py-2 bg-gray-200 dark:bg-gray-700 font-bold hover:bg-gray-300 dark:hover:bg-gray-600'
               >
                 +
               </button>
@@ -618,23 +213,16 @@ const AddItemForm = ({ onClose }) => {
             )}
           </div>
 
-          {/* Item Type Dropdown */}
-          <div className='flex flex-col'>
-            <label className='text-sm font-semibold mb-1'>Item Type</label>
-            <select
-              name='itemType'
-              value={formData.itemType}
-              onChange={handleChange}
-              className={`rounded-lg px-3 py-2 border ${errors.itemType ? "border-red-500" : "border-gray-300 dark:border-gray-600"} bg-white dark:bg-gray-800`}
-            >
-              <option value=''>Select Type</option>
-              {itemTypes.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-          </div>
+          <SelectField
+            label='Item Type'
+            name='itemType'
+            value={formData.itemType}
+            onChange={handleChange}
+            error={errors.itemType}
+            options={itemTypes}
+            dataKey='typeId'
+            displayKey='typeName'
+          />
 
           <div className='col-span-2 flex flex-col'>
             <label className='text-sm font-semibold mb-1'>
@@ -647,14 +235,14 @@ const AddItemForm = ({ onClose }) => {
               value={formData.description}
               onChange={handleChange}
               placeholder='Small Description'
-              className='bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 resize-none focus:ring-2 focus:ring-indigo-500'
+              className='bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 resize-none focus:ring-2 focus:ring-indigo-500 outline-none'
             />
           </div>
 
           <div className='col-span-2 flex justify-center gap-8 mt-4'>
             <button
               type='button'
-              className='bg-red-500 hover:bg-red-600 text-white px-8 py-2 rounded-lg font-semibold'
+              className='bg-red-500 hover:bg-red-600 text-white px-8 py-2 rounded-lg font-semibold transition-colors'
               onClick={onClose}
             >
               Cancel
@@ -662,7 +250,7 @@ const AddItemForm = ({ onClose }) => {
             <button
               type='submit'
               disabled={loading}
-              className='bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white px-8 py-2 rounded-lg font-semibold'
+              className='bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white px-8 py-2 rounded-lg font-semibold transition-colors'
             >
               {loading ? "Adding..." : "Add Item"}
             </button>
@@ -686,7 +274,9 @@ const InputField = ({ label, name, value, onChange, error, placeholder }) => (
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      className={`rounded-lg px-3 py-2 border ${error ? "border-red-500" : "border-gray-300 dark:border-gray-600"} bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
+      className={`rounded-lg px-3 py-2 border outline-none transition-all ${
+        error ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+      } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
     />
     {error && <span className='text-red-500 text-xs mt-1'>{error}</span>}
   </div>
@@ -708,14 +298,17 @@ const SelectField = ({
       name={name}
       value={value}
       onChange={onChange}
-      className={`rounded-lg px-3 py-2 border ${error ? "border-red-500" : "border-gray-300 dark:border-gray-600"} bg-white dark:bg-gray-800`}
+      className={`rounded-lg px-3 py-2 border outline-none transition-all ${
+        error ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+      } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
     >
       <option value=''>Select {label}</option>
-      {options.map((opt) => (
-        <option key={opt[dataKey]} value={opt[dataKey]}>
-          {opt[displayKey]}
-        </option>
-      ))}
+      {options &&
+        options.map((opt) => (
+          <option key={opt[dataKey]} value={opt[dataKey]}>
+            {opt[displayKey]}
+          </option>
+        ))}
     </select>
     {error && <span className='text-red-500 text-xs mt-1'>{error}</span>}
   </div>
