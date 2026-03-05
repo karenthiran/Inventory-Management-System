@@ -29,7 +29,6 @@ const AppRoutes = () => {
         <Route path="report" element={<Report />} />
         <Route path="setting" element={<Setting />} />
         <Route path="userprofile" element={<Userprofile />} />
-        
       </Route>
     </Routes>
   );
