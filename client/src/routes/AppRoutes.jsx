@@ -10,7 +10,7 @@ import Maintenance from "../pages/Maintenance";
 import Report from "../pages/Report";
 import Setting from "../pages/Settings";
 import Userprofile from "../pages/UserProfile";
-import Notification from "../pages/Notification";
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -29,7 +29,6 @@ const AppRoutes = () => {
         <Route path="report" element={<Report />} />
         <Route path="setting" element={<Setting />} />
         <Route path="userprofile" element={<Userprofile />} />
-        <Route path="notification" element={<Notification />} />
       </Route>
     </Routes>
   );
