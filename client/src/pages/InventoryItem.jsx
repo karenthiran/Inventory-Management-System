@@ -477,8 +477,10 @@ const InventoryItem = () => {
           onClick={() => {
             const flattenedItem = {
               ...row,
+              // Extract names from nested objects for the modal
               category: row.category?.categoryName || "N/A",
               location: row.location?.locationName || "N/A",
+              itemType: row.itemType?.typeName || "N/A", // Added this line
             };
             setSelectedItem(flattenedItem);
             setShowDetailModal(true);
