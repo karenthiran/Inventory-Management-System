@@ -4,22 +4,22 @@ import { useEffect, useState } from "react";
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 const EditItemForm = ({ item, onClose, onUpdate }) => {
-  // 1. Initialize formData with item data
+  // 1. Initialize formData - ensuring IDs match what the <option> values will be
   const [formData, setFormData] = useState({
     ...item,
     itemName: item.itemName || "",
     quantity: item.quantity || 0,
     description: item.description || "",
-    categoryId: item.category?.id || "",
-    locationId: item.location?.id || "",
-    itemTypeId: item.itemType?.typeId || "",
+    // Fallback logic: checks for 'id' then 'categoryId' to ensure the dropdown syncs
+    categoryId: item.category?.id || item.category?.categoryId || "",
+    locationId: item.location?.id || item.location?.locationId || "",
+    itemTypeId: item.itemType?.typeId || item.itemType?.id || "",
   });
 
-  // 2. State for dropdown options
   const [options, setOptions] = useState({
     categories: [],
     locations: [],
-    itemTypes: [], // Ensure this matches the .map() key below
+    itemTypes: [],
   });
 
   const [loadingOptions, setLoadingOptions] = useState(true);
@@ -133,7 +133,10 @@ const EditItemForm = ({ item, onClose, onUpdate }) => {
               >
                 <option value=''>Select Type</option>
                 {options.itemTypes.map((type) => (
-                  <option key={type.typeId} value={type.typeId}>
+                  <option
+                    key={type.typeId || type.id}
+                    value={type.typeId || type.id}
+                  >
                     {type.typeName}
                   </option>
                 ))}
@@ -156,7 +159,11 @@ const EditItemForm = ({ item, onClose, onUpdate }) => {
               >
                 <option value=''>Select Category</option>
                 {options.categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
+                  // Using cat.id to match the initialization logic above
+                  <option
+                    key={cat.id || cat.categoryId}
+                    value={cat.id || cat.categoryId}
+                  >
                     {cat.categoryName}
                   </option>
                 ))}
@@ -175,7 +182,10 @@ const EditItemForm = ({ item, onClose, onUpdate }) => {
               >
                 <option value=''>Select Location</option>
                 {options.locations.map((loc) => (
-                  <option key={loc.id} value={loc.id}>
+                  <option
+                    key={loc.id || loc.locationId}
+                    value={loc.id || loc.locationId}
+                  >
                     {loc.locationName}
                   </option>
                 ))}
