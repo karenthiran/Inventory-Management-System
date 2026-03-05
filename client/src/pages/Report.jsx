@@ -405,24 +405,48 @@ const Report = () => {
 
         <div className="flex flex-wrap gap-4 items-center">
           {/* Static Text */}
-          <div className="px-6 py-3 rounded-2xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
+          <div>
             <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
               Generate Report by
             </span>
           </div>
 
           {/* TYPE FILTER */}
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            className="px-6 py-3 rounded-2xl border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
-          >
-            <option value="">Select type</option>
-            <option value="Issued">Issued</option>
-            <option value="Return">Return</option>
-            <option value="Maintenance">Maintenance</option>
-            <option value="Complete Report">Complete Report</option>
-          </select>
+          <div className="relative w-56">
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="w-full appearance-none px-5 py-3 pr-10 rounded-xl border 
+               bg-white dark:bg-gray-800 
+               border-gray-300 dark:border-gray-600 
+               text-gray-700 dark:text-gray-200
+               focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
+               outline-none transition-all duration-200"
+            >
+              <option value="">Select type</option>
+              <option value="Issued">Issued</option>
+              <option value="Return">Return</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Complete Report">Complete Report</option>
+            </select>
+
+            {/* Custom Arrow */}
+            <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+              <svg
+                className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
 
           {/* DATE FROM */}
           <div className="relative">
@@ -513,7 +537,7 @@ const Report = () => {
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
         <table className="w-full text-left text-sm">
           <thead className="bg-gray-200 dark:bg-gray-700 text-xs uppercase">
-            <tr className="text-indigo-600 dark:text-indigo-400">
+            <tr className="text-gray-700 dark:text-indigo-400">
               <th className="px-6 py-4">No.</th>
               <th className="px-6 py-4">Report Type</th>
               <th className="px-6 py-4">Date</th>
