@@ -366,6 +366,7 @@
 // export default InventoryItem;
 
 import {
+  CheckCircle2,
   ChevronRight,
   Edit,
   Filter,
@@ -376,6 +377,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ConfirmModal from "../components/common/ConfirmModal";
 import PaginationBar from "../components/common/PaginationBar";
 import AddItemform from "../components/layout/inventory/AddItemform";
 import EditItemForm from "../components/layout/inventory/EditItemForm";
@@ -389,7 +391,7 @@ const InventoryItem = () => {
   const navigate = useNavigate();
   const { tableData, setTableData, addItem } = useInventory();
 
-  /* ================= STATES ================= */
+  /* STATES  */
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilter, setShowFilter] = useState(false);
   const [activeFilterType, setActiveFilterType] = useState(null);
@@ -402,6 +404,14 @@ const InventoryItem = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [itemToEdit, setItemToEdit] = useState(null);
+  const [deleteModal, setDeleteModal] = useState({
+    show: false,
+    itemCode: null,
+  });
+  const [successToast, setSuccessToast] = useState({
+    show: false,
+    message: "",
+  });
 
   const filterRef = useRef(null);
   const ITEMS_PER_PAGE = 5;
@@ -446,7 +456,43 @@ const InventoryItem = () => {
     );
   };
 
-  /* ================= TABLE COLUMNS ================= */
+  // 1. delete handler that opens the confirmation modal
+  const initiateDelete = (itemCode) => {
+    setDeleteModal({ show: true, itemCode });
+  };
+
+  // 2. This runs when the user clicks "Delete" inside the popup
+  const confirmDelete = async () => {
+    const { itemCode } = deleteModal;
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/inventory/delete/${itemCode}`,
+        { method: "DELETE" },
+      );
+
+      if (!response.ok) throw new Error("Failed to delete");
+
+      // Remove from local state
+      setTableData((prev) => prev.filter((item) => item.itemCode !== itemCode));
+
+      // Show success popup
+      setSuccessToast({
+        show: true,
+        message: `Item ${itemCode} deleted successfully!`,
+      });
+
+      // Auto-hide success message after 3 seconds
+      setTimeout(() => setSuccessToast({ show: false, message: "" }), 3000);
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("Error deleting item. Please try again.");
+    } finally {
+      // Close the confirmation modal
+      setDeleteModal({ show: false, itemCode: null });
+    }
+  };
+
+  /* TABLE COLUMNS*/
   const tableColumns = [
     {
       header: "No.",
@@ -477,8 +523,10 @@ const InventoryItem = () => {
           onClick={() => {
             const flattenedItem = {
               ...row,
+              // Extract names from nested objects for the modal
               category: row.category?.categoryName || "N/A",
               location: row.location?.locationName || "N/A",
+              itemType: row.itemType?.typeName || "N/A", // Added this line
             };
             setSelectedItem(flattenedItem);
             setShowDetailModal(true);
@@ -506,7 +554,7 @@ const InventoryItem = () => {
 
           {/* Delete Button */}
           <button
-            onClick={() => handleDelete(row.itemCode)} // Typically you'd have a delete function
+            onClick={() => initiateDelete(row.itemCode)} // CALLS THE POPUP
             className='text-red-600 dark:text-red-400 hover:text-red-800 transition-colors'
             title='Delete'
           >
@@ -730,6 +778,23 @@ const InventoryItem = () => {
           }}
           onUpdate={handleUpdateLocalData}
         />
+      )}
+
+      {/* DELETE CONFIRMATION MODAL */}
+      <ConfirmModal
+        isOpen={deleteModal.show}
+        title='Confirm Deletion'
+        message={`Are you sure you want to permanently remove item ${deleteModal.itemCode}? This action cannot be undone.`}
+        onConfirm={confirmDelete}
+        onClose={() => setDeleteModal({ show: false, itemCode: null })}
+      />
+
+      {/* SUCCESS TOAST POPUP */}
+      {successToast.show && (
+        <div className='fixed top-5 right-5 z-110 flex items-center gap-3 bg-green-600 text-white px-6 py-3 rounded-lg shadow-2xl animate-in slide-in-from-right-full'>
+          <CheckCircle2 size={20} />
+          <span className='font-medium'>{successToast.message}</span>
+        </div>
       )}
     </div>
   );
