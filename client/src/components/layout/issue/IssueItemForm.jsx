@@ -1,535 +1,336 @@
-// import React, { useState } from "react";
-// import { X } from "lucide-react";
+import axios from "axios";
+import { ChevronDown, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
-// const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
-//   const [formData, setFormData] = useState({
-//     itemName: "",
-//     itemNo: "",
-//     quantity: 1,
-//     issueTo: "",
-//     issueDate: "",
-//     dueDate: "",
-//     notes: "",
-//   });
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
-//   const [errors, setErrors] = useState({});
+const getTodayDate = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 
-//   /* =========================
-//      Validation
-//   ========================== */
-//   const validate = () => {
-//     const newErrors = {};
-
-//     if (!formData.itemName.trim()) newErrors.itemName = "Item Name is required";
-
-//     if (!formData.itemNo.trim()) newErrors.itemNo = "Item Number is required";
-
-//     if (!formData.issueTo.trim())
-//       newErrors.issueTo = "Issue To field is required";
-
-//     if (!formData.issueDate) newErrors.issueDate = "Issue Date is required";
-
-//     if (!formData.dueDate) newErrors.dueDate = "Due Date is required";
-
-//     if (formData.quantity <= 0)
-//       newErrors.quantity = "Quantity must be at least 1";
-
-//     setErrors(newErrors);
-//     return Object.keys(newErrors).length === 0;
-//   };
-
-//   /* =========================
-//      Handle Change
-//   ========================== */
-//   const handleChange = (e) => {
-//     const { name, value } = e.target;
-
-//     setFormData((prev) => ({
-//       ...prev,
-//       [name]: name === "quantity" ? Math.max(1, Number(value)) : value,
-//     }));
-
-//     setErrors((prev) => ({ ...prev, [name]: "" }));
-//   };
-
-//   /* =========================
-//      Submit
-//   ========================== */
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-
-//     if (!validate()) return;
-
-//     await onIssueItem(formData);
-//   };
-
-//   return (
-//     <div
-//       className="fixed inset-0 bg-black/60 dark:bg-black/70 flex items-center justify-center z-50"
-//       onClick={onClose}
-//     >
-//       <div
-//         className="bg-white dark:bg-gray-900
-//         text-gray-800 dark:text-gray-200
-//         w-full max-w-2xl rounded-2xl shadow-2xl p-8 relative
-//         border border-gray-200 dark:border-gray-700"
-//         onClick={(e) => e.stopPropagation()}
-//       >
-//         {/* Close Button */}
-//         <button
-//           onClick={onClose}
-//           className="absolute top-4 right-4 text-red-500 hover:text-red-600"
-//         >
-//           <X size={20} />
-//         </button>
-
-//         {/* Title */}
-//         <h2 className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">
-//           Issue Item
-//         </h2>
-//         <p className="text-gray-600 dark:text-gray-400 mb-6">
-//           Fill the details to issue an item to a user
-//         </p>
-
-//         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
-//           {/* Item Name */}
-//           <InputField
-//             label="Item Name"
-//             name="itemName"
-//             value={formData.itemName}
-//             onChange={handleChange}
-//             error={errors.itemName}
-//             placeholder="Desktop PC"
-//           />
-
-//           {/* Item Number */}
-//           <InputField
-//             label="Item No"
-//             name="itemNo"
-//             value={formData.itemNo}
-//             onChange={handleChange}
-//             error={errors.itemNo}
-//             placeholder="UOJPC001"
-//           />
-
-//           {/* Quantity */}
-//           <div className="flex flex-col">
-//             <label className="text-sm font-semibold mb-1">Quantity</label>
-//             <input
-//               type="number"
-//               name="quantity"
-//               min="1"
-//               value={formData.quantity}
-//               onChange={handleChange}
-//               className={`rounded-lg px-3 py-2 border ${
-//                 errors.quantity
-//                   ? "border-red-500"
-//                   : "border-gray-300 dark:border-gray-600"
-//               } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
-//             />
-//             {errors.quantity && (
-//               <span className="text-red-500 text-xs mt-1">
-//                 {errors.quantity}
-//               </span>
-//             )}
-//           </div>
-
-//           {/* Issue To */}
-//           <InputField
-//             label="Issue To (User / Lab)"
-//             name="issueTo"
-//             value={formData.issueTo}
-//             onChange={handleChange}
-//             error={errors.issueTo}
-//             placeholder="COL - 01"
-//           />
-
-//           {/* Issue Date */}
-//           <DateField
-//             label="Issue Date"
-//             name="issueDate"
-//             value={formData.issueDate}
-//             onChange={handleChange}
-//             error={errors.issueDate}
-//           />
-
-//           {/* Due Date */}
-//           <DateField
-//             label="Due Date"
-//             name="dueDate"
-//             value={formData.dueDate}
-//             onChange={handleChange}
-//             error={errors.dueDate}
-//           />
-
-//           {/* Notes */}
-//           <div className="col-span-2 flex flex-col">
-//             <label className="text-sm font-semibold mb-1">
-//               Notes
-//               <span className="text-gray-500 text-xs ml-1">(Optional)</span>
-//             </label>
-//             <textarea
-//               rows="3"
-//               name="notes"
-//               value={formData.notes}
-//               onChange={handleChange}
-//               placeholder="Add any additional notes..."
-//               className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 resize-none focus:ring-2 focus:ring-indigo-500"
-//             />
-//           </div>
-
-//           {/* Buttons */}
-//           <div className="col-span-2 flex justify-center gap-8 mt-4">
-//             <button
-//               type="button"
-//               onClick={onClose}
-//               className="bg-red-500 hover:bg-red-600 text-white px-8 py-2 rounded-lg font-semibold"
-//             >
-//               Cancel
-//             </button>
-
-//             <button
-//               type="submit"
-//               disabled={loading}
-//               className="bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white px-8 py-2 rounded-lg font-semibold"
-//             >
-//               {loading ? "Issuing..." : "Issue Item"}
-//             </button>
-//           </div>
-//         </form>
-//       </div>
-//     </div>
-//   );
-// };
-
-// /* =========================
-//    Reusable Input
-// ========================= */
-// const InputField = ({ label, name, value, onChange, error, placeholder }) => (
-//   <div className="flex flex-col">
-//     <label className="text-sm font-semibold mb-1">{label}</label>
-//     <input
-//       type="text"
-//       name={name}
-//       value={value}
-//       onChange={onChange}
-//       placeholder={placeholder}
-//       className={`rounded-lg px-3 py-2 border ${
-//         error ? "border-red-500" : "border-gray-300 dark:border-gray-600"
-//       } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
-//     />
-//     {error && <span className="text-red-500 text-xs mt-1">{error}</span>}
-//   </div>
-// );
-
-// /* =========================
-//    Reusable Date Field
-// ========================= */
-// const DateField = ({ label, name, value, onChange, error }) => (
-//   <div className="flex flex-col">
-//     <label className="text-sm font-semibold mb-1">{label}</label>
-//     <input
-//       type="date"
-//       name={name}
-//       value={value}
-//       onChange={onChange}
-//       className={`rounded-lg px-3 py-2 border ${
-//         error ? "border-red-500" : "border-gray-300 dark:border-gray-600"
-//       } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
-//     />
-//     {error && <span className="text-red-500 text-xs mt-1">{error}</span>}
-//   </div>
-// );
-
-// export default IssueItemForm;
-
-import { X } from "lucide-react";
-import { useMemo, useState } from "react";
-import { useInventory } from "../../../context/InventoryContext";
-
-const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
-  const { tableData, issueItem } = useInventory();
-
-  /* =========================
-     Available Items (Stock > 0)
-  ========================== */
-  const availableItems = useMemo(
-    () => tableData.filter((item) => item.quantity > 0),
-    [tableData],
-  );
+const IssueItemForm = ({
+  onClose,
+  onIssueItem,
+  loading: externalLoading = false,
+}) => {
+  const [internalLoading, setInternalLoading] = useState(false);
+  const [allInventoryItems, setAllInventoryItems] = useState([]);
+  const [categories, setCategories] = useState([]); // Now stores full objects
+  const [dataLoading, setDataLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    itemName: "",
-    itemNo: "",
-    quantity: "",
+    itemName: "", // Used for UI Display (Category Name)
+    categoryId: "", // REQUIRED for Backend
+    itemCodes: [],
+    userName: "", // Maps to "username" in Java
+    quantity: "0",
     issueTo: "",
-    issueDate: "",
+    issueDate: getTodayDate(),
     dueDate: "",
     notes: "",
   });
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [showItemCodeDropdown, setShowItemCodeDropdown] = useState(false);
   const [errors, setErrors] = useState({});
 
-  /* =========================
-     Selected Item
-  ========================== */
-  const selectedItem = useMemo(
-    () => availableItems.find((item) => item.itemNumber === formData.itemNo),
-    [availableItems, formData.itemNo],
-  );
+  useEffect(() => {
+    const fetchData = async () => {
+      setDataLoading(true);
+      try {
+        const [catRes, invRes] = await Promise.all([
+          axios.get(`${API_BASE_URL}/api/categories/all`),
+          axios.get(`${API_BASE_URL}/api/inventory/all`),
+        ]);
+        // Sort categories by name, but keep the full object
+        const sortedCats = catRes.data.sort((a, b) =>
+          a.categoryName.localeCompare(b.categoryName),
+        );
+        setCategories(sortedCats);
+        setAllInventoryItems(invRes.data);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      } finally {
+        setDataLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
-  const filteredItems = useMemo(
-    () =>
-      availableItems.filter((item) =>
-        item.itemName.toLowerCase().includes(searchTerm.toLowerCase()),
-      ),
-    [availableItems, searchTerm],
-  );
+  const availableItemCodes = useMemo(() => {
+    if (!formData.itemName) return [];
+    return allInventoryItems.filter((item) => {
+      const itemCategory = item.category?.categoryName;
+      return (
+        itemCategory === formData.itemName &&
+        !formData.itemCodes.includes(item.itemCode)
+      );
+    });
+  }, [allInventoryItems, formData.itemName, formData.itemCodes]);
 
-  /* =========================
-     Validation (Real-world safe)
-  ========================== */
+  const handleCategorySelect = (catObj) => {
+    setFormData((prev) => ({
+      ...prev,
+      itemName: catObj.categoryName,
+      categoryId: catObj.categoryId, // Storing the ID for the payload
+      itemCodes: [],
+      quantity: "0",
+    }));
+    setShowCategoryDropdown(false);
+    setErrors((prev) => ({ ...prev, itemName: "" }));
+  };
+
+  const handleToggleItemCode = (code) => {
+    setFormData((prev) => {
+      const isSelected = prev.itemCodes.includes(code);
+      const updatedCodes = isSelected
+        ? prev.itemCodes.filter((c) => c !== code)
+        : [...prev.itemCodes, code];
+      return {
+        ...prev,
+        itemCodes: updatedCodes,
+        quantity: updatedCodes.length.toString(),
+      };
+    });
+    setErrors((prev) => ({ ...prev, itemCodes: "" }));
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+
   const validate = () => {
     const newErrors = {};
-    const qty = Number(formData.quantity);
-
-    if (!formData.itemNo) newErrors.itemNo = "Please select an item";
-    if (!formData.issueTo.trim())
-      newErrors.issueTo = "Issue To field is required";
-    if (!formData.issueDate) newErrors.issueDate = "Issue Date is required";
-    if (!formData.dueDate) newErrors.dueDate = "Due Date is required";
-
-    if (!formData.quantity || isNaN(qty) || qty < 1) {
-      newErrors.quantity = "Quantity must be at least 1";
-    } else if (!selectedItem) {
-      newErrors.quantity = "Invalid item selected";
-    } else if (qty > selectedItem.quantity) {
-      newErrors.quantity = `Only ${selectedItem.quantity} available`;
-    }
-
-    if (
-      formData.issueDate &&
-      formData.dueDate &&
-      formData.dueDate < formData.issueDate
-    ) {
-      newErrors.dueDate = "Due date cannot be before issue date";
-    }
-
+    if (!formData.categoryId) newErrors.itemName = "Category is required";
+    if (formData.itemCodes.length === 0)
+      newErrors.itemCodes = "Select at least one code";
+    if (!formData.userName.trim())
+      newErrors.userName = "Admin name is required";
+    if (!formData.issueTo.trim()) newErrors.issueTo = "Location is required";
+    if (!formData.issueDate) newErrors.issueDate = "Issue date is required";
+    if (!formData.dueDate) newErrors.dueDate = "Due date is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  /* =========================
-     Handle Item Select
-  ========================== */
-  const handleItemSelect = (item) => {
-    setFormData((prev) => ({
-      ...prev,
-      itemName: item.itemName,
-      itemNo: item.itemNumber,
-      quantity: "",
-    }));
-
-    setSearchTerm(item.itemName);
-    setShowDropdown(false);
-    setErrors((prev) => ({ ...prev, itemNo: "" }));
-  };
-
-  /* =========================
-     Handle Change
-  ========================== */
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    if (name === "quantity") {
-      if (value === "") {
-        setFormData((prev) => ({ ...prev, quantity: "" }));
-        setErrors((prev) => ({ ...prev, quantity: "" }));
-        return;
-      }
-
-      if (!/^[0-9]+$/.test(value)) return;
-
-      const numericValue = Number(value);
-
-      if (selectedItem && numericValue > selectedItem.quantity) {
-        setErrors((prev) => ({
-          ...prev,
-          quantity: `Only ${selectedItem.quantity} available`,
-        }));
-        return;
-      }
-
-      setFormData((prev) => ({
-        ...prev,
-        quantity: value,
-      }));
-
-      setErrors((prev) => ({ ...prev, quantity: "" }));
-      return;
-    }
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    setErrors((prev) => ({ ...prev, [name]: "" }));
-  };
-
-  /* =========================
-     Submit (Double Stock Safe)
-  ========================== */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
+    if (!validate() || internalLoading || externalLoading) return;
 
-    const latestItem = tableData.find(
-      (item) => item.itemNumber === formData.itemNo,
-    );
+    setInternalLoading(true);
+    try {
+      const payload = {
+        category: {
+          categoryId: formData.categoryId,
+          categoryName: formData.itemName,
+        },
+        username: formData.userName,
+        itemCodes: formData.itemCodes,
+        quantity: parseInt(formData.quantity, 10),
+        issuedTo: formData.issueTo,
+        issueDate: formData.issueDate,
+        dueDate: formData.dueDate,
+        notes: formData.notes || "",
+      };
 
-    const finalQuantity = Number(formData.quantity);
+      const response = await axios.post(
+        `${API_BASE_URL}/api/inventory/issue/issue`,
+        payload,
+      );
 
-    if (!latestItem || latestItem.quantity < finalQuantity) {
+      if (response.status === 200 || response.status === 201) {
+        if (onIssueItem) await onIssueItem(response.data);
+        onClose();
+      }
+    } catch (error) {
+      console.error("Backend Error:", error.response?.data);
       setErrors({
-        quantity: `Only ${latestItem?.quantity ?? 0} available`,
+        api:
+          error.response?.data?.message ||
+          error.response?.data ||
+          "Submit failed.",
       });
-      return;
+    } finally {
+      setInternalLoading(false);
     }
-
-    issueItem(formData.itemNo, finalQuantity);
-
-    await onIssueItem({
-      ...formData,
-      quantity: finalQuantity,
-    });
   };
 
   return (
     <div
-      className='fixed inset-0 bg-black/60 dark:bg-black/70 flex items-center justify-center z-50'
+      className='fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50'
       onClick={onClose}
     >
       <div
-        className='bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200
-        w-full max-w-2xl rounded-2xl shadow-2xl p-8 relative
-        border border-gray-200 dark:border-gray-700'
+        className='bg-[#111827] w-full max-w-2xl rounded-2xl shadow-2xl p-8 relative border border-gray-700'
         onClick={(e) => e.stopPropagation()}
       >
         <button
+          type='button'
           onClick={onClose}
-          className='absolute top-4 right-4 text-red-500 hover:text-red-600'
+          className='absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors'
         >
           <X size={20} />
         </button>
 
-        <h2 className='text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-2'>
-          Issue Item
-        </h2>
-        <p className='text-gray-600 dark:text-gray-400 mb-6'>
-          Fill the details to issue an item to a user
-        </p>
+        <h2 className='text-3xl font-bold text-indigo-400 mb-2'>Issue Item</h2>
+        {errors.api && (
+          <p className='text-red-500 text-sm mb-4 bg-red-500/10 p-2 rounded'>
+            {errors.api}
+          </p>
+        )}
 
         <form onSubmit={handleSubmit} className='grid grid-cols-2 gap-6'>
-          {/* Item Select + Item Code */}
-          <div className='col-span-2 grid grid-cols-2 gap-6'>
-            {/* Searchable Select */}
-            <div className='flex flex-col relative'>
-              <label className='text-sm font-semibold mb-1'>
-                Select Category
-              </label>
-
-              <input
-                type='text'
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setShowDropdown(true);
-                }}
-                onFocus={() => setShowDropdown(true)}
-                placeholder='Search category...'
-                className={`rounded-lg px-3 py-2 border ${
-                  errors.itemNo
-                    ? "border-red-500"
-                    : "border-gray-300 dark:border-gray-600"
-                } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
-              />
-
-              {showDropdown && filteredItems.length > 0 && (
-                <div className='absolute top-full mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-48 overflow-y-auto z-50'>
-                  {filteredItems.map((item) => (
-                    <div
-                      key={item.itemNumber}
-                      onClick={() => handleItemSelect(item)}
-                      className='px-3 py-2 cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-700'
-                    >
-                      {item.itemName}
-                      <span className='text-xs text-gray-500 ml-2'>
-                        ({item.quantity} available)
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {errors.itemNo && (
-                <span className='text-red-500 text-xs mt-1'>
-                  {errors.itemNo}
-                </span>
-              )}
-
-              {selectedItem && (
-                <span className='text-xs text-green-500 mt-1'>
-                  Available: {selectedItem.quantity}
-                </span>
-              )}
-            </div>
-
-            <div className='flex flex-col relative'>
-              <label className='text-sm font-semibold mb-1'>UserName</label>
-
-              <input
-                type='text'
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setShowDropdown(true);
-                }}
-                onFocus={() => setShowDropdown(true)}
-                placeholder='name...'
-                className={`rounded-lg px-3 py-2 border ${
-                  errors.itemNo
-                    ? "border-red-500"
-                    : "border-gray-300 dark:border-gray-600"
-                } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
+          {/* CATEGORY DROPDOWN */}
+          <div className='flex flex-col relative'>
+            <label className='text-sm font-semibold mb-1 text-gray-200'>
+              Select Category
+            </label>
+            <div
+              onClick={() =>
+                !dataLoading && setShowCategoryDropdown(!showCategoryDropdown)
+              }
+              className={`flex items-center justify-between rounded-lg px-3 py-2 border cursor-pointer transition-all ${errors.itemName ? "border-red-500" : "border-gray-600 hover:border-indigo-400"} bg-[#1f2937]`}
+            >
+              <span
+                className={
+                  formData.itemName ? "text-gray-100" : "text-gray-500"
+                }
+              >
+                {dataLoading
+                  ? "Loading..."
+                  : formData.itemName || "Select Category"}
+              </span>
+              <ChevronDown
+                size={18}
+                className={`text-gray-400 transition-transform ${showCategoryDropdown ? "rotate-180" : ""}`}
               />
             </div>
+            {showCategoryDropdown && (
+              <div className='absolute left-0 right-0 top-full mt-1 bg-[#1f2937] border border-gray-600 rounded-lg shadow-2xl max-h-56 overflow-y-auto z-[9999]'>
+                {categories.map((cat) => (
+                  <div
+                    key={cat.categoryId}
+                    onClick={() => handleCategorySelect(cat)}
+                    className='px-4 py-2.5 cursor-pointer text-gray-200 hover:bg-indigo-600 hover:text-white transition-colors border-b border-gray-700 last:border-0'
+                  >
+                    {cat.categoryName}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Item Code */}
           <div className='flex flex-col'>
-            <label className='text-sm font-semibold mb-1'>Item Code</label>
-
+            <label className='text-sm font-semibold mb-1 text-gray-200'>
+              Admin Name
+            </label>
             <input
               type='text'
-              value={formData.itemNo}
-              readOnly
-              placeholder='item codes'
-              className='rounded-lg px-3 py-2 border border-gray-300 dark:border-gray-600
-      bg-gray-100 dark:bg-gray-700 cursor-not-allowed'
+              name='userName'
+              value={formData.userName}
+              onChange={handleChange}
+              placeholder='Your name'
+              className={`rounded-lg px-3 py-2 border bg-[#1f2937] text-white outline-none ${errors.userName ? "border-red-500" : "border-gray-600 focus:ring-2 focus:ring-indigo-500"}`}
             />
           </div>
 
-          <InputField
-            label='Issue To (User / Lab)'
-            name='issueTo'
-            value={formData.issueTo}
-            onChange={handleChange}
-            error={errors.issueTo}
-            placeholder='COL - 01'
-          />
+          {/* ITEM CODES MULTI-SELECT */}
+          <div className='flex flex-col relative col-span-2'>
+            <label className='text-sm font-semibold mb-1 text-gray-200'>
+              Item Codes
+            </label>
+            <div
+              onClick={() =>
+                formData.itemName &&
+                setShowItemCodeDropdown(!showItemCodeDropdown)
+              }
+              className={`flex flex-wrap gap-2 items-center min-h-[42px] rounded-lg px-3 py-2 border transition-all ${!formData.itemName ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:border-indigo-400"} bg-[#1f2937] ${errors.itemCodes ? "border-red-500" : "border-gray-600"}`}
+            >
+              {formData.itemCodes.length > 0 ? (
+                formData.itemCodes.map((code) => (
+                  <span
+                    key={code}
+                    className='bg-indigo-600 text-white text-xs px-2 py-1 rounded flex items-center gap-1'
+                  >
+                    {code}
+                    <X
+                      size={14}
+                      className='hover:text-red-400 cursor-pointer'
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleToggleItemCode(code);
+                      }}
+                    />
+                  </span>
+                ))
+              ) : (
+                <span className='text-gray-500'>
+                  {formData.itemName
+                    ? "Select Item Codes"
+                    : "Pick Category First"}
+                </span>
+              )}
+              <div className='ml-auto'>
+                <ChevronDown size={18} className='text-gray-400' />
+              </div>
+            </div>
+
+            {showItemCodeDropdown && formData.itemName && (
+              <div className='absolute left-0 right-0 top-full mt-1 bg-[#1f2937] border border-gray-600 rounded-lg shadow-2xl max-h-56 overflow-y-auto z-[9999]'>
+                {availableItemCodes.length > 0 ? (
+                  availableItemCodes.map((item) => (
+                    <div
+                      key={item.itemCode}
+                      onClick={() => handleToggleItemCode(item.itemCode)}
+                      className='px-4 py-2.5 cursor-pointer text-gray-200 hover:bg-indigo-600 hover:text-white transition-colors border-b border-gray-700 last:border-0 flex justify-between'
+                    >
+                      <span>{item.itemCode}</span>
+                      <span className='text-[10px] text-gray-400 italic'>
+                        ID: {item.itemCode}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <div className='px-4 py-2.5 text-gray-500 text-sm italic'>
+                    No items available
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className='flex flex-col'>
+            <label className='text-sm font-semibold mb-1 text-gray-200'>
+              Issue To (Location)
+            </label>
+            <input
+              type='text'
+              name='issueTo'
+              value={formData.issueTo}
+              onChange={handleChange}
+              placeholder='e.g. LAB-01'
+              className={`rounded-lg px-3 py-2 border bg-[#1f2937] text-white outline-none ${errors.issueTo ? "border-red-500" : "border-gray-600 focus:ring-2 focus:ring-indigo-500"}`}
+            />
+          </div>
+
+          <div className='flex flex-col'>
+            <label className='text-sm font-semibold mb-1 text-gray-200'>
+              Total Quantity
+            </label>
+            <input
+              type='number'
+              name='quantity'
+              value={formData.quantity}
+              readOnly
+              className='rounded-lg px-3 py-2 border border-gray-600 bg-[#111827] text-indigo-400 font-bold outline-none cursor-default'
+            />
+          </div>
 
           <DateField
             label='Issue Date'
@@ -538,7 +339,6 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
             onChange={handleChange}
             error={errors.issueDate}
           />
-
           <DateField
             label='Due Date'
             name='dueDate'
@@ -548,35 +348,33 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
           />
 
           <div className='col-span-2 flex flex-col'>
-            <label className='text-sm font-semibold mb-1'>
+            <label className='text-sm font-semibold mb-1 text-gray-200'>
               Notes
-              <span className='text-gray-500 text-xs ml-1'>(Optional)</span>
             </label>
             <textarea
-              rows='3'
+              rows='2'
               name='notes'
               value={formData.notes}
               onChange={handleChange}
-              placeholder='Add any additional notes...'
-              className='bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 resize-none focus:ring-2 focus:ring-indigo-500'
+              className='bg-[#1f2937] border border-gray-600 rounded-lg px-3 py-2 text-white resize-none outline-none focus:ring-2 focus:ring-indigo-500'
             />
           </div>
 
-          <div className='col-span-2 flex justify-center gap-8 mt-4'>
+          <div className='col-span-2 flex justify-end gap-4 mt-4'>
             <button
               type='button'
               onClick={onClose}
-              className='bg-red-500 hover:bg-red-600 text-white px-8 py-2 rounded-lg font-semibold'
+              disabled={internalLoading}
+              className='text-gray-400 hover:text-white px-6 py-2 transition-colors disabled:opacity-50'
             >
               Cancel
             </button>
-
             <button
               type='submit'
-              disabled={loading}
-              className='bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white px-8 py-2 rounded-lg font-semibold'
+              disabled={externalLoading || internalLoading}
+              className='bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-2.5 rounded-lg font-bold transition-all active:scale-95 disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2'
             >
-              {loading ? "Issuing..." : "Issue Item"}
+              {internalLoading ? "Processing..." : "Confirm Issue"}
             </button>
           </div>
         </form>
@@ -585,42 +383,16 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
   );
 };
 
-/* =========================
-   Reusable Input
-========================= */
-const InputField = ({ label, name, value, onChange, error, placeholder }) => (
-  <div className='flex flex-col'>
-    <label className='text-sm font-semibold mb-1'>{label}</label>
-    <input
-      type='text'
-      name={name}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      className={`rounded-lg px-3 py-2 border ${
-        error ? "border-red-500" : "border-gray-300 dark:border-gray-600"
-      } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
-    />
-    {error && <span className='text-red-500 text-xs mt-1'>{error}</span>}
-  </div>
-);
-
-/* =========================
-   Reusable Date Field
-========================= */
 const DateField = ({ label, name, value, onChange, error }) => (
   <div className='flex flex-col'>
-    <label className='text-sm font-semibold mb-1'>{label}</label>
+    <label className='text-sm font-semibold mb-1 text-gray-200'>{label}</label>
     <input
       type='date'
       name={name}
       value={value}
       onChange={onChange}
-      className={`rounded-lg px-3 py-2 border ${
-        error ? "border-red-500" : "border-gray-300 dark:border-gray-600"
-      } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
+      className={`rounded-lg px-3 py-2 border bg-[#1f2937] text-white outline-none cursor-pointer ${error ? "border-red-500" : "border-gray-600 focus:ring-2 focus:ring-indigo-500"}`}
     />
-    {error && <span className='text-red-500 text-xs mt-1'>{error}</span>}
   </div>
 );
 
