@@ -487,44 +487,39 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
               )}
             </div>
 
-            {/* Item Code */}
-            <div className='flex flex-col'>
-              <label className='text-sm font-semibold mb-1'>Item Code</label>
+            <div className='flex flex-col relative'>
+              <label className='text-sm font-semibold mb-1'>UserName</label>
 
               <input
                 type='text'
-                value={formData.itemNo}
-                readOnly
-                placeholder='item codes'
-                className='rounded-lg px-3 py-2 border border-gray-300 dark:border-gray-600
-      bg-gray-100 dark:bg-gray-700 cursor-not-allowed'
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setShowDropdown(true);
+                }}
+                onFocus={() => setShowDropdown(true)}
+                placeholder='name...'
+                className={`rounded-lg px-3 py-2 border ${
+                  errors.itemNo
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-gray-600"
+                } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
               />
             </div>
           </div>
 
-          {/* Quantity */}
+          {/* Item Code */}
           <div className='flex flex-col'>
-            <label className='text-sm font-semibold mb-1'>Quantity</label>
+            <label className='text-sm font-semibold mb-1'>Item Code</label>
+
             <input
-              placeholder='Enter the quantity'
-              type='number'
-              name='quantity'
-              min='1'
-              max={selectedItem ? selectedItem.quantity : undefined}
-              value={formData.quantity}
-              onChange={handleChange}
-              disabled={!selectedItem}
-              className={`rounded-lg px-3 py-2 border ${
-                errors.quantity
-                  ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-600"
-              } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
+              type='text'
+              value={formData.itemNo}
+              readOnly
+              placeholder='item codes'
+              className='rounded-lg px-3 py-2 border border-gray-300 dark:border-gray-600
+      bg-gray-100 dark:bg-gray-700 cursor-not-allowed'
             />
-            {errors.quantity && (
-              <span className='text-red-500 text-xs mt-1'>
-                {errors.quantity}
-              </span>
-            )}
           </div>
 
           <InputField
