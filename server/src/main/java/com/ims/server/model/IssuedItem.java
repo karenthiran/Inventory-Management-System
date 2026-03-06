@@ -33,6 +33,9 @@ public class IssuedItem {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    @Column(name = "processed_by_user", nullable = false) // Optional: custom column name
+    private String username;
+
     // Stores the multiple item codes selected in the UI
     @ElementCollection
     @CollectionTable(name = "issued_item_codes", joinColumns = @JoinColumn(name = "issue_id"))
