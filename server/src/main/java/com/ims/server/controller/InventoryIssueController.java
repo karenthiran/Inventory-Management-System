@@ -26,7 +26,6 @@ public class InventoryIssueController {
 
     private final InventoryIssueService issueService;
 
-    // Change "/add" to "/issue" to resolve the ambiguity
     @PostMapping("/issue")
     public ResponseEntity<?> createIssueRecord(@RequestBody IssuedItem issueRequest) {
         try {
