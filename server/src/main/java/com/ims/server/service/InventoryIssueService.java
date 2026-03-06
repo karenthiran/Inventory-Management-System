@@ -87,6 +87,7 @@ public class InventoryIssueService {
         existingIssue.setDueDate(updatedDetails.getDueDate());
         existingIssue.setNotes(updatedDetails.getNotes());
         existingIssue.setQuantity(updatedDetails.getQuantity());
+        existingIssue.setUsername(updatedDetails.getUsername());
 
         return issueRepo.save(existingIssue);
     }
