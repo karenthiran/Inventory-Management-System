@@ -243,8 +243,8 @@
 
 // export default IssueItemForm;
 
-import React, { useState, useMemo } from "react";
 import { X } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useInventory } from "../../../context/InventoryContext";
 
 const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
@@ -409,45 +409,47 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-black/60 dark:bg-black/70 flex items-center justify-center z-50"
+      className='fixed inset-0 bg-black/60 dark:bg-black/70 flex items-center justify-center z-50'
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200
+        className='bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200
         w-full max-w-2xl rounded-2xl shadow-2xl p-8 relative
-        border border-gray-200 dark:border-gray-700"
+        border border-gray-200 dark:border-gray-700'
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-red-500 hover:text-red-600"
+          className='absolute top-4 right-4 text-red-500 hover:text-red-600'
         >
           <X size={20} />
         </button>
 
-        <h2 className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">
+        <h2 className='text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-2'>
           Issue Item
         </h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
+        <p className='text-gray-600 dark:text-gray-400 mb-6'>
           Fill the details to issue an item to a user
         </p>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
+        <form onSubmit={handleSubmit} className='grid grid-cols-2 gap-6'>
           {/* Item Select + Item Code */}
-          <div className="col-span-2 grid grid-cols-2 gap-6">
+          <div className='col-span-2 grid grid-cols-2 gap-6'>
             {/* Searchable Select */}
-            <div className="flex flex-col relative">
-              <label className="text-sm font-semibold mb-1">Select Item</label>
+            <div className='flex flex-col relative'>
+              <label className='text-sm font-semibold mb-1'>
+                Select Category
+              </label>
 
               <input
-                type="text"
+                type='text'
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
                   setShowDropdown(true);
                 }}
                 onFocus={() => setShowDropdown(true)}
-                placeholder="Search item..."
+                placeholder='Search category...'
                 className={`rounded-lg px-3 py-2 border ${
                   errors.itemNo
                     ? "border-red-500"
@@ -456,15 +458,15 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
               />
 
               {showDropdown && filteredItems.length > 0 && (
-                <div className="absolute top-full mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-48 overflow-y-auto z-50">
+                <div className='absolute top-full mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-48 overflow-y-auto z-50'>
                   {filteredItems.map((item) => (
                     <div
                       key={item.itemNumber}
                       onClick={() => handleItemSelect(item)}
-                      className="px-3 py-2 cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-700"
+                      className='px-3 py-2 cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-700'
                     >
                       {item.itemName}
-                      <span className="text-xs text-gray-500 ml-2">
+                      <span className='text-xs text-gray-500 ml-2'>
                         ({item.quantity} available)
                       </span>
                     </div>
@@ -473,41 +475,41 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
               )}
 
               {errors.itemNo && (
-                <span className="text-red-500 text-xs mt-1">
+                <span className='text-red-500 text-xs mt-1'>
                   {errors.itemNo}
                 </span>
               )}
 
               {selectedItem && (
-                <span className="text-xs text-green-500 mt-1">
+                <span className='text-xs text-green-500 mt-1'>
                   Available: {selectedItem.quantity}
                 </span>
               )}
             </div>
 
             {/* Item Code */}
-            <div className="flex flex-col">
-              <label className="text-sm font-semibold mb-1">Item Code</label>
+            <div className='flex flex-col'>
+              <label className='text-sm font-semibold mb-1'>Item Code</label>
 
               <input
-                type="text"
+                type='text'
                 value={formData.itemNo}
                 readOnly
-                placeholder="Auto generated"
-                className="rounded-lg px-3 py-2 border border-gray-300 dark:border-gray-600
-      bg-gray-100 dark:bg-gray-700 cursor-not-allowed"
+                placeholder='item codes'
+                className='rounded-lg px-3 py-2 border border-gray-300 dark:border-gray-600
+      bg-gray-100 dark:bg-gray-700 cursor-not-allowed'
               />
             </div>
           </div>
 
           {/* Quantity */}
-          <div className="flex flex-col">
-            <label className="text-sm font-semibold mb-1">Quantity</label>
+          <div className='flex flex-col'>
+            <label className='text-sm font-semibold mb-1'>Quantity</label>
             <input
-              placeholder="Enter the quantity"
-              type="number"
-              name="quantity"
-              min="1"
+              placeholder='Enter the quantity'
+              type='number'
+              name='quantity'
+              min='1'
               max={selectedItem ? selectedItem.quantity : undefined}
               value={formData.quantity}
               onChange={handleChange}
@@ -519,65 +521,65 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
               } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
             />
             {errors.quantity && (
-              <span className="text-red-500 text-xs mt-1">
+              <span className='text-red-500 text-xs mt-1'>
                 {errors.quantity}
               </span>
             )}
           </div>
 
           <InputField
-            label="Issue To (User / Lab)"
-            name="issueTo"
+            label='Issue To (User / Lab)'
+            name='issueTo'
             value={formData.issueTo}
             onChange={handleChange}
             error={errors.issueTo}
-            placeholder="COL - 01"
+            placeholder='COL - 01'
           />
 
           <DateField
-            label="Issue Date"
-            name="issueDate"
+            label='Issue Date'
+            name='issueDate'
             value={formData.issueDate}
             onChange={handleChange}
             error={errors.issueDate}
           />
 
           <DateField
-            label="Due Date"
-            name="dueDate"
+            label='Due Date'
+            name='dueDate'
             value={formData.dueDate}
             onChange={handleChange}
             error={errors.dueDate}
           />
 
-          <div className="col-span-2 flex flex-col">
-            <label className="text-sm font-semibold mb-1">
+          <div className='col-span-2 flex flex-col'>
+            <label className='text-sm font-semibold mb-1'>
               Notes
-              <span className="text-gray-500 text-xs ml-1">(Optional)</span>
+              <span className='text-gray-500 text-xs ml-1'>(Optional)</span>
             </label>
             <textarea
-              rows="3"
-              name="notes"
+              rows='3'
+              name='notes'
               value={formData.notes}
               onChange={handleChange}
-              placeholder="Add any additional notes..."
-              className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 resize-none focus:ring-2 focus:ring-indigo-500"
+              placeholder='Add any additional notes...'
+              className='bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 resize-none focus:ring-2 focus:ring-indigo-500'
             />
           </div>
 
-          <div className="col-span-2 flex justify-center gap-8 mt-4">
+          <div className='col-span-2 flex justify-center gap-8 mt-4'>
             <button
-              type="button"
+              type='button'
               onClick={onClose}
-              className="bg-red-500 hover:bg-red-600 text-white px-8 py-2 rounded-lg font-semibold"
+              className='bg-red-500 hover:bg-red-600 text-white px-8 py-2 rounded-lg font-semibold'
             >
               Cancel
             </button>
 
             <button
-              type="submit"
+              type='submit'
               disabled={loading}
-              className="bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white px-8 py-2 rounded-lg font-semibold"
+              className='bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white px-8 py-2 rounded-lg font-semibold'
             >
               {loading ? "Issuing..." : "Issue Item"}
             </button>
@@ -592,10 +594,10 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
    Reusable Input
 ========================= */
 const InputField = ({ label, name, value, onChange, error, placeholder }) => (
-  <div className="flex flex-col">
-    <label className="text-sm font-semibold mb-1">{label}</label>
+  <div className='flex flex-col'>
+    <label className='text-sm font-semibold mb-1'>{label}</label>
     <input
-      type="text"
+      type='text'
       name={name}
       value={value}
       onChange={onChange}
@@ -604,7 +606,7 @@ const InputField = ({ label, name, value, onChange, error, placeholder }) => (
         error ? "border-red-500" : "border-gray-300 dark:border-gray-600"
       } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
     />
-    {error && <span className="text-red-500 text-xs mt-1">{error}</span>}
+    {error && <span className='text-red-500 text-xs mt-1'>{error}</span>}
   </div>
 );
 
@@ -612,10 +614,10 @@ const InputField = ({ label, name, value, onChange, error, placeholder }) => (
    Reusable Date Field
 ========================= */
 const DateField = ({ label, name, value, onChange, error }) => (
-  <div className="flex flex-col">
-    <label className="text-sm font-semibold mb-1">{label}</label>
+  <div className='flex flex-col'>
+    <label className='text-sm font-semibold mb-1'>{label}</label>
     <input
-      type="date"
+      type='date'
       name={name}
       value={value}
       onChange={onChange}
@@ -623,7 +625,7 @@ const DateField = ({ label, name, value, onChange, error }) => (
         error ? "border-red-500" : "border-gray-300 dark:border-gray-600"
       } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
     />
-    {error && <span className="text-red-500 text-xs mt-1">{error}</span>}
+    {error && <span className='text-red-500 text-xs mt-1'>{error}</span>}
   </div>
 );
 

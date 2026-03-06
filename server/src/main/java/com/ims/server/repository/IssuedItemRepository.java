@@ -7,5 +7,4 @@ import com.ims.server.model.IssuedItem;
 
 @Repository
 public interface IssuedItemRepository extends JpaRepository<IssuedItem, Long> {
-
 }
