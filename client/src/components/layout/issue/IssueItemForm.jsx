@@ -243,8 +243,8 @@
 
 // export default IssueItemForm;
 
-import React, { useState, useMemo } from "react";
 import { X } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useInventory } from "../../../context/InventoryContext";
 
 const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
@@ -437,7 +437,7 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
           <div className="col-span-2 grid grid-cols-2 gap-6">
             {/* Searchable Select */}
             <div className="flex flex-col relative">
-              <label className="text-sm font-semibold mb-1">Select Item</label>
+              <label className="text-sm font-semibold mb-1">Select Category</label>
 
               <input
                 type="text"
@@ -447,7 +447,7 @@ const IssueItemForm = ({ onClose, onIssueItem, loading = false }) => {
                   setShowDropdown(true);
                 }}
                 onFocus={() => setShowDropdown(true)}
-                placeholder="Search item..."
+                placeholder="Search category..."
                 className={`rounded-lg px-3 py-2 border ${
                   errors.itemNo
                     ? "border-red-500"
