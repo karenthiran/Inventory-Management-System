@@ -121,13 +121,14 @@ public class InventoryIssueService {
         returnRequest.setIssuedItem(issuedItem);
         returnedItemRepo.save(returnRequest);
 
-        // 3. Free up the item codes (Lock/Unlock logic)
+        // 3. Free up the item codes
         if (issuedItem.getItemCodes() != null && !issuedItem.getItemCodes().isEmpty()) {
             currentRepo.deleteAllById(issuedItem.getItemCodes());
         }
 
-        // 4. THE NEW STEP: Update the status flag in 'issued_items'
-        issuedItem.setReturned(true); // Changes status from false to true
+        // 4. FIX: Use the exact setter name defined in your IssuedItem class
+        issuedItem.setIsReturned(true);
+
         issueRepo.save(issuedItem);
     }
 }

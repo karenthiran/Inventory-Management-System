@@ -59,4 +59,10 @@ public class IssuedItem {
 
     @Column(name = "is_returned", nullable = false)
     private boolean isReturned = false;
+
+    // Use this annotation to handle the "missing field" issue during
+    // deserialization
+    public void setIsReturned(Boolean isReturned) {
+        this.isReturned = isReturned != null ? isReturned : false;
+    }
 }
