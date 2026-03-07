@@ -38,6 +38,7 @@ function Login() {
       localStorage.setItem("user", JSON.stringify(response.data));
       // Inside your login success handler
       localStorage.setItem("username", response.data.username);
+      localStorage.setItem("role", response.data.role);
       navigate("/dashboard");
     } catch (err) {
       // Log the full error to the browser console for debugging
