@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ims.server.model.InventoryItem;
 import com.ims.server.model.IssuedItem;
+import com.ims.server.model.ReturnedItem;
 import com.ims.server.service.InventoryIssueService;
 
 import lombok.RequiredArgsConstructor;
@@ -73,5 +74,22 @@ public class InventoryIssueController {
     @GetMapping("/available/category/{catId}")
     public ResponseEntity<List<InventoryItem>> getAvailableByCat(@PathVariable String catId) {
         return ResponseEntity.ok(issueService.getAvailableItemsByCategory(catId));
+    }
+
+    // Add this to com.ims.server.controller.InventoryIssueController
+
+    @PostMapping("/return")
+    public ResponseEntity<?> processReturn(@RequestBody ReturnedItem returnRequest) {
+        try {
+            // This calls the service method that:
+            // 1. Saves history to returned_items
+            // 2. Removes codes from current_issued_inventory
+            issueService.processReturn(returnRequest);
+
+            return ResponseEntity.ok("Item return processed successfully. Inventory updated.");
+        } catch (RuntimeException e) {
+            // Returns a 400 Bad Request with the error message
+            return ResponseEntity.badRequest().body("Error processing return: " + e.getMessage());
+        }
     }
 }
