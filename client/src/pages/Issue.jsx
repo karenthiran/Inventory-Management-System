@@ -16,6 +16,7 @@ import EditDueDateModal from "../components/layout/issue/EditDueDateModal";
 import IssueDetailModal from "../components/layout/issue/IssueDetailModal";
 import IssueItemForm from "../components/layout/issue/IssueItemForm";
 import IssueTable from "../components/layout/issue/IssueTable";
+import ReturnItemModal from "../components/layout/issue/ReturnItemModal";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
@@ -30,6 +31,8 @@ const Issue = () => {
   const [statusFilter, setStatusFilter] = useState("All");
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingIssue, setEditingIssue] = useState(null);
+  const [showReturnModal, setShowReturnModal] = useState(false);
+  const [returningIssue, setReturningIssue] = useState(null);
   const pageSize = 5;
 
   const fetchIssuedItems = async () => {
@@ -50,6 +53,7 @@ const Issue = () => {
         dueDate: item.dueDate,
         quantity: item.quantity,
         notes: item.notes,
+        isReturned: item.isReturned || item.returned,
         categoryCode: item.itemCodes?.join(", ") || "N/A",
       }));
       setTableData(formattedData);
@@ -173,19 +177,35 @@ const Issue = () => {
     {
       header: "Action",
       render: (row) => (
-        <div className='flex justify-center gap-2'>
-          <button
-            onClick={() => {
-              setEditingIssue(row);
-              setShowEditModal(true);
-            }}
-            className='text-red-700 p-1 hover:bg-red-100 rounded'
-          >
-            <SquarePen size={16} />
-          </button>
-          <button className='text-indigo-600 p-1 hover:bg-gray-200 rounded'>
-            <RotateCcw size={16} />
-          </button>
+        <div className='flex justify-center gap-2 items-center'>
+          {!row.isReturned && (
+            <>
+              <button
+                onClick={() => {
+                  setEditingIssue(row);
+                  setShowEditModal(true);
+                }}
+                className='text-red-700 p-1 hover:bg-red-100 rounded'
+              >
+                <SquarePen size={16} />
+              </button>
+
+              <button
+                onClick={() => {
+                  setReturningIssue(row);
+                  setShowReturnModal(true);
+                }}
+                className='text-indigo-600 p-1 hover:bg-gray-200 rounded'
+              >
+                <RotateCcw size={16} />
+              </button>
+            </>
+          )}
+          {row.isReturned && (
+            <span className='text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20'>
+              RETURNED
+            </span>
+          )}
         </div>
       ),
     },
@@ -291,6 +311,14 @@ const Issue = () => {
           onClose={() => setShowEditModal(false)}
           onUpdate={handleUpdateDueDate}
           loading={loading}
+        />
+      )}
+
+      {showReturnModal && returningIssue && (
+        <ReturnItemModal
+          data={returningIssue}
+          onClose={() => setShowReturnModal(false)}
+          onRefresh={fetchIssuedItems}
         />
       )}
     </div>
