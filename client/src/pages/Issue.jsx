@@ -48,6 +48,9 @@ const Issue = () => {
 
       const data = await response.json();
 
+      /* Inside fetchIssuedItems in Issue.jsx */
+
+      /* Inside fetchIssuedItems in Issue.jsx */
       const formattedData = [...data].reverse().map((item, index) => ({
         no: index + 1,
         dbId: item.id,
@@ -58,7 +61,12 @@ const Issue = () => {
         dueDate: item.dueDate,
         quantity: item.quantity,
         notes: item.notes,
-        categoryCode: item.category?.categoryId,
+
+        // FIX: Access itemCodes (the List) and join them with a comma
+        categoryCode:
+          item.itemCodes && item.itemCodes.length > 0
+            ? item.itemCodes.join(", ")
+            : "N/A",
       }));
 
       setTableData(formattedData);
