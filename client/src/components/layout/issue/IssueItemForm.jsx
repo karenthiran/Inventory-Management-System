@@ -122,30 +122,43 @@ const IssueItemForm = ({
     setInternalLoading(true);
     try {
       const payload = {
+        // 1. Nested Category Object
         category: {
           categoryId: formData.categoryId,
           categoryName: formData.itemName,
         },
+        // 2. Matches 'private String username' in Java
         username: formData.userName,
+        // 3. Array of strings for @ElementCollection
         itemCodes: formData.itemCodes,
         quantity: parseInt(formData.quantity, 10),
+        // 4. FIXED: changed 'issueTo' to 'issuedTo' to match Java @Column
         issuedTo: formData.issueTo,
+        // 5. Dates (ensure YYYY-MM-DD format)
         issueDate: formData.issueDate,
-        dueDate: formData.dueDate,
+        dueDate: formData.dueDate || null,
         notes: formData.notes || "",
         isReturned: false,
       };
+
+      console.log("Sending Payload:", payload); // Debugging line
 
       const response = await axios.post(
         `${API_BASE_URL}/api/inventory/issue/issue`,
         payload,
       );
+
       if (response.status === 200 || response.status === 201) {
         if (onIssueItem) await onIssueItem(response.data);
         onClose();
       }
     } catch (error) {
-      setErrors({ api: error.response?.data?.message || "Submit failed." });
+      // Better error message extraction
+      const errorMsg = error.response?.data || "Submit failed.";
+      setErrors({
+        api: typeof errorMsg === "string" ? errorMsg : "Check backend logs.",
+      });
+      console.error("Submission Error:", error.response);
     } finally {
       setInternalLoading(false);
     }
