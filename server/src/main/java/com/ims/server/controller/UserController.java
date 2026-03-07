@@ -83,6 +83,25 @@ public class UserController {
                 .orElse(ResponseEntity.status(404).body("Email not found."));
     }
 
+    @GetMapping("/profile/{username}")
+    public ResponseEntity<?> getUserByUsername(@PathVariable("username") String username) {
+        // 1. Log exactly what the server sees
+        System.out.println("DEBUG: Request received for username: [" + username + "]");
+
+        // 2. Try to find the user
+        return userRepository.findById(username)
+                .map(user -> {
+                    user.setPassword(null); // Security
+                    return ResponseEntity.ok((Object) user);
+                })
+                .orElseGet(() -> {
+                    // 3. Log if it failed to find the user in the DB
+                    System.out.println("DEBUG: Username [" + username + "] not found in database.");
+                    return ResponseEntity.status(404)
+                            .body("User profile not found for: " + username);
+                });
+    }
+
     @DeleteMapping("/{username}")
     public ResponseEntity<?> deleteUser(@PathVariable String username) {
         return userRepository.findById(username)
