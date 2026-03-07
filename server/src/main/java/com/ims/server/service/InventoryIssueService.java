@@ -112,24 +112,22 @@ public class InventoryIssueService {
 
     @Transactional
     public void processReturn(ReturnedItem returnRequest) {
-        // 1. Fetch the original Issue to get the associated item codes
+        // 1. Fetch the original Issue
         Long issueId = returnRequest.getIssuedItem().getId();
         IssuedItem issuedItem = issueRepo.findById(issueId)
                 .orElseThrow(() -> new RuntimeException("Original issue record not found."));
 
-        // 2. Save the details to the 'returned_items' table for audit/history
-        // We attach the full issuedItem object so the Foreign Key is satisfied
+        // 2. Save the details to the 'returned_items' table
         returnRequest.setIssuedItem(issuedItem);
         returnedItemRepo.save(returnRequest);
 
-        // 3. THE SPECIFIC TASK:
-        // Remove the item codes only from 'current_issued_inventory'
-        // This makes the items "Available" again in your system
+        // 3. Free up the item codes (Lock/Unlock logic)
         if (issuedItem.getItemCodes() != null && !issuedItem.getItemCodes().isEmpty()) {
             currentRepo.deleteAllById(issuedItem.getItemCodes());
         }
 
-        // NOTE: issueRepo.delete(issuedItem) is NOT called here,
-        // so the issue remains in your database history.
+        // 4. THE NEW STEP: Update the status flag in 'issued_items'
+        issuedItem.setReturned(true); // Changes status from false to true
+        issueRepo.save(issuedItem);
     }
 }
