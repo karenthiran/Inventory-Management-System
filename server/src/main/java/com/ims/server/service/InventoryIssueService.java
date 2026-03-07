@@ -112,23 +112,30 @@ public class InventoryIssueService {
 
     @Transactional
     public void processReturn(ReturnedItem returnRequest) {
-        // 1. Fetch the original Issue
-        Long issueId = returnRequest.getIssuedItem().getId();
-        IssuedItem issuedItem = issueRepo.findById(issueId)
-                .orElseThrow(() -> new RuntimeException("Original issue record not found."));
-
-        // 2. Save the details to the 'returned_items' table
-        returnRequest.setIssuedItem(issuedItem);
-        returnedItemRepo.save(returnRequest);
-
-        // 3. Free up the item codes
-        if (issuedItem.getItemCodes() != null && !issuedItem.getItemCodes().isEmpty()) {
-            currentRepo.deleteAllById(issuedItem.getItemCodes());
+        // 1. Extract ID safely
+        if (returnRequest.getIssuedItem() == null || returnRequest.getIssuedItem().getId() == null) {
+            throw new RuntimeException("Validation Error: Issued Item ID is missing.");
         }
 
-        // 4. FIX: Use the exact setter name defined in your IssuedItem class
-        issuedItem.setIsReturned(true);
+        Long issueId = returnRequest.getIssuedItem().getId();
 
-        issueRepo.save(issuedItem);
+        // 2. Fetch the REAL entity from the DB
+        IssuedItem persistentIssue = issueRepo.findById(issueId)
+                .orElseThrow(() -> new RuntimeException("Original issue record not found for ID: " + issueId));
+
+        // 3. Link the REAL entity to the return request
+        returnRequest.setIssuedItem(persistentIssue);
+
+        // 4. Update the Issue status
+        persistentIssue.setIsReturned(true);
+        issueRepo.save(persistentIssue);
+
+        // 5. Save Return History
+        returnedItemRepo.save(returnRequest);
+
+        // 6. Clear from current inventory
+        if (persistentIssue.getItemCodes() != null) {
+            currentRepo.deleteAllById(persistentIssue.getItemCodes());
+        }
     }
 }

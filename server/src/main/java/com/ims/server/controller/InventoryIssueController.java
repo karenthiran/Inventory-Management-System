@@ -81,15 +81,15 @@ public class InventoryIssueController {
     @PostMapping("/return")
     public ResponseEntity<?> processReturn(@RequestBody ReturnedItem returnRequest) {
         try {
-            // This calls the service method that:
-            // 1. Saves history to returned_items
-            // 2. Removes codes from current_issued_inventory
-            issueService.processReturn(returnRequest);
+            // Log this to your IDE console to see what actually arrives
+            System.out.println("Return Request for Issue ID: " +
+                    (returnRequest.getIssuedItem() != null ? returnRequest.getIssuedItem().getId() : "NULL"));
 
-            return ResponseEntity.ok("Item return processed successfully. Inventory updated.");
-        } catch (RuntimeException e) {
-            // Returns a 400 Bad Request with the error message
-            return ResponseEntity.badRequest().body("Error processing return: " + e.getMessage());
+            issueService.processReturn(returnRequest);
+            return ResponseEntity.ok("Item return processed successfully.");
+        } catch (Exception e) {
+            e.printStackTrace(); // This is crucial to see the error in your Spring Boot console
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }
