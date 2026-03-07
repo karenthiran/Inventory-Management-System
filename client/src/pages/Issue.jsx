@@ -14,6 +14,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardCard from "../components/common/DashboardCard";
 import PaginationBar from "../components/common/PaginationBar";
+import EditDueDateModal from "../components/layout/issue/EditDueDateModal";
 import IssueDetailModal from "../components/layout/issue/IssueDetailModal";
 import IssueItemForm from "../components/layout/issue/IssueItemForm";
 import IssueTable from "../components/layout/issue/IssueTable";
@@ -35,6 +36,9 @@ const Issue = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All"); // New Filter State
+
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingIssue, setEditingIssue] = useState(null);
   const pageSize = 5;
 
   /* =========================================================
@@ -80,6 +84,54 @@ const Issue = () => {
   useEffect(() => {
     fetchIssuedItems();
   }, []);
+
+  //handle the edit
+  const handleUpdateDueDate = async (id, newDate) => {
+    // 1. Immediately prevent further clicks
+    if (loading) return;
+
+    try {
+      setLoading(true);
+      const item = tableData.find((i) => i.dbId === id);
+
+      const updatePayload = {
+        id: item.dbId,
+        username: item.user,
+        issuedTo: item.location,
+        issueDate: item.issueDate,
+        dueDate: newDate,
+        quantity: item.quantity,
+        notes: item.notes,
+        category: { categoryId: item.categoryCode },
+        itemCodes: item.categoryCode
+          ? item.categoryCode.split(", ").map((c) => c.trim())
+          : [],
+      };
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/inventory/issue/update/${id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatePayload),
+        },
+      );
+
+      if (response.ok) {
+        await fetchIssuedItems();
+        setShowEditModal(false);
+      } else {
+        const errorMsg = await response.text();
+        alert(`Update failed: ${errorMsg}`);
+      }
+    } catch (error) {
+      console.error("Connection error:", error);
+      alert("Check your server connection.");
+    } finally {
+      // 2. Re-enable buttons only after process is done
+      setLoading(false);
+    }
+  };
 
   /* =========================================================
       📊 Card & Filter Logic
@@ -163,7 +215,10 @@ const Issue = () => {
         <div className='flex justify-center items-center'>
           <button
             type='button'
-            onClick={() => navigate(`/edit-item/${row.dbId}`)}
+            onClick={() => {
+              setEditingIssue(row);
+              setShowEditModal(true);
+            }}
             className='text-red-700 px-2 py-1 rounded-lg text-sm font-medium hover:bg-red-100 transition-all'
           >
             <SquarePen size={16} />
@@ -291,6 +346,15 @@ const Issue = () => {
         <IssueDetailModal
           data={selectedIssue}
           onClose={() => setShowDetailModal(false)}
+        />
+      )}
+
+      {showEditModal && editingIssue && (
+        <EditDueDateModal
+          data={editingIssue}
+          onClose={() => setShowEditModal(false)}
+          onUpdate={handleUpdateDueDate}
+          loading={loading} // Pass the loading state here
         />
       )}
     </div>
