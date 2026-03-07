@@ -56,4 +56,7 @@ public class IssuedItem {
 
     @Column(columnDefinition = "TEXT")
     private String notes;
+
+    @Column(name = "is_returned", nullable = false)
+    private boolean isReturned = false;
 }
