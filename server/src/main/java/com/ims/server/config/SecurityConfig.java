@@ -29,6 +29,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/locations/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/itemtypes/**").permitAll()
+                        .requestMatchers("/api/maintenance/**").permitAll()
                         .anyRequest().authenticated());
 
         return http.build();
