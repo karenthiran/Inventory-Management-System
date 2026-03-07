@@ -36,6 +36,8 @@ function Login() {
       // On success, save user data and navigate
       // response.data now contains the User object from your PostgreSQL table
       localStorage.setItem("user", JSON.stringify(response.data));
+      // Inside your login success handler
+      localStorage.setItem("username", response.data.username);
       navigate("/dashboard");
     } catch (err) {
       // Log the full error to the browser console for debugging
