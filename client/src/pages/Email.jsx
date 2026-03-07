@@ -25,10 +25,10 @@ const Email = () => {
 
     emailjs
       .sendForm(
-        "YOUR_SERVICE_ID",
-        "YOUR_TEMPLATE_ID",
+        "service_ji7iuhp",
+        "template_s2d2lrk",
         form.current,
-        "YOUR_PUBLIC_KEY",
+        "T7pugy3XTgikYV4oC",
       )
       .then(
         () => {
