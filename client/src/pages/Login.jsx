@@ -36,6 +36,9 @@ function Login() {
       // On success, save user data and navigate
       // response.data now contains the User object from your PostgreSQL table
       localStorage.setItem("user", JSON.stringify(response.data));
+      // Inside your login success handler
+      localStorage.setItem("username", response.data.username);
+      localStorage.setItem("role", response.data.role);
       navigate("/dashboard");
     } catch (err) {
       // Log the full error to the browser console for debugging
@@ -56,7 +59,7 @@ function Login() {
       <div className='w-[1000px] h-[580px] bg-white rounded-2xl overflow-hidden shadow-2xl flex transition-all duration-300'>
         {/* LEFT PANEL - Form Section */}
         <div className='w-[45%] px-14 py-20 flex flex-col justify-center'>
-          <h2 className='text-4xl font-semibold text-gray-800 mb-2'>Hello.</h2>
+          <h2 className='text-4xl font-semibold text-gray-800 mb-2'>Hello!</h2>
           <p className='text-gray-400 mb-10 text-lg'>Welcome back</p>
 
           <form onSubmit={handleSubmit} className='space-y-6'>
@@ -126,7 +129,7 @@ function Login() {
               <button
                 type='submit'
                 disabled={loading}
-                className={`w-full py-3 mt-4 text-white font-semibold rounded-lg bg-gradient-to-r from-indigo-500 to-indigo-700 shadow-lg shadow-indigo-100 transition-all duration-200
+                className={`w-full py-3 mt-4 text-white font-semibold rounded-lg bg-linear-to-r from-indigo-500 to-indigo-700 shadow-lg shadow-indigo-100 transition-all duration-200
                   ${loading ? "opacity-70 cursor-wait" : "hover:scale-[1.01] active:scale-95 hover:shadow-indigo-200"}
                 `}
               >
@@ -146,7 +149,7 @@ function Login() {
         {/* RIGHT PANEL - Illustration Section */}
         <div className='w-[55%] bg-[#636AE8] flex flex-col items-center justify-between p-12 text-white relative overflow-hidden'>
           {/* Subtle Background Pattern */}
-          <div className='absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent'></div>
+          <div className='absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-white via-transparent to-transparent'></div>
 
           <div className='w-full flex items-center justify-center relative z-10'>
             <img src={logo} alt='IMS Logo' className='h-16 drop-shadow-2xl' />
