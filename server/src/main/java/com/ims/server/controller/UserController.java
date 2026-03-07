@@ -1,6 +1,8 @@
 package com.ims.server.controller;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ims.server.dto.LoginRequest;
 import com.ims.server.model.User;
 import com.ims.server.repository.UserRepository;
+import com.ims.server.service.EmailService;
 
 @RestController
 @RequestMapping("/api/users")
@@ -26,25 +29,44 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    // Stores email -> OTPData (OTP + Timestamp)
+    private final Map<String, OTPData> otpStorage = new ConcurrentHashMap<>();
+
+    private static class OTPData {
+        String code;
+        long expiryTime;
+
+        OTPData(String code) {
+            this.code = code;
+            this.expiryTime = System.currentTimeMillis() + (5 * 60 * 1000); // 5 minutes
+        }
+
+        boolean isExpired() {
+            return System.currentTimeMillis() > expiryTime;
+        }
+    }
+
     @GetMapping("/all")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userRepository.findAll();
         return ResponseEntity.ok(users);
     }
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    // REMOVED: Duplicate @Autowired PasswordEncoder was here
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         if (userRepository.existsById(user.getUsername())) {
             return ResponseEntity.badRequest().body("Username already exists");
         }
-
-        // Encrypt the password before saving to PostgreSQL
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
-
+        // Encrypt password
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return ResponseEntity.ok(userRepository.save(user));
     }
 
@@ -52,11 +74,9 @@ public class UserController {
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
         return userRepository.findByEmail(loginRequest.getEmail())
                 .map(user -> {
-                    // Verify BCrypt match
                     if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
                         return ResponseEntity.ok(user);
                     } else {
-                        // Explicitly returning a string for your React setError
                         return ResponseEntity.status(401).body("Invalid password.");
                     }
                 })
@@ -71,5 +91,49 @@ public class UserController {
                     return ResponseEntity.ok("User deleted successfully");
                 })
                 .orElse(ResponseEntity.status(404).body("User not found with username: " + username));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> requestOtp(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+
+        if (!userRepository.existsByEmail(email)) {
+            return ResponseEntity.status(404).body("Email not registered in IMS.");
+        }
+
+        String otp = emailService.generateOTP();
+        otpStorage.put(email, new OTPData(otp));
+
+        try {
+            emailService.sendOtpEmail(email, otp);
+            return ResponseEntity.ok("OTP sent successfully to " + email);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to send email. Check SMTP config.");
+        }
+    }
+
+    @PostMapping("/verify-otp-reset")
+    public ResponseEntity<?> verifyAndReset(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String otp = request.get("otp");
+        String newPassword = request.get("newPassword");
+
+        OTPData storedData = otpStorage.get(email);
+
+        if (storedData == null || !storedData.code.equals(otp)) {
+            return ResponseEntity.status(400).body("Invalid OTP code.");
+        }
+
+        if (storedData.isExpired()) {
+            otpStorage.remove(email);
+            return ResponseEntity.status(400).body("OTP has expired. Please request a new one.");
+        }
+
+        return userRepository.findByEmail(email).map(user -> {
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+            otpStorage.remove(email);
+            return ResponseEntity.ok("Password reset successful.");
+        }).orElse(ResponseEntity.status(404).body("User not found."));
     }
 }
