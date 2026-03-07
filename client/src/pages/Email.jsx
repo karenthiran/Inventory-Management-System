@@ -47,8 +47,8 @@ const Email = () => {
 
   return (
     <div className="p-6 flex justify-center">
-      <div className="w-full max-w-xl bg-white dark:bg-gray-900 shadow-md rounded-lg p-5 border dark:border-gray-700">
-        <h2 className="text-lg font-semibold mb-4 text-indigo-600 dark:text-white">
+      <div className="w-full max-w-xl bg-white dark:bg-gray-900 shadow-md rounded-lg p-5 border border-gray-200 dark:border-gray-700">
+        <h2 className="text-lg font-semibold mb-4 text-indigo-600 dark:text-indigo-400">
           Send Email
         </h2>
 
@@ -56,7 +56,7 @@ const Email = () => {
           {/* Email + Subject */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-sm font-medium block mb-1">
+              <label className="text-sm font-medium mb-1 block text-gray-700 dark:text-gray-300">
                 Recipient Email
               </label>
               <input
@@ -64,21 +64,29 @@ const Email = () => {
                 name="to_email"
                 required
                 placeholder="example@email.com"
-                className="w-full border border-gray-300 dark:border-gray-700
-                bg-gray-100 dark:bg-gray-800 rounded-md px-3 py-2 text-sm
+                className="w-full border border-gray-300 dark:border-gray-600
+                bg-gray-100 dark:bg-gray-800
+                text-gray-800 dark:text-gray-200
+                placeholder-gray-500 dark:placeholder-gray-400
+                rounded-md px-3 py-2 text-sm
                 outline-none focus:ring-2 focus:ring-indigo-400"
               />
             </div>
 
             <div>
-              <label className="text-sm font-medium block mb-1">Subject</label>
+              <label className="text-sm font-medium mb-1 block text-gray-700 dark:text-gray-300">
+                Subject
+              </label>
               <input
                 type="text"
                 name="subject"
                 required
                 placeholder="Email subject"
-                className="w-full border border-gray-300 dark:border-gray-700
-                bg-gray-100 dark:bg-gray-800 rounded-md px-3 py-2 text-sm
+                className="w-full border border-gray-300 dark:border-gray-600
+                bg-gray-100 dark:bg-gray-800
+                text-gray-800 dark:text-gray-200
+                placeholder-gray-500 dark:placeholder-gray-400
+                rounded-md px-3 py-2 text-sm
                 outline-none focus:ring-2 focus:ring-indigo-400"
               />
             </div>
@@ -86,31 +94,40 @@ const Email = () => {
 
           {/* Message */}
           <div>
-            <label className="text-sm font-medium block mb-1">Message</label>
+            <label className="text-sm font-medium mb-1 block text-gray-700 dark:text-gray-300">
+              Message
+            </label>
             <textarea
               name="message"
               rows="4"
               required
               placeholder="Write your message..."
-              className="w-full border border-gray-300 dark:border-gray-700
-              bg-gray-100 dark:bg-gray-800 rounded-md px-3 py-2 text-sm
+              className="w-full border border-gray-300 dark:border-gray-600
+              bg-gray-100 dark:bg-gray-800
+              text-gray-800 dark:text-gray-200
+              placeholder-gray-500 dark:placeholder-gray-400
+              rounded-md px-3 py-2 text-sm
               outline-none focus:ring-2 focus:ring-indigo-400"
             ></textarea>
           </div>
 
           {/* Attachment */}
           <div>
-            <label className="text-sm font-medium block mb-2">Attachment</label>
+            <label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">
+              Attachment
+            </label>
 
             <label
               className="flex flex-col items-center justify-center
               w-full h-20 border-2 border-dashed
-              border-gray-300 dark:border-gray-700
+              border-gray-300 dark:border-gray-600
               rounded-md cursor-pointer
               bg-gray-50 dark:bg-gray-800
-              hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+              hover:bg-gray-100 dark:hover:bg-gray-700
+              transition"
             >
-              <Upload size={18} className="text-gray-500" />
+              <Upload size={18} className="text-gray-500 dark:text-gray-400" />
+
               <span className="text-xs text-gray-600 dark:text-gray-400">
                 Upload file
               </span>
@@ -126,13 +143,15 @@ const Email = () => {
             {fileName && (
               <div
                 className="flex items-center justify-between mt-2
-              bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-md text-xs"
+                bg-gray-100 dark:bg-gray-800
+                text-gray-700 dark:text-gray-300
+                px-3 py-1.5 rounded-md text-xs"
               >
                 <span className="truncate">{fileName}</span>
 
                 <X
                   size={14}
-                  className="cursor-pointer text-red-500"
+                  className="cursor-pointer text-red-500 hover:text-red-600"
                   onClick={removeFile}
                 />
               </div>
@@ -150,7 +169,9 @@ const Email = () => {
           </button>
 
           {status && (
-            <p className="text-center text-xs text-green-500">{status}</p>
+            <p className="text-center text-xs text-green-600 dark:text-green-400">
+              {status}
+            </p>
           )}
         </form>
       </div>
