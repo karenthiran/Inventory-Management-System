@@ -10,6 +10,7 @@ import Maintenance from "../pages/Maintenance";
 import Report from "../pages/Report";
 import Setting from "../pages/Settings";
 import Userprofile from "../pages/UserProfile";
+import EmailPage from "../pages/Email";
 
 const AppRoutes = () => {
   return (
@@ -29,6 +30,7 @@ const AppRoutes = () => {
         <Route path="report" element={<Report />} />
         <Route path="setting" element={<Setting />} />
         <Route path="userprofile" element={<Userprofile />} />
+        <Route path="email" element={<EmailPage />} />
       </Route>
     </Routes>
   );
