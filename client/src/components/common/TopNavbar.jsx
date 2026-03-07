@@ -77,7 +77,7 @@
 // };
 
 // export default Topbar;
-import { Bell, LogOut, Search, X } from "lucide-react";
+import { Bell, LogOut, Search, X, Mail } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import ThemeToggle from "./ThemeToggle";
@@ -125,6 +125,7 @@ const Topbar = () => {
     "/dashboard/report": "Reports",
     "/dashboard/setting": "Settings",
     "/dashboard/userprofile": "User Profile",
+    "/dashboard/email": "Send Email", // add this
   };
 
   const title = routeTitles[location.pathname] || "Dashboard";
@@ -295,6 +296,18 @@ const Topbar = () => {
           )}
         </div>
 
+        {/* Email */}
+        <button
+          onClick={() => navigate("/dashboard/email")}
+          className="relative"
+        >
+          <Mail
+            size={20}
+            className="text-indigo-500 hover:scale-110 transition cursor-pointer"
+          />
+        </button>
+
+        {/* Darkmode */}
         <ThemeToggle />
 
         <LogOut
