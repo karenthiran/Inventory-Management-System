@@ -9,10 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ims.server.model.CurrentIssuedInventory;
 import com.ims.server.model.InventoryItem;
 import com.ims.server.model.IssuedItem;
+import com.ims.server.model.ReturnedItem;
 import com.ims.server.repository.CategoryRepository;
 import com.ims.server.repository.CurrentInventoryRepository;
 import com.ims.server.repository.InventoryItemRepository;
 import com.ims.server.repository.IssuedItemRepository;
+import com.ims.server.repository.ReturnedItemRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,7 +26,9 @@ public class InventoryIssueService {
     private final CurrentInventoryRepository currentRepo;
     private final CategoryRepository categoryRepo;
     // In InventoryIssueService.java
-    private final InventoryItemRepository inventoryItemRepo; // Add this dependency
+    private final InventoryItemRepository inventoryItemRepo;
+    // Add this to your existing private final fields
+    private final ReturnedItemRepository returnedItemRepo;
 
     public List<InventoryItem> getAvailableItems() {
         return inventoryItemRepo.findAllAvailableItems();
@@ -104,5 +108,28 @@ public class InventoryIssueService {
     public void returnMultipleItems(List<String> itemCodes) {
         // Optional: Validate if they exist first, or just perform the delete
         currentRepo.deleteAllById(itemCodes);
+    }
+
+    @Transactional
+    public void processReturn(ReturnedItem returnRequest) {
+        // 1. Fetch the original Issue to get the associated item codes
+        Long issueId = returnRequest.getIssuedItem().getId();
+        IssuedItem issuedItem = issueRepo.findById(issueId)
+                .orElseThrow(() -> new RuntimeException("Original issue record not found."));
+
+        // 2. Save the details to the 'returned_items' table for audit/history
+        // We attach the full issuedItem object so the Foreign Key is satisfied
+        returnRequest.setIssuedItem(issuedItem);
+        returnedItemRepo.save(returnRequest);
+
+        // 3. THE SPECIFIC TASK:
+        // Remove the item codes only from 'current_issued_inventory'
+        // This makes the items "Available" again in your system
+        if (issuedItem.getItemCodes() != null && !issuedItem.getItemCodes().isEmpty()) {
+            currentRepo.deleteAllById(issuedItem.getItemCodes());
+        }
+
+        // NOTE: issueRepo.delete(issuedItem) is NOT called here,
+        // so the issue remains in your database history.
     }
 }
