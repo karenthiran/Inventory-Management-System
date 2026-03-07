@@ -57,13 +57,13 @@ const Email = () => {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-sm font-medium mb-1 block text-gray-700 dark:text-gray-300">
-                Recipient Email
+                Send Email To
               </label>
               <input
                 type="email"
                 name="to_email"
                 required
-                placeholder="example@email.com"
+                placeholder="user@eng.jfn.ac.lk"
                 className="w-full border border-gray-300 dark:border-gray-600
                 bg-gray-100 dark:bg-gray-800
                 text-gray-800 dark:text-gray-200
