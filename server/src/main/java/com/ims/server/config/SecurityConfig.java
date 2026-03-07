@@ -23,10 +23,11 @@ public class SecurityConfig {
 
                 // 2. Configure endpoint permissions
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/register").permitAll() // Allow anyone to register
-                        .anyRequest().authenticated() // Protect everything else
-                );
+                        .requestMatchers("/api/users/**").permitAll() // Allows login/register
+                        .requestMatchers("/api/inventory/**").permitAll() // ADD THIS: Allows table data fetching
+                        .anyRequest().authenticated());
 
         return http.build();
     }
+
 }

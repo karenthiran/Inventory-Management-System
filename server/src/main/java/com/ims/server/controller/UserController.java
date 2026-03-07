@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ims.server.dto.LoginRequest;
 import com.ims.server.model.User;
 import com.ims.server.repository.UserRepository;
 
@@ -34,5 +35,20 @@ public class UserController {
         user.setPassword(encodedPassword);
 
         return ResponseEntity.ok(userRepository.save(user));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
+        return userRepository.findByEmail(loginRequest.getEmail())
+                .map(user -> {
+                    // Verify BCrypt match
+                    if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+                        return ResponseEntity.ok(user);
+                    } else {
+                        // Explicitly returning a string for your React setError
+                        return ResponseEntity.status(401).body("Invalid password.");
+                    }
+                })
+                .orElse(ResponseEntity.status(404).body("Email not found."));
     }
 }
