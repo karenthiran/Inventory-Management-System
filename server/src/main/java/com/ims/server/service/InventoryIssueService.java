@@ -9,10 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ims.server.model.CurrentIssuedInventory;
 import com.ims.server.model.InventoryItem;
 import com.ims.server.model.IssuedItem;
+import com.ims.server.model.ReturnedItem;
 import com.ims.server.repository.CategoryRepository;
 import com.ims.server.repository.CurrentInventoryRepository;
 import com.ims.server.repository.InventoryItemRepository;
 import com.ims.server.repository.IssuedItemRepository;
+import com.ims.server.repository.ReturnedItemRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,7 +26,9 @@ public class InventoryIssueService {
     private final CurrentInventoryRepository currentRepo;
     private final CategoryRepository categoryRepo;
     // In InventoryIssueService.java
-    private final InventoryItemRepository inventoryItemRepo; // Add this dependency
+    private final InventoryItemRepository inventoryItemRepo;
+    // Add this to your existing private final fields
+    private final ReturnedItemRepository returnedItemRepo;
 
     public List<InventoryItem> getAvailableItems() {
         return inventoryItemRepo.findAllAvailableItems();
@@ -104,5 +108,34 @@ public class InventoryIssueService {
     public void returnMultipleItems(List<String> itemCodes) {
         // Optional: Validate if they exist first, or just perform the delete
         currentRepo.deleteAllById(itemCodes);
+    }
+
+    @Transactional
+    public void processReturn(ReturnedItem returnRequest) {
+        // 1. Extract ID safely
+        if (returnRequest.getIssuedItem() == null || returnRequest.getIssuedItem().getId() == null) {
+            throw new RuntimeException("Validation Error: Issued Item ID is missing.");
+        }
+
+        Long issueId = returnRequest.getIssuedItem().getId();
+
+        // 2. Fetch the REAL entity from the DB
+        IssuedItem persistentIssue = issueRepo.findById(issueId)
+                .orElseThrow(() -> new RuntimeException("Original issue record not found for ID: " + issueId));
+
+        // 3. Link the REAL entity to the return request
+        returnRequest.setIssuedItem(persistentIssue);
+
+        // 4. Update the Issue status
+        persistentIssue.setIsReturned(true);
+        issueRepo.save(persistentIssue);
+
+        // 5. Save Return History
+        returnedItemRepo.save(returnRequest);
+
+        // 6. Clear from current inventory
+        if (persistentIssue.getItemCodes() != null) {
+            currentRepo.deleteAllById(persistentIssue.getItemCodes());
+        }
     }
 }

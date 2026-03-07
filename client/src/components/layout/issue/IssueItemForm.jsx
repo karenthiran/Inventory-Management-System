@@ -19,14 +19,14 @@ const IssueItemForm = ({
 }) => {
   const [internalLoading, setInternalLoading] = useState(false);
   const [allInventoryItems, setAllInventoryItems] = useState([]);
-  const [categories, setCategories] = useState([]); // Now stores full objects
+  const [categories, setCategories] = useState([]);
   const [dataLoading, setDataLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    itemName: "", // Used for UI Display (Category Name)
-    categoryId: "", // REQUIRED for Backend
+    itemName: "",
+    categoryId: "",
     itemCodes: [],
-    userName: "", // Maps to "username" in Java
+    userName: "",
     quantity: "0",
     issueTo: "",
     issueDate: getTodayDate(),
@@ -46,11 +46,11 @@ const IssueItemForm = ({
           axios.get(`${API_BASE_URL}/api/categories/all`),
           axios.get(`${API_BASE_URL}/api/inventory/all`),
         ]);
-        // Sort categories by name, but keep the full object
-        const sortedCats = catRes.data.sort((a, b) =>
-          a.categoryName.localeCompare(b.categoryName),
+        setCategories(
+          catRes.data.sort((a, b) =>
+            a.categoryName.localeCompare(b.categoryName),
+          ),
         );
-        setCategories(sortedCats);
         setAllInventoryItems(invRes.data);
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -63,25 +63,22 @@ const IssueItemForm = ({
 
   const availableItemCodes = useMemo(() => {
     if (!formData.itemName) return [];
-    return allInventoryItems.filter((item) => {
-      const itemCategory = item.category?.categoryName;
-      return (
-        itemCategory === formData.itemName &&
-        !formData.itemCodes.includes(item.itemCode)
-      );
-    });
+    return allInventoryItems.filter(
+      (item) =>
+        item.category?.categoryName === formData.itemName &&
+        !formData.itemCodes.includes(item.itemCode),
+    );
   }, [allInventoryItems, formData.itemName, formData.itemCodes]);
 
   const handleCategorySelect = (catObj) => {
     setFormData((prev) => ({
       ...prev,
       itemName: catObj.categoryName,
-      categoryId: catObj.categoryId, // Storing the ID for the payload
+      categoryId: catObj.categoryId,
       itemCodes: [],
       quantity: "0",
     }));
     setShowCategoryDropdown(false);
-    setErrors((prev) => ({ ...prev, itemName: "" }));
   };
 
   const handleToggleItemCode = (code) => {
@@ -96,7 +93,6 @@ const IssueItemForm = ({
         quantity: updatedCodes.length.toString(),
       };
     });
-    setErrors((prev) => ({ ...prev, itemCodes: "" }));
   };
 
   const handleChange = (e) => {
@@ -126,18 +122,26 @@ const IssueItemForm = ({
     setInternalLoading(true);
     try {
       const payload = {
+        // 1. Nested Category Object
         category: {
           categoryId: formData.categoryId,
           categoryName: formData.itemName,
         },
+        // 2. Matches 'private String username' in Java
         username: formData.userName,
+        // 3. Array of strings for @ElementCollection
         itemCodes: formData.itemCodes,
         quantity: parseInt(formData.quantity, 10),
+        // 4. FIXED: changed 'issueTo' to 'issuedTo' to match Java @Column
         issuedTo: formData.issueTo,
+        // 5. Dates (ensure YYYY-MM-DD format)
         issueDate: formData.issueDate,
-        dueDate: formData.dueDate,
+        dueDate: formData.dueDate || null,
         notes: formData.notes || "",
+        isReturned: false,
       };
+
+      console.log("Sending Payload:", payload); // Debugging line
 
       const response = await axios.post(
         `${API_BASE_URL}/api/inventory/issue/issue`,
@@ -149,13 +153,12 @@ const IssueItemForm = ({
         onClose();
       }
     } catch (error) {
-      console.error("Backend Error:", error.response?.data);
+      // Better error message extraction
+      const errorMsg = error.response?.data || "Submit failed.";
       setErrors({
-        api:
-          error.response?.data?.message ||
-          error.response?.data ||
-          "Submit failed.",
+        api: typeof errorMsg === "string" ? errorMsg : "Check backend logs.",
       });
+      console.error("Submission Error:", error.response);
     } finally {
       setInternalLoading(false);
     }
@@ -173,11 +176,10 @@ const IssueItemForm = ({
         <button
           type='button'
           onClick={onClose}
-          className='absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors'
+          className='absolute top-4 right-4 text-gray-400 hover:text-red-500'
         >
           <X size={20} />
         </button>
-
         <h2 className='text-3xl font-bold text-indigo-400 mb-2'>Issue Item</h2>
         {errors.api && (
           <p className='text-red-500 text-sm mb-4 bg-red-500/10 p-2 rounded'>
@@ -186,7 +188,7 @@ const IssueItemForm = ({
         )}
 
         <form onSubmit={handleSubmit} className='grid grid-cols-2 gap-6'>
-          {/* CATEGORY DROPDOWN */}
+          {/* Category Selector */}
           <div className='flex flex-col relative'>
             <label className='text-sm font-semibold mb-1 text-gray-200'>
               Select Category
@@ -195,7 +197,7 @@ const IssueItemForm = ({
               onClick={() =>
                 !dataLoading && setShowCategoryDropdown(!showCategoryDropdown)
               }
-              className={`flex items-center justify-between rounded-lg px-3 py-2 border cursor-pointer transition-all ${errors.itemName ? "border-red-500" : "border-gray-600 hover:border-indigo-400"} bg-[#1f2937]`}
+              className={`flex items-center justify-between rounded-lg px-3 py-2 border cursor-pointer bg-[#1f2937] ${errors.itemName ? "border-red-500" : "border-gray-600"}`}
             >
               <span
                 className={
@@ -217,7 +219,7 @@ const IssueItemForm = ({
                   <div
                     key={cat.categoryId}
                     onClick={() => handleCategorySelect(cat)}
-                    className='px-4 py-2.5 cursor-pointer text-gray-200 hover:bg-indigo-600 hover:text-white transition-colors border-b border-gray-700 last:border-0'
+                    className='px-4 py-2.5 cursor-pointer text-gray-200 hover:bg-indigo-600 border-b border-gray-700 last:border-0'
                   >
                     {cat.categoryName}
                   </div>
@@ -226,6 +228,7 @@ const IssueItemForm = ({
             )}
           </div>
 
+          {/* Admin Name */}
           <div className='flex flex-col'>
             <label className='text-sm font-semibold mb-1 text-gray-200'>
               Admin Name
@@ -235,12 +238,11 @@ const IssueItemForm = ({
               name='userName'
               value={formData.userName}
               onChange={handleChange}
-              placeholder='Your name'
-              className={`rounded-lg px-3 py-2 border bg-[#1f2937] text-white outline-none ${errors.userName ? "border-red-500" : "border-gray-600 focus:ring-2 focus:ring-indigo-500"}`}
+              className={`rounded-lg px-3 py-2 border bg-[#1f2937] text-white ${errors.userName ? "border-red-500" : "border-gray-600"}`}
             />
           </div>
 
-          {/* ITEM CODES MULTI-SELECT */}
+          {/* Item Codes - Multi-select */}
           <div className='flex flex-col relative col-span-2'>
             <label className='text-sm font-semibold mb-1 text-gray-200'>
               Item Codes
@@ -250,7 +252,7 @@ const IssueItemForm = ({
                 formData.itemName &&
                 setShowItemCodeDropdown(!showItemCodeDropdown)
               }
-              className={`flex flex-wrap gap-2 items-center min-h-[42px] rounded-lg px-3 py-2 border transition-all ${!formData.itemName ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:border-indigo-400"} bg-[#1f2937] ${errors.itemCodes ? "border-red-500" : "border-gray-600"}`}
+              className={`flex flex-wrap gap-2 items-center min-h-[42px] rounded-lg px-3 py-2 border bg-[#1f2937] ${!formData.itemName ? "opacity-50" : "cursor-pointer"} ${errors.itemCodes ? "border-red-500" : "border-gray-600"}`}
             >
               {formData.itemCodes.length > 0 ? (
                 formData.itemCodes.map((code) => (
@@ -258,10 +260,10 @@ const IssueItemForm = ({
                     key={code}
                     className='bg-indigo-600 text-white text-xs px-2 py-1 rounded flex items-center gap-1'
                   >
-                    {code}
+                    {code}{" "}
                     <X
                       size={14}
-                      className='hover:text-red-400 cursor-pointer'
+                      className='cursor-pointer'
                       onClick={(e) => {
                         e.stopPropagation();
                         handleToggleItemCode(code);
@@ -270,52 +272,36 @@ const IssueItemForm = ({
                   </span>
                 ))
               ) : (
-                <span className='text-gray-500'>
-                  {formData.itemName
-                    ? "Select Item Codes"
-                    : "Pick Category First"}
-                </span>
+                <span className='text-gray-500'>Select Item Codes</span>
               )}
-              <div className='ml-auto'>
-                <ChevronDown size={18} className='text-gray-400' />
-              </div>
+              <ChevronDown size={18} className='ml-auto text-gray-400' />
             </div>
-
             {showItemCodeDropdown && formData.itemName && (
               <div className='absolute left-0 right-0 top-full mt-1 bg-[#1f2937] border border-gray-600 rounded-lg shadow-2xl max-h-56 overflow-y-auto z-[9999]'>
-                {availableItemCodes.length > 0 ? (
-                  availableItemCodes.map((item) => (
-                    <div
-                      key={item.itemCode}
-                      onClick={() => handleToggleItemCode(item.itemCode)}
-                      className='px-4 py-2.5 cursor-pointer text-gray-200 hover:bg-indigo-600 hover:text-white transition-colors border-b border-gray-700 last:border-0 flex justify-between'
-                    >
-                      <span>{item.itemCode}</span>
-                      <span className='text-[10px] text-gray-400 italic'>
-                        ID: {item.itemCode}
-                      </span>
-                    </div>
-                  ))
-                ) : (
-                  <div className='px-4 py-2.5 text-gray-500 text-sm italic'>
-                    No items available
+                {availableItemCodes.map((item) => (
+                  <div
+                    key={item.itemCode}
+                    onClick={() => handleToggleItemCode(item.itemCode)}
+                    className='px-4 py-2.5 cursor-pointer text-gray-200 hover:bg-indigo-600 border-b border-gray-700 last:border-0'
+                  >
+                    {item.itemCode}
                   </div>
-                )}
+                ))}
               </div>
             )}
           </div>
 
+          {/* Issue To & Quantity */}
           <div className='flex flex-col'>
             <label className='text-sm font-semibold mb-1 text-gray-200'>
-              Issue To (Location)
+              Issue To
             </label>
             <input
               type='text'
               name='issueTo'
               value={formData.issueTo}
               onChange={handleChange}
-              placeholder='e.g. LAB-01'
-              className={`rounded-lg px-3 py-2 border bg-[#1f2937] text-white outline-none ${errors.issueTo ? "border-red-500" : "border-gray-600 focus:ring-2 focus:ring-indigo-500"}`}
+              className='rounded-lg px-3 py-2 border bg-[#1f2937] text-white border-gray-600'
             />
           </div>
 
@@ -325,13 +311,13 @@ const IssueItemForm = ({
             </label>
             <input
               type='number'
-              name='quantity'
               value={formData.quantity}
               readOnly
-              className='rounded-lg px-3 py-2 border border-gray-600 bg-[#111827] text-indigo-400 font-bold outline-none cursor-default'
+              className='rounded-lg px-3 py-2 border border-gray-600 bg-[#111827] text-indigo-400 font-bold'
             />
           </div>
 
+          {/* Dates */}
           <DateField
             label='Issue Date'
             name='issueDate'
@@ -347,32 +333,34 @@ const IssueItemForm = ({
             error={errors.dueDate}
           />
 
-          <div className='col-span-2 flex flex-col'>
+          {/* Added Notes Field */}
+          <div className='flex flex-col col-span-2'>
             <label className='text-sm font-semibold mb-1 text-gray-200'>
-              Notes
+              Notes (Optional)
             </label>
             <textarea
-              rows='2'
               name='notes'
               value={formData.notes}
               onChange={handleChange}
-              className='bg-[#1f2937] border border-gray-600 rounded-lg px-3 py-2 text-white resize-none outline-none focus:ring-2 focus:ring-indigo-500'
+              rows='3'
+              className='rounded-lg px-3 py-2 border border-gray-600 bg-[#1f2937] text-white resize-none focus:outline-none focus:border-indigo-500'
+              placeholder='Add any additional details here...'
             />
           </div>
 
-          <div className='col-span-2 flex justify-end gap-4 mt-4'>
+          {/* Action Buttons */}
+          <div className='col-span-2 flex justify-end gap-4 mt-2'>
             <button
               type='button'
               onClick={onClose}
-              disabled={internalLoading}
-              className='text-gray-400 hover:text-white px-6 py-2 transition-colors disabled:opacity-50'
+              className='text-gray-400 px-6 py-2'
             >
               Cancel
             </button>
             <button
               type='submit'
               disabled={externalLoading || internalLoading}
-              className='bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-2.5 rounded-lg font-bold transition-all active:scale-95 disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2'
+              className='bg-indigo-600 text-white px-10 py-2.5 rounded-lg font-bold disabled:bg-gray-700 hover:bg-indigo-700 transition-colors'
             >
               {internalLoading ? "Processing..." : "Confirm Issue"}
             </button>
@@ -391,7 +379,7 @@ const DateField = ({ label, name, value, onChange, error }) => (
       name={name}
       value={value}
       onChange={onChange}
-      className={`rounded-lg px-3 py-2 border bg-[#1f2937] text-white outline-none cursor-pointer ${error ? "border-red-500" : "border-gray-600 focus:ring-2 focus:ring-indigo-500"}`}
+      className={`rounded-lg px-3 py-2 border bg-[#1f2937] text-white ${error ? "border-red-500" : "border-gray-600"}`}
     />
   </div>
 );

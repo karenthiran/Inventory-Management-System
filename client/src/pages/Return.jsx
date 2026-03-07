@@ -1,230 +1,82 @@
-import React, { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import ReturnTable from "../components/layout/return/ReturnTable";
+import axios from "axios";
 import {
-  LayoutGrid,
-  Plus,
-  Hourglass,
-  ClockAlert,
-  ArrowLeft,
+  Calendar,
+  ClipboardList,
   FileText,
-  Filter,
-  Search,
-  SquarePen,
+  MapPin,
+  Package,
+  User,
+  X,
 } from "lucide-react";
-import DashboardCard from "../components/common/DashboardCard";
+import { useEffect, useMemo, useState } from "react";
 import PaginationBar from "../components/common/PaginationBar";
+import ReturnTable from "../components/layout/return/ReturnTable";
 
-/* =========================================================
-   📊 Return Cards Data
-========================================================= */
-const cardData = [
-  {
-    title: "Currently Returned",
-    value: "264",
-    subtitle: "Items successfully received",
-    icon: <ArrowLeft size={20} />,
-    gradient: "from-emerald-500 to-green-600",
-  },
-  {
-    title: "Pending Return",
-    value: "125",
-    subtitle: "Awaiting item return",
-    icon: <Hourglass size={20} />,
-    gradient: "from-amber-500 to-orange-600",
-  },
-  {
-    title: "Overdue Returns",
-    value: "25",
-    subtitle: "Return deadline passed",
-    icon: <ClockAlert size={20} />,
-    gradient: "bg-gradient-to-r from-red-500 via-red-600 to-red-700 text-white",
-  },
-];
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 const Return = () => {
-  const navigate = useNavigate();
-
+  const [tableData, setTableData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 5; // how many rows per page
+  const [selectedReturn, setSelectedReturn] = useState(null);
+  const pageSize = 5;
+
+  const fetchReturns = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/api/inventory/issue/returns`,
+      );
+      setTableData(response.data);
+    } catch (error) {
+      console.error("Error fetching returns:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReturns();
+  }, []);
 
   const tableColumns = [
-    { header: "NO.", accessor: "no" },
-    { header: "User", accessor: "user" },
-    { header: "Item Name", accessor: "itemName" },
-    { header: "Location", accessor: "location" },
-    { header: "Issue Date", accessor: "issueDate" },
-    { header: "Due Date", accessor: "dueDate" },
-    { header: "Quantity", accessor: "quantity" },
-
     {
-      header: "Action",
-      render: () => (
-        <button
-          type="button"
-          onClick={() => navigate("/edit-item")}
-          className="text-red-700 px-2 py-1 rounded-lg text-sm font-medium hover:bg-red-100 cursor-pointer transition-all duration-200"
-          aria-label="Edit item"
-        >
-          <SquarePen size={16} />
-        </button>
-      ),
+      header: "NO.",
+      render: (_, index) => (currentPage - 1) * pageSize + index + 1,
     },
-
+    {
+      header: "Returned By", // RE-ADDED COLUMN
+      accessor: "returnedBy",
+    },
+    {
+      header: "Item Name",
+      render: (row) => row.issuedItem?.category?.categoryName || "N/A",
+    },
+    {
+      header: "Issued To",
+      render: (row) => row.issuedItem?.issuedTo || "N/A",
+    },
+    {
+      header: "Return Date",
+      accessor: "returnDate",
+    },
+    {
+      header: "Condition",
+      accessor: "conditionStatus",
+    },
     {
       header: "View",
-      render: () => (
+      render: (row) => (
         <button
-          type="button"
-          onClick={() => navigate("/issue-detail")}
-          className="text-indigo-600 font-medium hover:underline cursor-pointer transition-all duration-200"
+          type='button'
+          onClick={() => setSelectedReturn(row)}
+          className='text-indigo-600 font-medium hover:underline cursor-pointer transition-all duration-200'
         >
           Detail
         </button>
       ),
     },
   ];
-
-  const tableData = useMemo(
-    () => [
-      {
-        no: 1,
-        user: "Kamal Perera",
-        itemName: "Laptop",
-        location: "COL-01",
-        issueDate: "2026-02-20",
-        dueDate: "2026-02-27",
-        quantity: 1,
-      },
-      {
-        no: 2,
-        user: "Nisali Fernando",
-        itemName: "Projector",
-        location: "Seminar Hall",
-        issueDate: "2026-02-18",
-        dueDate: "2026-02-25",
-        quantity: 1,
-      },
-      {
-        no: 3,
-        user: "Saman Jayasinghe",
-        itemName: "Oscilloscope",
-        location: "EML-01",
-        issueDate: "2026-02-15",
-        dueDate: "2026-02-28",
-        quantity: 2,
-      },
-      {
-        no: 4,
-        user: "Tharushi Silva",
-        itemName: "Extension Cable",
-        location: "EML-02",
-        issueDate: "2026-02-22",
-        dueDate: "2026-03-01",
-        quantity: 5,
-      },
-      {
-        no: 5,
-        user: "A. Nimal",
-        itemName: "HDMI Cable",
-        location: "COL-03",
-        issueDate: "2026-02-10",
-        dueDate: "2026-02-17",
-        quantity: 3,
-      },
-      {
-        no: 6,
-        user: "R. Priya",
-        itemName: "Wireless Mouse",
-        location: "EML-03",
-        issueDate: "2026-02-11",
-        dueDate: "2026-02-18",
-        quantity: 2,
-      },
-      {
-        no: 7,
-        user: "S. Ibrahim",
-        itemName: "Keyboard",
-        location: "COL-02",
-        issueDate: "2026-02-12",
-        dueDate: "2026-02-19",
-        quantity: 4,
-      },
-      {
-        no: 8,
-        user: "T. Kavitha",
-        itemName: "Power Bank",
-        location: "COL-01",
-        issueDate: "2026-02-13",
-        dueDate: "2026-02-20",
-        quantity: 1,
-      },
-      {
-        no: 9,
-        user: "M. Daniel",
-        itemName: "Router",
-        location: "Server Room",
-        issueDate: "2026-02-14",
-        dueDate: "2026-02-21",
-        quantity: 1,
-      },
-      {
-        no: 10,
-        user: "N. Fathima",
-        itemName: "Laser Printer",
-        location: "EML-01",
-        issueDate: "2026-02-15",
-        dueDate: "2026-02-22",
-        quantity: 1,
-      },
-      {
-        no: 11,
-        user: "K. Arun",
-        itemName: "Arduino Uno",
-        location: "Robotics Lab",
-        issueDate: "2026-02-16",
-        dueDate: "2026-02-23",
-        quantity: 6,
-      },
-      {
-        no: 12,
-        user: "P. Sara",
-        itemName: "Multimeter",
-        location: "EML-02",
-        issueDate: "2026-02-17",
-        dueDate: "2026-02-24",
-        quantity: 5,
-      },
-      {
-        no: 13,
-        user: "J. Kevin",
-        itemName: "Tripod Stand",
-        location: "Media Room",
-        issueDate: "2026-02-18",
-        dueDate: "2026-02-25",
-        quantity: 2,
-      },
-      {
-        no: 14,
-        user: "L. Ayesha",
-        itemName: "Extension Cord",
-        location: "Workshop",
-        issueDate: "2026-02-19",
-        dueDate: "2026-02-26",
-        quantity: 7,
-      },
-      {
-        no: 15,
-        user: "H. Chen",
-        itemName: "Webcam",
-        location: "COL-04",
-        issueDate: "2026-02-20",
-        dueDate: "2026-02-27",
-        quantity: 2,
-      },
-    ],
-    [],
-  );
 
   const totalResults = tableData.length;
   const totalPages = Math.ceil(totalResults / pageSize);
@@ -235,120 +87,161 @@ const Return = () => {
   }, [currentPage, tableData]);
 
   return (
-    <div
-      className="px-6 py-4 bg-gray-100 dark:bg-gray-900 
-  min-h-screen transition-colors duration-300"
-    >
-      {/* ================= Header ================= */}
-      <div className="flex items-center gap-3 mb-10">
-        <div className="bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg">
-          <LayoutGrid
-            size={22}
-            className="text-indigo-600 dark:text-indigo-400"
-          />
+    <div className='px-6 py-8 bg-gray-100 dark:bg-gray-900 min-h-screen transition-colors duration-300'>
+      <div className='max-w-7xl mx-auto'>
+        {/* Top Bar Header */}
+        <div className='flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8'>
+          <div className='flex items-center gap-3 text-neutral-900 dark:text-gray-200'>
+            <div className='bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg'>
+              <FileText
+                size={24}
+                className='text-indigo-600 dark:text-indigo-400'
+              />
+            </div>
+            <span className='text-2xl font-bold tracking-tight text-gray-800 dark:text-white'>
+              Return Management
+            </span>
+          </div>
         </div>
-        <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
-          Overview
-        </h1>
-      </div>
 
-      {/* ================= Cards Section ================= */}
-      <section className="flex justify-center mb-14">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
-          {cardData.map((card, index) => (
-            <DashboardCard key={index} {...card} />
-          ))}
+        {/* Table Content */}
+        <div className='bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden'>
+          {loading ? (
+            <div className='p-20 text-center text-gray-500 flex flex-col items-center gap-2'>
+              <div className='w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin'></div>
+              <span>Fetching records...</span>
+            </div>
+          ) : (
+            <ReturnTable columns={tableColumns} data={paginatedData} />
+          )}
         </div>
-      </section>
 
-      {/* ================= Table Section ================= */}
-      <div className="max-w-7xl mx-auto">
-        {/* Top Bar */}
-        <div className="flex items-center justify-between mb-6">
-          {/* Left title */}
-          <div className="flex items-center gap-2 text-neutral-900 dark:text-gray-200">
-            <FileText
-              size={25}
-              className="text-indigo-600 dark:text-indigo-400"
+        {/* Pagination bar */}
+        {!loading && totalResults > 0 && (
+          <div className='mt-6'>
+            <PaginationBar
+              totalResults={totalResults}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
             />
-            <span className="text-xl font-semibold">Detailed Report</span>
           </div>
+        )}
 
-          {/* Right controls */}
-          <div className="flex items-center gap-4">
-            {/* Issue button */}
-            <button
-              onClick={() => navigate("/add-item")}
-              className="flex items-center gap-2 
-            bg-indigo-600 hover:bg-indigo-700 
-            dark:bg-indigo-500 dark:hover:bg-indigo-600
-            cursor-pointer text-white px-4 py-2 
-            rounded-lg text-sm font-medium 
-            transition-all duration-200 shadow-sm"
-            >
-              <Plus size={18} />
-              Return a Item
-            </button>
+        {/* --- ENLARGED POPUP MODAL --- */}
+        {selectedReturn && (
+          <div className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md transition-opacity'>
+            {/* max-w-3xl for increased width */}
+            <div className='bg-white dark:bg-gray-800 w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden transform transition-all animate-in fade-in zoom-in duration-300'>
+              <div className='px-8 py-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50'>
+                <h3 className='text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-3'>
+                  <ClipboardList className='text-indigo-500' size={28} /> Full
+                  Return Details
+                </h3>
+                <button
+                  onClick={() => setSelectedReturn(null)}
+                  className='p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 transition-colors'
+                >
+                  <X size={24} />
+                </button>
+              </div>
 
-            {/* Filter dropdown */}
-            <div className="relative">
-              <select
-                className="appearance-none 
-              bg-white dark:bg-gray-800 
-              border border-gray-200 dark:border-gray-700 
-              cursor-pointer rounded-lg 
-              px-4 py-2 pr-10 text-sm 
-              text-gray-700 dark:text-gray-200
-              focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="">Filter by</option>
-                <option value="issue date">Issue Date</option>
-                <option value="due date">Due Date</option>
-                <option value="due in soon">Due in Soon</option>
-                <option value="over due">Over Due</option>
-              </select>
+              {/* Increased padding (p-8) and gap (gap-10) */}
+              <div className='p-10 grid grid-cols-1 md:grid-cols-2 gap-10'>
+                <div className='space-y-6'>
+                  <h4 className='text-sm font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest border-b border-indigo-50 dark:border-indigo-900/30 pb-2'>
+                    Issuance Info
+                  </h4>
+                  <DetailItem
+                    icon={<Package size={20} />}
+                    label='Item Category'
+                    value={selectedReturn.issuedItem?.category?.categoryName}
+                  />
+                  <DetailItem
+                    icon={<MapPin size={20} />}
+                    label='Issued to'
+                    value={selectedReturn.issuedItem?.issuedTo}
+                  />
+                  <DetailItem
+                    icon={<User size={20} />}
+                    label='obtained by'
+                    value={selectedReturn.issuedItem?.username}
+                  />
+                  <DetailItem
+                    icon={<ClipboardList size={20} />}
+                    label='Inventory Codes'
+                    value={selectedReturn.issuedItem?.itemCodes?.join(", ")}
+                  />
+                </div>
 
-              <Filter
-                size={16}
-                className="absolute right-3 top-1/2 -translate-y-1/2 
-              text-gray-500 dark:text-gray-400 pointer-events-none"
-              />
-            </div>
+                <div className='space-y-6'>
+                  <h4 className='text-sm font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest border-b border-indigo-50 dark:border-indigo-900/30 pb-2'>
+                    Return Status
+                  </h4>
+                  <DetailItem
+                    icon={<Calendar size={20} />}
+                    label='Date Processed'
+                    value={selectedReturn.returnDate}
+                  />
+                  <DetailItem
+                    icon={<User size={20} />}
+                    label='Returned By'
+                    value={selectedReturn.returnedBy}
+                  />
+                  <div className='flex flex-col'>
+                    <span className='text-xs text-gray-400 uppercase font-bold tracking-tighter'>
+                      Condition Status
+                    </span>
+                    <span
+                      className={`mt-2 px-4 py-1.5 rounded-full text-sm font-bold w-fit ${
+                        selectedReturn.conditionStatus === "Good"
+                          ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                          : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                      }`}
+                    >
+                      {selectedReturn.conditionStatus}
+                    </span>
+                  </div>
+                  <DetailItem
+                    icon={<FileText size={20} />}
+                    label='Admin Remarks'
+                    value={
+                      selectedReturn.remarks || "No specific remarks provided."
+                    }
+                  />
+                </div>
+              </div>
 
-            {/* Search input */}
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search by name"
-                className="bg-white dark:bg-gray-800 
-              border border-gray-200 dark:border-gray-700 
-              rounded-lg px-4 py-2 pr-10 text-sm 
-              text-gray-700 dark:text-gray-200
-              placeholder-gray-400 dark:placeholder-gray-500
-              focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <Search
-                size={16}
-                className="absolute right-3 top-1/2 -translate-y-1/2 
-              text-gray-500 dark:text-gray-400"
-              />
+              <div className='px-8 py-6 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-700 text-right'>
+                <button
+                  onClick={() => setSelectedReturn(null)}
+                  className='px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-indigo-200 dark:shadow-none active:scale-95'
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-
-        {/* Table */}
-        <ReturnTable columns={tableColumns} data={paginatedData} />
-
-        {/* Pagination */}
-        <PaginationBar
-          totalResults={totalResults}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
+        )}
       </div>
     </div>
   );
-};  
+};
+
+const DetailItem = ({ icon, label, value }) => (
+  <div className='flex items-start gap-4'>
+    <div className='text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 p-2 rounded-lg'>
+      {icon}
+    </div>
+    <div>
+      <p className='text-xs text-gray-400 uppercase font-bold tracking-widest'>
+        {label}
+      </p>
+      <p className='text-base font-semibold text-gray-900 dark:text-gray-100'>
+        {value || "N/A"}
+      </p>
+    </div>
+  </div>
+);
 
 export default Return;
