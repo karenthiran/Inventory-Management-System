@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ims.server.model.InventoryItem;
 import com.ims.server.model.IssuedItem;
+import com.ims.server.model.ReturnedItem;
 import com.ims.server.service.InventoryIssueService;
 
 import lombok.RequiredArgsConstructor;
@@ -73,5 +74,22 @@ public class InventoryIssueController {
     @GetMapping("/available/category/{catId}")
     public ResponseEntity<List<InventoryItem>> getAvailableByCat(@PathVariable String catId) {
         return ResponseEntity.ok(issueService.getAvailableItemsByCategory(catId));
+    }
+
+    // Add this to com.ims.server.controller.InventoryIssueController
+
+    @PostMapping("/return")
+    public ResponseEntity<?> processReturn(@RequestBody ReturnedItem returnRequest) {
+        try {
+            // Log this to your IDE console to see what actually arrives
+            System.out.println("Return Request for Issue ID: " +
+                    (returnRequest.getIssuedItem() != null ? returnRequest.getIssuedItem().getId() : "NULL"));
+
+            issueService.processReturn(returnRequest);
+            return ResponseEntity.ok("Item return processed successfully.");
+        } catch (Exception e) {
+            e.printStackTrace(); // This is crucial to see the error in your Spring Boot console
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

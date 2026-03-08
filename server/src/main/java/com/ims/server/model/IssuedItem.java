@@ -56,4 +56,13 @@ public class IssuedItem {
 
     @Column(columnDefinition = "TEXT")
     private String notes;
+
+    // Change this line in com.ims.server.model.IssuedItem
+    @Column(name = "is_returned", nullable = false)
+    private Boolean isReturned = false; // Use Boolean wrapper instead of boolean primitive
+
+    // Keep your existing setter logic, but ensure it handles the Boolean wrapper
+    public void setIsReturned(Boolean isReturned) {
+        this.isReturned = isReturned != null ? isReturned : false;
+    }
 }
