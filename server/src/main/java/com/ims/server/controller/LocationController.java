@@ -28,6 +28,11 @@ public class LocationController {
 
     @PostMapping("/add")
     public Location createLoaction(@RequestBody Location location) {
+        // Check if the ID already exists in the database
+        if (locationRepository.existsById(location.getLocationId())) {
+            throw new RuntimeException(
+                    "Location ID " + location.getLocationId() + " already exists. Cannot add duplicate.");
+        }
         // this takes the JSON from the user and saves it to the DB
         return locationRepository.save(location);
     }

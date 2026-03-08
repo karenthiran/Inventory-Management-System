@@ -114,7 +114,7 @@ const overDueItems = [
 /* ================= Home Component ================== */
 const Home = () => {
   return (
-    <div className="px-6 py-4 bg-gray-100 dark:bg-gray-900 min-h-screen transition-colors duration-300">
+    <div className="h-full flex flex-col px-6 py-4 bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
       {/* ================= Header ================= */}
       <div className="flex items-center gap-3 mb-10">
         <div className="bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg">
