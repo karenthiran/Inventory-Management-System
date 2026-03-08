@@ -2,6 +2,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { http } from "../api/http";
 import { queryKeys } from "../queries/imsQueries";
+import { mockAddItem } from "../mock/mockDb";
 
 // POST /api/issues  body: { itemId, userId, dueDate... }
 export function useIssueItem() {
@@ -26,10 +27,7 @@ export function useAddItem() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: async (newItem) => {
-      const res = await http.post("/api/items", newItem);
-      return res.data;
-    },
+    mutationFn: mockAddItem,
     onSuccess: () => {
       // refresh inventory list after adding
       qc.invalidateQueries({ queryKey: queryKeys.items });

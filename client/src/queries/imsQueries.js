@@ -1,37 +1,30 @@
-// src/queries/imsQueries.js
 import { useQuery } from "@tanstack/react-query";
 import {
-  fetchItems,
-  fetchIssues,
-  fetchActiveIssues,
-  fetchMaintenanceActive,
-  fetchAvailableItems,
-} from "../api/imsApi";
+  mockFetchItems,
+  mockFetchLocations,
+  mockFetchCategories,
+  mockFetchItemTypes,
+} from "../mock/mockDb";
 
 export const queryKeys = {
   items: ["items"],
-  issues: ["issues"],
-  activeIssues: ["activeIssues"],
-  maintenanceActive: ["maintenanceActive"],
-  availableItems: ["availableItems"],
+  locations: ["locations"],
+  categories: ["categories"],
+  itemTypes: ["itemTypes"],
 };
 
 export function useItems() {
-  return useQuery({ queryKey: queryKeys.items, queryFn: fetchItems });
+  return useQuery({ queryKey: queryKeys.items, queryFn: mockFetchItems });
 }
 
-export function useIssues() {
-  return useQuery({ queryKey: queryKeys.issues, queryFn: fetchIssues });
+export function useLocations() {
+  return useQuery({ queryKey: queryKeys.locations, queryFn: mockFetchLocations });
 }
 
-export function useActiveIssues() {
-  return useQuery({ queryKey: queryKeys.activeIssues, queryFn: fetchActiveIssues });
+export function useCategories() {
+  return useQuery({ queryKey: queryKeys.categories, queryFn: mockFetchCategories });
 }
 
-export function useMaintenanceActive() {
-  return useQuery({ queryKey: queryKeys.maintenanceActive, queryFn: fetchMaintenanceActive });
-}
-
-export function useAvailableItems() {
-  return useQuery({ queryKey: queryKeys.availableItems, queryFn: fetchAvailableItems });
+export function useItemTypes() {
+  return useQuery({ queryKey: queryKeys.itemTypes, queryFn: mockFetchItemTypes });
 }

@@ -403,33 +403,345 @@
 
 // export default AddItemForm;
 
+// import React, { useState } from "react";
+// import { X } from "lucide-react";
+// import { useInventory } from "../../../context/InventoryContext";
+
+// const AddItemForm = ({ onClose, loading = false }) => {
+//   const { addItem } = useInventory();
+
+//   /* =========================
+//      TEMPORARY DUMMY DATA
+//   ========================== */
+//   const categories = [
+//     "Electronics",
+//     "Furniture",
+//     "Stationery",
+//     "Office Supplies",
+//     "Accessories",
+//   ];
+
+//   const locations = [
+//     "Main Store",
+//     "Warehouse A",
+//     "Warehouse B",
+//     "Showroom",
+//     "Online Stock",
+//   ];
+
+//   const itemTypes = ["Raw Material", "Finished Product", "Consumable", "Asset"];
+
+//   /* =========================
+//      STATE
+//   ========================== */
+//   const [formData, setFormData] = useState({
+//     itemName: "",
+//     itemCode: "",
+//     category: "",
+//     location: "",
+//     quantity: 0,
+//     itemType: "",
+//     description: "",
+//   });
+
+//   const [errors, setErrors] = useState({});
+
+//   /* =========================
+//      VALIDATION
+//   ========================== */
+//   const validate = () => {
+//     const newErrors = {};
+
+//     if (!formData.itemName.trim()) newErrors.itemName = "Item Name is required";
+
+//     if (!formData.itemCode.trim()) newErrors.itemCode = "Item Code is required";
+
+//     if (!formData.category) newErrors.category = "Please select a category";
+
+//     if (!formData.location) newErrors.location = "Please select a location";
+
+//     if (formData.quantity === "" || formData.quantity < 0)
+//       newErrors.quantity = "Quantity must be 0 or more";
+
+//     if (!formData.itemType) newErrors.itemType = "Please select item type";
+
+//     setErrors(newErrors);
+//     return Object.keys(newErrors).length === 0;
+//   };
+
+//   const handleChange = (e) => {
+//     const { name, value } = e.target;
+
+//     if (name === "quantity") {
+//       // Allow empty while typing
+//       if (value === "") {
+//         setFormData((prev) => ({
+//           ...prev,
+//           quantity: "",
+//         }));
+//         return;
+//       }
+
+//       const numericValue = Number(value);
+
+//       // Only block negative numbers
+//       if (isNaN(numericValue) || numericValue < 0) return;
+
+//       setFormData((prev) => ({
+//         ...prev,
+//         quantity: numericValue,
+//       }));
+
+//       return;
+//     }
+
+//     setFormData((prev) => ({
+//       ...prev,
+//       [name]: value,
+//     }));
+//   };
+//   /* =========================
+//      SUBMIT
+//   ========================== */
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     if (!validate()) return;
+
+//     await addItem({
+//       ...formData,
+//       quantity: Number(formData.quantity),
+//     });
+
+//     onClose();
+//   };
+
+//   return (
+//     <div
+//       className="fixed inset-0 bg-black/60 dark:bg-black/70 flex items-center justify-center z-50"
+//       onClick={onClose}
+//     >
+//       <div
+//         className="bg-white dark:bg-gray-900 
+//         text-gray-800 dark:text-gray-200
+//         w-full max-w-2xl rounded-2xl shadow-2xl p-8 relative 
+//         border border-gray-200 dark:border-gray-700"
+//         onClick={(e) => e.stopPropagation()}
+//       >
+//         {/* Close Button */}
+//         <button
+//           onClick={onClose}
+//           aria-label="Close Modal"
+//           className="absolute top-4 right-4 text-red-500 hover:text-red-600"
+//         >
+//           <X size={20} />
+//         </button>
+
+//         <h2 className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">
+//           Add A New Item
+//         </h2>
+//         <p className="text-gray-600 dark:text-gray-400 mb-6">
+//           Fill the details to add a new inventory item
+//         </p>
+
+//         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
+//           <InputField
+//             label="Item Name"
+//             name="itemName"
+//             value={formData.itemName}
+//             onChange={handleChange}
+//             error={errors.itemName}
+//             placeholder="Enter Item Name"
+//           />
+
+//           <InputField
+//             label="Item Code"
+//             name="itemCode"
+//             value={formData.itemCode}
+//             onChange={handleChange}
+//             error={errors.itemCode}
+//             placeholder="Enter Item Code"
+//           />
+
+//           <SelectField
+//             label="Category"
+//             name="category"
+//             value={formData.category}
+//             onChange={handleChange}
+//             error={errors.category}
+//             options={categories}
+//           />
+
+//           <SelectField
+//             label="Location"
+//             name="location"
+//             value={formData.location}
+//             onChange={handleChange}
+//             error={errors.location}
+//             options={locations}
+//           />
+
+//           {/* Quantity */}
+//           <div className="flex flex-col">
+//             <label className="text-sm font-semibold mb-1">Quantity</label>
+
+//             <div
+//               className={`flex items-center border rounded-lg overflow-hidden 
+//     ${
+//       errors.quantity
+//         ? "border-red-500"
+//         : "border-gray-300 dark:border-gray-600"
+//     }
+//     focus-within:ring-2 focus-within:ring-indigo-500`}
+//             >
+//               {/* Minus */}
+//               <button
+//                 type="button"
+//                 onClick={() =>
+//                   setFormData((prev) => ({
+//                     ...prev,
+//                     quantity: Math.max(0, Number(prev.quantity || 0) - 1),
+//                   }))
+//                 }
+//                 className="px-4 py-2 bg-gray-200 dark:bg-gray-700 font-bold"
+//               >
+//                 −
+//               </button>
+
+//               {/* Input */}
+//               <input
+//                 type="number"
+//                 name="quantity"
+//                 min="0"
+//                 value={formData.quantity}
+//                 onChange={handleChange}
+//                 className="w-full text-center bg-white dark:bg-gray-800 outline-none py-2"
+//               />
+
+//               {/* Plus */}
+//               <button
+//                 type="button"
+//                 onClick={() =>
+//                   setFormData((prev) => ({
+//                     ...prev,
+//                     quantity: Number(prev.quantity || 0) + 1,
+//                   }))
+//                 }
+//                 className="px-4 py-2 bg-gray-200 dark:bg-gray-700 font-bold"
+//               >
+//                 +
+//               </button>
+//             </div>
+
+//             {errors.quantity && (
+//               <span className="text-red-500 text-xs mt-1">
+//                 {errors.quantity}
+//               </span>
+//             )}
+//           </div>
+
+//           <SelectField
+//             label="Item Type"
+//             name="itemType"
+//             value={formData.itemType}
+//             onChange={handleChange}
+//             error={errors.itemType}
+//             options={itemTypes}
+//           />
+
+//           <div className="col-span-2 flex flex-col">
+//             <label className="text-sm font-semibold mb-1">
+//               Description
+//               <span className="text-gray-500 text-xs ml-1">(Optional)</span>
+//             </label>
+//             <textarea
+//               rows="3"
+//               name="description"
+//               value={formData.description}
+//               onChange={handleChange}
+//               placeholder="Small Description"
+//               className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 resize-none focus:ring-2 focus:ring-indigo-500"
+//             />
+//           </div>
+
+//           <div className="col-span-2 flex justify-center gap-8 mt-4">
+//             <button
+//               type="button"
+//               className="bg-red-500 hover:bg-red-600 text-white px-8 py-2 rounded-lg font-semibold"
+//               onClick={onClose}
+//             >
+//               Cancel
+//             </button>
+
+//             <button
+//               type="submit"
+//               disabled={loading}
+//               className="bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white px-8 py-2 rounded-lg font-semibold"
+//             >
+//               {loading ? "Adding..." : "Add Item"}
+//             </button>
+//           </div>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// };
+
+// /* =========================
+//    REUSABLE COMPONENTS
+// ========================== */
+
+// const InputField = ({ label, name, value, onChange, error, placeholder }) => (
+//   <div className="flex flex-col">
+//     <label className="text-sm font-semibold mb-1">{label}</label>
+//     <input
+//       type="text"
+//       name={name}
+//       value={value}
+//       onChange={onChange}
+//       placeholder={placeholder}
+//       className={`rounded-lg px-3 py-2 border ${
+//         error ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+//       } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
+//     />
+//     {error && <span className="text-red-500 text-xs mt-1">{error}</span>}
+//   </div>
+// );
+
+// const SelectField = ({ label, name, value, onChange, error, options = [] }) => (
+//   <div className="flex flex-col">
+//     <label className="text-sm font-semibold mb-1">{label}</label>
+//     <select
+//       name={name}
+//       value={value}
+//       onChange={onChange}
+//       className={`rounded-lg px-3 py-2 border ${
+//         error ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+//       } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
+//     >
+//       <option value="">Select {label}</option>
+//       {options.map((option) => (
+//         <option key={option} value={option}>
+//           {option}
+//         </option>
+//       ))}
+//     </select>
+//     {error && <span className="text-red-500 text-xs mt-1">{error}</span>}
+//   </div>
+// );
+
+// export default AddItemForm;
 import React, { useState } from "react";
 import { X } from "lucide-react";
-import { useInventory } from "../../../context/InventoryContext";
 
-const AddItemForm = ({ onClose, loading = false }) => {
-  const { addItem } = useInventory();
+// ✅ pull dropdown options from TanStack Query (mock mode)
+import { useCategories, useLocations, useItemTypes } from "../../../queries/imsQueries";
 
-  /* =========================
-     TEMPORARY DUMMY DATA
-  ========================== */
-  const categories = [
-    "Electronics",
-    "Furniture",
-    "Stationery",
-    "Office Supplies",
-    "Accessories",
-  ];
-
-  const locations = [
-    "Main Store",
-    "Warehouse A",
-    "Warehouse B",
-    "Showroom",
-    "Online Stock",
-  ];
-
-  const itemTypes = ["Raw Material", "Finished Product", "Consumable", "Asset"];
+const AddItemForm = ({ onClose, onAddItem, loading = false }) => {
+  // ✅ options from mock queries (later same hooks will hit backend)
+  const { data: categories = [], isLoading: catLoading } = useCategories();
+  const { data: locations = [], isLoading: locLoading } = useLocations();
+  const { data: itemTypes = [], isLoading: typeLoading } = useItemTypes();
 
   /* =========================
      STATE
@@ -453,15 +765,13 @@ const AddItemForm = ({ onClose, loading = false }) => {
     const newErrors = {};
 
     if (!formData.itemName.trim()) newErrors.itemName = "Item Name is required";
-
     if (!formData.itemCode.trim()) newErrors.itemCode = "Item Code is required";
-
     if (!formData.category) newErrors.category = "Please select a category";
-
     if (!formData.location) newErrors.location = "Please select a location";
 
-    if (formData.quantity === "" || formData.quantity < 0)
+    if (formData.quantity === "" || Number(formData.quantity) < 0) {
       newErrors.quantity = "Quantity must be 0 or more";
+    }
 
     if (!formData.itemType) newErrors.itemType = "Please select item type";
 
@@ -469,52 +779,43 @@ const AddItemForm = ({ onClose, loading = false }) => {
     return Object.keys(newErrors).length === 0;
   };
 
+  /* =========================
+     HANDLE CHANGE
+  ========================== */
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     if (name === "quantity") {
-      // Allow empty while typing
       if (value === "") {
-        setFormData((prev) => ({
-          ...prev,
-          quantity: "",
-        }));
+        setFormData((prev) => ({ ...prev, quantity: "" }));
         return;
       }
 
       const numericValue = Number(value);
+      if (Number.isNaN(numericValue) || numericValue < 0) return;
 
-      // Only block negative numbers
-      if (isNaN(numericValue) || numericValue < 0) return;
-
-      setFormData((prev) => ({
-        ...prev,
-        quantity: numericValue,
-      }));
-
+      setFormData((prev) => ({ ...prev, quantity: numericValue }));
       return;
     }
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
   /* =========================
      SUBMIT
   ========================== */
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validate()) return;
 
-    await addItem({
+    // ✅ pass to parent (InventoryItem.jsx) which calls mutation
+    await onAddItem({
       ...formData,
       quantity: Number(formData.quantity),
     });
-
-    onClose();
   };
+
+  const dropdownLoading = catLoading || locLoading || typeLoading;
 
   return (
     <div
@@ -544,6 +845,12 @@ const AddItemForm = ({ onClose, loading = false }) => {
           Fill the details to add a new inventory item
         </p>
 
+        {dropdownLoading && (
+          <div className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+            Loading form options...
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
           <InputField
             label="Item Name"
@@ -570,6 +877,7 @@ const AddItemForm = ({ onClose, loading = false }) => {
             onChange={handleChange}
             error={errors.category}
             options={categories}
+            disabled={dropdownLoading}
           />
 
           <SelectField
@@ -579,6 +887,7 @@ const AddItemForm = ({ onClose, loading = false }) => {
             onChange={handleChange}
             error={errors.location}
             options={locations}
+            disabled={dropdownLoading}
           />
 
           {/* Quantity */}
@@ -587,12 +896,12 @@ const AddItemForm = ({ onClose, loading = false }) => {
 
             <div
               className={`flex items-center border rounded-lg overflow-hidden 
-    ${
-      errors.quantity
-        ? "border-red-500"
-        : "border-gray-300 dark:border-gray-600"
-    }
-    focus-within:ring-2 focus-within:ring-indigo-500`}
+              ${
+                errors.quantity
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-600"
+              }
+              focus-within:ring-2 focus-within:ring-indigo-500`}
             >
               {/* Minus */}
               <button
@@ -634,9 +943,7 @@ const AddItemForm = ({ onClose, loading = false }) => {
             </div>
 
             {errors.quantity && (
-              <span className="text-red-500 text-xs mt-1">
-                {errors.quantity}
-              </span>
+              <span className="text-red-500 text-xs mt-1">{errors.quantity}</span>
             )}
           </div>
 
@@ -647,6 +954,7 @@ const AddItemForm = ({ onClose, loading = false }) => {
             onChange={handleChange}
             error={errors.itemType}
             options={itemTypes}
+            disabled={dropdownLoading}
           />
 
           <div className="col-span-2 flex flex-col">
@@ -689,7 +997,7 @@ const AddItemForm = ({ onClose, loading = false }) => {
 
 /* =========================
    REUSABLE COMPONENTS
-========================== */
+========================= */
 
 const InputField = ({ label, name, value, onChange, error, placeholder }) => (
   <div className="flex flex-col">
@@ -708,16 +1016,25 @@ const InputField = ({ label, name, value, onChange, error, placeholder }) => (
   </div>
 );
 
-const SelectField = ({ label, name, value, onChange, error, options = [] }) => (
+const SelectField = ({
+  label,
+  name,
+  value,
+  onChange,
+  error,
+  options = [],
+  disabled = false,
+}) => (
   <div className="flex flex-col">
     <label className="text-sm font-semibold mb-1">{label}</label>
     <select
       name={name}
       value={value}
       onChange={onChange}
+      disabled={disabled}
       className={`rounded-lg px-3 py-2 border ${
         error ? "border-red-500" : "border-gray-300 dark:border-gray-600"
-      } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500`}
+      } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500 disabled:opacity-60`}
     >
       <option value="">Select {label}</option>
       {options.map((option) => (
