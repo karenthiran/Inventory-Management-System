@@ -13,7 +13,7 @@ import DashboardCard from "../components/common/DashboardCard";
 import PaginationBar from "../components/common/PaginationBar";
 import MaintenanceTable from "../components/layout/maintenance/MaintenanceTable";
 
-const API_BASE_URL = "http://localhost:8080/api/maintenance";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 const Maintenance = () => {
   const [showRequest, setShowRequest] = useState(false);
@@ -38,7 +38,7 @@ const Maintenance = () => {
   const fetchMaintenanceData = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get(`${API_BASE_URL}/all`);
+      const response = await axios.get(`${API_BASE_URL}/api/maintenance/all`);
       setTableData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -59,7 +59,7 @@ const Maintenance = () => {
       );
       if (!itemToUpdate) return;
 
-      await axios.put(`${API_BASE_URL}/edit/${requestId}`, {
+      await axios.put(`${API_BASE_URL}/api/maintenance/edit/${requestId}`, {
         ...itemToUpdate,
         status: newStatus,
       });
@@ -72,9 +72,12 @@ const Maintenance = () => {
   const handleAddItem = async () => {
     try {
       if (editId) {
-        await axios.put(`${API_BASE_URL}/edit/${editId}`, formData);
+        await axios.put(
+          `${API_BASE_URL}/api/maintenance/edit/${editId}`,
+          formData,
+        );
       } else {
-        await axios.post(`${API_BASE_URL}/add`, formData);
+        await axios.post(`${API_BASE_URL}/api/maintenance/add`, formData);
       }
       fetchMaintenanceData();
       resetForm();
