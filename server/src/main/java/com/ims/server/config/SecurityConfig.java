@@ -23,6 +23,7 @@ public class SecurityConfig {
 
                 // 2. Configure endpoint permissions
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/").permitAll()
                         .requestMatchers("/api/users/**").permitAll() // Allows login/register
                         .requestMatchers("/api/inventory/**").permitAll()
                         .requestMatchers("/api/categories/**").permitAll()
