@@ -219,7 +219,7 @@ const IssueItemForm = ({
 
         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
           {/* Category Selector */}
-          <div className="flex flex-col relative">
+          <div ref={categoryRef} className="flex flex-col relative">
             <label className="text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">
               Select Category
             </label>
