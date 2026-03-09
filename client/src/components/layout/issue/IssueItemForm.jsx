@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ChevronDown, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
