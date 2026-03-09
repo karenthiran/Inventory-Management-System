@@ -290,7 +290,7 @@ const IssueItemForm = ({
           </div>
 
           {/* Item Codes */}
-          <div className="flex flex-col relative col-span-2">
+          <div ref={itemCodeRef} className="flex flex-col relative col-span-2">
             <label className="text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">
               Item Codes
             </label>
