@@ -232,7 +232,7 @@ const IssueItemForm = ({
             </div>
 
             {showCategoryDropdown && (
-              <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[#1f2937] border border-gray-200 dark:border-gray-600 rounded-lg shadow-2xl max-h-56 overflow-y-auto z-[9999]">
+              <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[#1f2937] border border-gray-200 dark:border-gray-600 rounded-lg shadow-2xl z-[9999]">
                 {categories.map((cat) => (
                   <div
                     key={cat.categoryId}
