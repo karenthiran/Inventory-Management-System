@@ -125,7 +125,7 @@ const Topbar = () => {
     "/dashboard/report": "Reports",
     "/dashboard/setting": "Settings",
     "/dashboard/userprofile": "User Profile",
-    "/dashboard/email": "Send Email", // add this
+    "/dashboard/email": " Email", // add this
   };
 
   const title = routeTitles[location.pathname] || "Dashboard";
