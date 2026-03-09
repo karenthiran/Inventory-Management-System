@@ -366,6 +366,7 @@
 // export default InventoryItem;
 
 import {
+  BoxIcon,
   CheckCircle2,
   ChevronRight,
   Edit,
@@ -531,7 +532,7 @@ const InventoryItem = () => {
             setSelectedItem(flattenedItem);
             setShowDetailModal(true);
           }}
-          className='text-indigo-600 dark:text-indigo-400 font-medium hover:underline'
+          className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline"
         >
           Detail
         </button>
@@ -540,14 +541,14 @@ const InventoryItem = () => {
     {
       header: "Actions",
       render: (row) => (
-        <div className='flex items-center gap-3'>
+        <div className="flex items-center gap-3">
           <button
             onClick={() => {
               setItemToEdit(row); // Set the row data
               setShowEditModal(true); // Open Popup
             }}
-            className='text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 transition-colors'
-            title='Edit'
+            className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 transition-colors"
+            title="Edit"
           >
             <Edit size={20} strokeWidth={1.25} />
           </button>
@@ -555,8 +556,8 @@ const InventoryItem = () => {
           {/* Delete Button */}
           <button
             onClick={() => initiateDelete(row.itemCode)} // CALLS THE POPUP
-            className='text-red-600 dark:text-red-400 hover:text-red-800 transition-colors'
-            title='Delete'
+            className="text-red-600 dark:text-red-400 hover:text-red-800 transition-colors"
+            title="Delete"
           >
             <Trash2 size={20} strokeWidth={1.25} />
           </button>
@@ -605,67 +606,67 @@ const InventoryItem = () => {
   );
 
   return (
-    <div className='h-full flex flex-col px-6 py-4 bg-gray-100 dark:bg-gray-900 transition-colors duration-300'>
+    <div className="h-full flex flex-col px-6 py-4 bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
       {/* HEADER SECTION */}
-      <div className='flex items-center justify-between mb-6 flex-wrap gap-4'>
-        <div className='flex items-center gap-3'>
-          <div className='bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg'>
-            <LayoutGrid
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+        <div className="flex items-center gap-3">
+          <div className="bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg">
+            <BoxIcon
               size={22}
-              className='text-indigo-600 dark:text-indigo-400'
+              className="text-indigo-600 dark:text-indigo-400"
             />
           </div>
-          <h1 className='text-xl font-semibold text-gray-800 dark:text-gray-100'>
+          <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
             Inventory Management
           </h1>
         </div>
 
-        <div className='flex items-center gap-4 flex-wrap'>
+        <div className="flex items-center gap-4 flex-wrap">
           <button
             onClick={() => setShowModal(true)}
-            className='bg-indigo-500 text-white px-4 py-1 rounded-lg hover:bg-indigo-600 transition flex items-center gap-2'
+            className="bg-indigo-500 text-white px-4 py-1 rounded-lg hover:bg-indigo-600 transition flex items-center gap-2"
           >
-            <span className='text-lg font-bold'>+</span> Add Item
+            <span className="text-lg font-bold">+</span> Add Item
           </button>
 
           {/* FILTER DROPDOWN */}
-          <div className='relative' ref={filterRef}>
+          <div className="relative" ref={filterRef}>
             <button
               onClick={() => setShowFilter(!showFilter)}
-              className='flex items-center gap-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition'
+              className="flex items-center gap-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition"
             >
               <Filter size={16} />
               {selectedLocation || selectedCategory || "Filter"}
             </button>
 
             {showFilter && (
-              <div className='absolute right-0 mt-3 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden'>
+              <div className="absolute right-0 mt-3 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
                 {!activeFilterType ? (
-                  <div className='p-2'>
+                  <div className="p-2">
                     <div
                       onClick={() => setActiveFilterType("location")}
-                      className='flex justify-between p-3 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition'
+                      className="flex justify-between p-3 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition"
                     >
-                      <span className='dark:text-gray-200'>Location</span>{" "}
+                      <span className="dark:text-gray-200">Location</span>{" "}
                       <ChevronRight size={16} />
                     </div>
                     <div
                       onClick={() => setActiveFilterType("category")}
-                      className='flex justify-between p-3 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition'
+                      className="flex justify-between p-3 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition"
                     >
-                      <span className='dark:text-gray-200'>Category</span>{" "}
+                      <span className="dark:text-gray-200">Category</span>{" "}
                       <ChevronRight size={16} />
                     </div>
                   </div>
                 ) : (
-                  <div className='p-3'>
+                  <div className="p-3">
                     <button
                       onClick={() => setActiveFilterType(null)}
-                      className='text-xs text-indigo-500 mb-2 font-semibold hover:underline'
+                      className="text-xs text-indigo-500 mb-2 font-semibold hover:underline"
                     >
                       ← Back to Filters
                     </button>
-                    <div className='max-h-60 overflow-y-auto space-y-1'>
+                    <div className="max-h-60 overflow-y-auto space-y-1">
                       {(activeFilterType === "location"
                         ? locationOptions
                         : categoryOptions
@@ -684,7 +685,7 @@ const InventoryItem = () => {
                             setShowFilter(false);
                             setActiveFilterType(null);
                           }}
-                          className='px-3 py-2 rounded-lg cursor-pointer text-sm text-gray-700 dark:text-gray-200 hover:bg-indigo-100 dark:hover:bg-indigo-600 transition'
+                          className="px-3 py-2 rounded-lg cursor-pointer text-sm text-gray-700 dark:text-gray-200 hover:bg-indigo-100 dark:hover:bg-indigo-600 transition"
                         >
                           {opt}
                         </div>
@@ -699,7 +700,7 @@ const InventoryItem = () => {
                     setSearchTerm("");
                     setShowFilter(false);
                   }}
-                  className='text-center text-red-500 text-xs py-3 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20 border-t border-gray-100 dark:border-gray-700'
+                  className="text-center text-red-500 text-xs py-3 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20 border-t border-gray-100 dark:border-gray-700"
                 >
                   Reset All Filters
                 </div>
@@ -708,38 +709,38 @@ const InventoryItem = () => {
           </div>
 
           {/* SEARCH */}
-          <div className='relative'>
+          <div className="relative">
             <input
-              type='text'
-              placeholder='Search item...'
+              type="text"
+              placeholder="Search item..."
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              className='bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-2 pr-10 text-sm focus:ring-2 focus:ring-indigo-500 transition'
+              className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-2 pr-10 text-sm focus:ring-2 focus:ring-indigo-500 transition"
             />
             <Search
               size={16}
-              className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400'
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
             />
           </div>
         </div>
       </div>
 
       {/* TABLE SECTION */}
-      <div className='flex-1 flex flex-col max-w-7xl mx-auto w-full'>
-        <div className='flex-1 overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 relative'>
+      <div className="flex-1 flex flex-col max-w-7xl mx-auto w-full">
+        <div className="flex-1 overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 relative">
           {loading ? (
-            <div className='absolute inset-0 flex items-center justify-center'>
-              <Loader2 className='animate-spin text-indigo-500' size={40} />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Loader2 className="animate-spin text-indigo-500" size={40} />
             </div>
           ) : (
             <InventoryTable columns={tableColumns} data={paginatedData} />
           )}
         </div>
 
-        <div className='mt-4'>
+        <div className="mt-4">
           <PaginationBar
             totalResults={filteredData.length}
             currentPage={currentPage}
@@ -783,7 +784,7 @@ const InventoryItem = () => {
       {/* DELETE CONFIRMATION MODAL */}
       <ConfirmModal
         isOpen={deleteModal.show}
-        title='Confirm Deletion'
+        title="Confirm Deletion"
         message={`Are you sure you want to permanently remove item ${deleteModal.itemCode}? This action cannot be undone.`}
         onConfirm={confirmDelete}
         onClose={() => setDeleteModal({ show: false, itemCode: null })}
@@ -791,9 +792,9 @@ const InventoryItem = () => {
 
       {/* SUCCESS TOAST POPUP */}
       {successToast.show && (
-        <div className='fixed top-5 right-5 z-110 flex items-center gap-3 bg-green-600 text-white px-6 py-3 rounded-lg shadow-2xl animate-in slide-in-from-right-full'>
+        <div className="fixed top-5 right-5 z-110 flex items-center gap-3 bg-green-600 text-white px-6 py-3 rounded-lg shadow-2xl animate-in slide-in-from-right-full">
           <CheckCircle2 size={20} />
-          <span className='font-medium'>{successToast.message}</span>
+          <span className="font-medium">{successToast.message}</span>
         </div>
       )}
     </div>
