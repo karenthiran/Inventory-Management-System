@@ -5,6 +5,7 @@ import {
   FileText,
   MapPin,
   Package,
+  PackagePlusIcon,
   Undo2,
   User,
   X,
@@ -94,7 +95,10 @@ const Return = () => {
 
         <div className="flex items-center gap-3 mb-10">
           <div className="bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg">
-            <Undo2 size={22} className="text-indigo-600 dark:text-indigo-400" />
+            <PackagePlusIcon
+              size={22}
+              className="text-indigo-600 dark:text-indigo-400"
+            />
           </div>
           <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
             Return Management

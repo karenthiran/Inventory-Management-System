@@ -4,6 +4,7 @@ import {
   FileText,
   Hourglass,
   LayoutGrid,
+  PackageMinus,
   Plus,
   Redo2,
   RotateCcw,
@@ -230,7 +231,10 @@ const Issue = () => {
     <div className="h-full flex flex-col px-6 py-4 bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
       <div className="flex items-center gap-3 mb-10">
         <div className="bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg">
-          <Redo2 size={22} className="text-indigo-600 dark:text-indigo-400" />
+          <PackageMinus
+            size={22}
+            className="text-indigo-600 dark:text-indigo-400"
+          />
         </div>
         <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
           Issue Management
