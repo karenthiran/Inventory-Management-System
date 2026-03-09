@@ -640,7 +640,7 @@ const IssueItemForm = ({
             <input
               type="text"
               name="userName"
-              placeholder="Enter Admin name"
+              placeholder="Enter admin name"
               value={formData.userName}
               onChange={handleChange}
               className={`rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] text-gray-900 dark:text-white ${
@@ -721,6 +721,7 @@ const IssueItemForm = ({
             <input
               type="text"
               name="issueTo"
+              placeholder="Enter receiver name"
               value={formData.issueTo}
               onChange={handleChange}
               className="rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
