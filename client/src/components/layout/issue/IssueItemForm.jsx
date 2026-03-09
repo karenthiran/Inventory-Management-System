@@ -12,6 +12,10 @@ const getTodayDate = () => {
   return `${year}-${month}-${day}`;
 };
 
+//create userefef for category and item code dropdowns to handle outside clicks
+const categoryRef = useRef(null);
+const itemCodeRef = useRef(null);
+
 const IssueItemForm = ({
   onClose,
   onIssueItem,
