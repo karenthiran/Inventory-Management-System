@@ -150,10 +150,7 @@ const Maintenance = () => {
     <div className="px-4 md:px-6 py-4 bg-gray-100 dark:bg-gray-900 min-h-screen">
       <div className="flex items-center gap-3 mb-10">
         <div className="bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg">
-          <LayoutGrid
-            size={22}
-            className="text-indigo-600 dark:text-indigo-400"
-          />
+          <Wrench size={22} className="text-indigo-600 dark:text-indigo-400" />
         </div>
         <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
           Maintenance Management
