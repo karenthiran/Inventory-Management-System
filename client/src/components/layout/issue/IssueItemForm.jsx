@@ -16,6 +16,25 @@ const getTodayDate = () => {
 const categoryRef = useRef(null);
 const itemCodeRef = useRef(null);
 
+//handle outside clicks to close dropdowns
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (categoryRef.current && !categoryRef.current.contains(event.target)) {
+      setShowCategoryDropdown(false);
+    }
+
+    if (itemCodeRef.current && !itemCodeRef.current.contains(event.target)) {
+      setShowItemCodeDropdown(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
+
 const IssueItemForm = ({
   onClose,
   onIssueItem,
