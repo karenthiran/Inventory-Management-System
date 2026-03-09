@@ -481,6 +481,9 @@ const IssueItemForm = ({
         quantity: updatedCodes.length.toString(),
       };
     });
+
+    // Close dropdown after selection
+    setShowItemCodeDropdown(false);
   };
 
   const handleChange = (e) => {
