@@ -235,7 +235,7 @@ const Issue = () => {
           />
         </div>
         <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
-          Overview
+          Issue Management
         </h1>
       </div>
 

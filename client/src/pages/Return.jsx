@@ -68,9 +68,9 @@ const Return = () => {
       header: "View",
       render: (row) => (
         <button
-          type='button'
+          type="button"
           onClick={() => setSelectedReturn(row)}
-          className='text-indigo-600 font-medium hover:underline cursor-pointer transition-all duration-200'
+          className="text-indigo-600 font-medium hover:underline cursor-pointer transition-all duration-200"
         >
           Detail
         </button>
@@ -87,28 +87,27 @@ const Return = () => {
   }, [currentPage, tableData]);
 
   return (
-    <div className='px-6 py-8 bg-gray-100 dark:bg-gray-900 min-h-screen transition-colors duration-300'>
-      <div className='max-w-7xl mx-auto'>
+    <div className="px-6 py-4 bg-gray-100 dark:bg-gray-900 min-h-screen transition-colors duration-300">
+      <div className="max-w-7xl mx-auto">
         {/* Top Bar Header */}
-        <div className='flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8'>
-          <div className='flex items-center gap-3 text-neutral-900 dark:text-gray-200'>
-            <div className='bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg'>
-              <FileText
-                size={24}
-                className='text-indigo-600 dark:text-indigo-400'
-              />
-            </div>
-            <span className='text-2xl font-bold tracking-tight text-gray-800 dark:text-white'>
-              Return Management
-            </span>
+
+        <div className="flex items-center gap-3 mb-10">
+          <div className="bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg">
+            <FileText
+              size={22}
+              className="text-indigo-600 dark:text-indigo-400"
+            />
           </div>
+          <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+            Return Management
+          </h1>
         </div>
 
         {/* Table Content */}
-        <div className='bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden'>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           {loading ? (
-            <div className='p-20 text-center text-gray-500 flex flex-col items-center gap-2'>
-              <div className='w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin'></div>
+            <div className="p-20 text-center text-gray-500 flex flex-col items-center gap-2">
+              <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
               <span>Fetching records...</span>
             </div>
           ) : (
@@ -118,7 +117,7 @@ const Return = () => {
 
         {/* Pagination bar */}
         {!loading && totalResults > 0 && (
-          <div className='mt-6'>
+          <div className="mt-6">
             <PaginationBar
               totalResults={totalResults}
               currentPage={currentPage}
@@ -130,66 +129,66 @@ const Return = () => {
 
         {/* --- ENLARGED POPUP MODAL --- */}
         {selectedReturn && (
-          <div className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md transition-opacity'>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md transition-opacity">
             {/* max-w-3xl for increased width */}
-            <div className='bg-white dark:bg-gray-800 w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden transform transition-all animate-in fade-in zoom-in duration-300'>
-              <div className='px-8 py-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50'>
-                <h3 className='text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-3'>
-                  <ClipboardList className='text-indigo-500' size={28} /> Full
+            <div className="bg-white dark:bg-gray-800 w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden transform transition-all animate-in fade-in zoom-in duration-300">
+              <div className="px-8 py-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
+                <h3 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
+                  <ClipboardList className="text-indigo-500" size={28} /> Full
                   Return Details
                 </h3>
                 <button
                   onClick={() => setSelectedReturn(null)}
-                  className='p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 transition-colors'
+                  className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 transition-colors"
                 >
                   <X size={24} />
                 </button>
               </div>
 
               {/* Increased padding (p-8) and gap (gap-10) */}
-              <div className='p-10 grid grid-cols-1 md:grid-cols-2 gap-10'>
-                <div className='space-y-6'>
-                  <h4 className='text-sm font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest border-b border-indigo-50 dark:border-indigo-900/30 pb-2'>
+              <div className="p-10 grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div className="space-y-6">
+                  <h4 className="text-sm font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest border-b border-indigo-50 dark:border-indigo-900/30 pb-2">
                     Issuance Info
                   </h4>
                   <DetailItem
                     icon={<Package size={20} />}
-                    label='Item Category'
+                    label="Item Category"
                     value={selectedReturn.issuedItem?.category?.categoryName}
                   />
                   <DetailItem
                     icon={<MapPin size={20} />}
-                    label='Issued to'
+                    label="Issued to"
                     value={selectedReturn.issuedItem?.issuedTo}
                   />
                   <DetailItem
                     icon={<User size={20} />}
-                    label='obtained by'
+                    label="obtained by"
                     value={selectedReturn.issuedItem?.username}
                   />
                   <DetailItem
                     icon={<ClipboardList size={20} />}
-                    label='Inventory Codes'
+                    label="Inventory Codes"
                     value={selectedReturn.issuedItem?.itemCodes?.join(", ")}
                   />
                 </div>
 
-                <div className='space-y-6'>
-                  <h4 className='text-sm font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest border-b border-indigo-50 dark:border-indigo-900/30 pb-2'>
+                <div className="space-y-6">
+                  <h4 className="text-sm font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest border-b border-indigo-50 dark:border-indigo-900/30 pb-2">
                     Return Status
                   </h4>
                   <DetailItem
                     icon={<Calendar size={20} />}
-                    label='Date Processed'
+                    label="Date Processed"
                     value={selectedReturn.returnDate}
                   />
                   <DetailItem
                     icon={<User size={20} />}
-                    label='Returned By'
+                    label="Returned By"
                     value={selectedReturn.returnedBy}
                   />
-                  <div className='flex flex-col'>
-                    <span className='text-xs text-gray-400 uppercase font-bold tracking-tighter'>
+                  <div className="flex flex-col">
+                    <span className="text-xs text-gray-400 uppercase font-bold tracking-tighter">
                       Condition Status
                     </span>
                     <span
@@ -204,7 +203,7 @@ const Return = () => {
                   </div>
                   <DetailItem
                     icon={<FileText size={20} />}
-                    label='Admin Remarks'
+                    label="Admin Remarks"
                     value={
                       selectedReturn.remarks || "No specific remarks provided."
                     }
@@ -212,10 +211,10 @@ const Return = () => {
                 </div>
               </div>
 
-              <div className='px-8 py-6 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-700 text-right'>
+              <div className="px-8 py-6 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-700 text-right">
                 <button
                   onClick={() => setSelectedReturn(null)}
-                  className='px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-indigo-200 dark:shadow-none active:scale-95'
+                  className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-indigo-200 dark:shadow-none active:scale-95"
                 >
                   Close
                 </button>
@@ -229,15 +228,15 @@ const Return = () => {
 };
 
 const DetailItem = ({ icon, label, value }) => (
-  <div className='flex items-start gap-4'>
-    <div className='text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 p-2 rounded-lg'>
+  <div className="flex items-start gap-4">
+    <div className="text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 p-2 rounded-lg">
       {icon}
     </div>
     <div>
-      <p className='text-xs text-gray-400 uppercase font-bold tracking-widest'>
+      <p className="text-xs text-gray-400 uppercase font-bold tracking-widest">
         {label}
       </p>
-      <p className='text-base font-semibold text-gray-900 dark:text-gray-100'>
+      <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
         {value || "N/A"}
       </p>
     </div>
