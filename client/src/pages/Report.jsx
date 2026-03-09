@@ -193,17 +193,29 @@ const Report = () => {
   );
 
   return (
-    <div className='h-full flex flex-col px-6 py-4 bg-gray-100 dark:bg-gray-900'>
-      <div className='flex justify-between items-center mb-6'>
-        <div className='flex items-center gap-2'>
+    <div className="h-full flex flex-col px-6 py-4 bg-gray-100 dark:bg-gray-900">
+      <div className="flex justify-between items-center mb-6">
+        {/* <div className='flex items-center gap-2'>
           <LayoutGrid size={24} className='text-indigo-600' />
           <h1 className='text-2xl font-bold dark:text-white'>System Reports</h1>
+        </div> */}
+
+        <div className="flex items-center gap-3 mb-10">
+          <div className="bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg">
+            <FileText
+              size={22}
+              className="text-indigo-600 dark:text-indigo-400"
+            />
+          </div>
+          <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+            Report Management
+          </h1>
         </div>
-        <div className='flex gap-3'>
+        <div className="flex gap-3">
           <button
             onClick={generatePDF}
             disabled={filteredData.length === 0}
-            className='flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm disabled:opacity-50'
+            className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm disabled:opacity-50"
           >
             <FileText size={16} /> Export Full PDF
           </button>
@@ -211,34 +223,34 @@ const Report = () => {
       </div>
 
       {/* FILTERS */}
-      <div className='mb-8 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm flex flex-wrap gap-6 items-end'>
-        <div className='flex flex-col gap-2'>
-          <label className='text-[10px] font-bold text-gray-400 uppercase ml-1'>
+      <div className="mb-8 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm flex flex-wrap gap-6 items-end">
+        <div className="flex flex-col gap-2">
+          <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">
             Report Type
           </label>
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className='p-2.5 rounded-xl border dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500 w-52'
+            className="p-2.5 rounded-xl border dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500 w-52"
           >
-            <option value=''>Select Report Type</option>
-            <option value='Inventory'>Inventory List</option>
-            <option value='Issued'>Issued Records</option>
-            <option value='Return'>Return Records</option>
-            <option value='Maintenance'>Maintenance Tasks</option>
+            <option value="">Select Report Type</option>
+            <option value="Inventory">Inventory List</option>
+            <option value="Issued">Issued Records</option>
+            <option value="Return">Return Records</option>
+            <option value="Maintenance">Maintenance Tasks</option>
           </select>
         </div>
 
-        <div className='flex flex-col gap-2'>
-          <label className='text-[10px] font-bold text-gray-400 uppercase ml-1'>
+        <div className="flex flex-col gap-2">
+          <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">
             Location
           </label>
           <select
             value={locationFilter}
             onChange={(e) => setLocationFilter(e.target.value)}
-            className='p-2.5 rounded-xl border dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm outline-none w-40'
+            className="p-2.5 rounded-xl border dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm outline-none w-40"
           >
-            <option value=''>All Locations</option>
+            <option value="">All Locations</option>
             {locations.map((l) => (
               <option key={l.locationId} value={l.locationName}>
                 {l.locationName}
@@ -247,29 +259,29 @@ const Report = () => {
           </select>
         </div>
 
-        <div className='flex flex-col gap-2'>
-          <label className='text-[10px] font-bold text-gray-400 uppercase ml-1'>
+        <div className="flex flex-col gap-2">
+          <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">
             Date Range
           </label>
-          <div className='flex items-center gap-2'>
+          <div className="flex items-center gap-2">
             <input
-              type='date'
+              type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className='p-2 rounded-xl border dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm'
+              className="p-2 rounded-xl border dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm"
             />
-            <span className='text-gray-400'>-</span>
+            <span className="text-gray-400">-</span>
             <input
-              type='date'
+              type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className='p-2 rounded-xl border dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm'
+              className="p-2 rounded-xl border dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm"
             />
           </div>
         </div>
 
         {/* This div pushes everything after it to the right */}
-        <div className='ml-auto'>
+        <div className="ml-auto">
           <button
             onClick={() => {
               setTypeFilter("");
@@ -278,7 +290,7 @@ const Report = () => {
               setToDate("");
               setTableData([]);
             }}
-            className='flex items-center gap-2 px-6 py-2.5 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-xl border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition shadow-sm text-sm font-medium'
+            className="flex items-center gap-2 px-6 py-2.5 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-xl border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition shadow-sm text-sm font-medium"
           >
             <RotateCcw size={16} /> Reset Filters
           </button>
@@ -286,37 +298,37 @@ const Report = () => {
       </div>
 
       {/* DYNAMIC TABLE */}
-      <div className='bg-white dark:bg-gray-800 rounded-2xl shadow-sm border overflow-hidden'>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border overflow-hidden">
         {loading ? (
-          <div className='p-20 text-center'>
-            <Loader2 className='animate-spin mx-auto text-indigo-600' />
-            <p className='mt-2'>Fetching Database Records...</p>
+          <div className="p-20 text-center">
+            <Loader2 className="animate-spin mx-auto text-indigo-600" />
+            <p className="mt-2">Fetching Database Records...</p>
           </div>
         ) : filteredData.length > 0 ? (
-          <div className='overflow-x-auto'>
-            <table className='w-full text-left'>
-              <thead className='bg-gray-50 dark:bg-gray-700'>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
                   {getColumns().map((col, i) => (
                     <th
                       key={i}
-                      className='p-4 text-[11px] font-bold text-gray-500 uppercase'
+                      className="p-4 text-[11px] font-bold text-gray-500 uppercase"
                     >
                       {col}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className='divide-y dark:divide-gray-700'>
+              <tbody className="divide-y dark:divide-gray-700">
                 {mapDataToRows(paginatedData).map((row, rowIndex) => (
                   <tr
                     key={rowIndex}
-                    className='hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors'
+                    className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                   >
                     {row.map((cell, cellIndex) => (
                       <td
                         key={cellIndex}
-                        className='p-4 text-sm dark:text-gray-300'
+                        className="p-4 text-sm dark:text-gray-300"
                       >
                         {cell}
                       </td>
@@ -327,7 +339,7 @@ const Report = () => {
             </table>
           </div>
         ) : (
-          <div className='p-20 text-center text-gray-500'>
+          <div className="p-20 text-center text-gray-500">
             No records found for this model.
           </div>
         )}
