@@ -82,9 +82,8 @@ public class IssuedItemController {
      * 6. Update the expected return date for an active issue.
      */
     @PutMapping("/{id}/update-date")
-    public ResponseEntity<?> updateReturnDate(
-            @PathVariable Long id,
-            @RequestParam LocalDate newDate) {
+    public ResponseEntity<?> updateReturnDate(@PathVariable Long id, @RequestParam LocalDate newDate) {
+
         try {
             IssuedItem updatedIssue = issueService.updateExpectedReturnDate(id, newDate);
             return ResponseEntity.ok(updatedIssue);

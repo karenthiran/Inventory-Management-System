@@ -2,6 +2,7 @@ import { Calendar, X } from "lucide-react";
 import { useState } from "react";
 
 const EditDueDateModal = ({ data, onClose, onUpdate, loading }) => {
+  const today = new Date().toISOString().split("T")[0];
   const [newDate, setNewDate] = useState(data.dueDate || "");
 
   const handleSubmit = (e) => {
@@ -28,6 +29,7 @@ const EditDueDateModal = ({ data, onClose, onUpdate, loading }) => {
               <Calendar size={18} className='text-indigo-400' />
               <input
                 type='date'
+                min={today}
                 value={newDate}
                 onChange={(e) => setNewDate(e.target.value)}
                 className='bg-transparent text-gray-200 outline-none w-full'
