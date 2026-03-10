@@ -62,5 +62,5 @@ public class IssuedItem {
 
     // In IssuedItem.java
     @Column(name = "is_returned", nullable = false)
-    private boolean isReturned = false; // Default to false for new issues
+    private Boolean isReturned = false; // Default to false for new issues
 }

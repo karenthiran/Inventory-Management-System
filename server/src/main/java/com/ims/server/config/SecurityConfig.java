@@ -18,17 +18,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // 1. Disable CSRF (Required for testing POST/PUT/DELETE in Postman)
+                // 1. Enable CORS and Disable CSRF
+                .cors(cors -> cors.configure(http)) // Add this line
                 .csrf(csrf -> csrf.disable())
 
                 // 2. Configure endpoint permissions
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/").permitAll()
-                        .requestMatchers("/api/users/**").permitAll() // Allows login/register
+                        .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/inventory/**").permitAll()
                         .requestMatchers("/api/categories/**").permitAll()
                         .requestMatchers("/api/locations/**").permitAll()
-                        .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/itemtypes/**").permitAll()
                         .requestMatchers("/api/maintenance/**").permitAll()
                         .requestMatchers("/api/issues/**").permitAll()
