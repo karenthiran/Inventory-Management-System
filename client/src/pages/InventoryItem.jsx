@@ -538,6 +538,30 @@ const InventoryItem = () => {
       ),
     },
     {
+      header: "Status",
+      accessor: "status",
+      render: (row) => {
+        const status = row.status || "Available"; // Default fallback
+        const statusStyles = {
+          Available: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
+          Lent: "text-blue-500 bg-blue-500/10 border-blue-500/20",
+          Maintenance: "text-amber-500 bg-amber-500/10 border-amber-500/20",
+          Damaged: "text-red-500 bg-red-500/10 border-red-500/20",
+        };
+
+        return (
+          <span
+            className={`px-2 py-1 rounded text-[10px] font-bold border ${
+              statusStyles[status] ||
+              "text-gray-500 bg-gray-500/10 border-gray-500/20"
+            }`}
+          >
+            {status.toUpperCase()}
+          </span>
+        );
+      },
+    },
+    {
       header: "Actions",
       render: (row) => (
         <div className='flex items-center gap-3'>
