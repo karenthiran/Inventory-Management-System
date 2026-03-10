@@ -10,6 +10,7 @@ import {
   SquarePen,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import DashboardCard from "../components/common/DashboardCard";
 import PaginationBar from "../components/common/PaginationBar";
 import EditDueDateModal from "../components/layout/issue/EditDueDateModal";
@@ -46,25 +47,36 @@ const Issue = () => {
       const formattedData = [...data].reverse().map((item, index) => ({
         no: index + 1,
         dbId: item.id,
-        // The backend returns the User object in 'issuedTo'
-        user: item.issuedTo?.username || "N/A",
-        userEmail: item.issuedTo?.email, // Used for the update payload later
-        // The backend now stores itemName directly as a String
+
+        // Who got it
+        user: item.issuedTo?.username || "N/A", // Keep this as .username if it exists in GET
+        userEmail: item.issuedTo?.email,
+
+        // FIX: Map issuedBy as a direct string based on your Postman JSON
+        issuedBy: item.issuedBy || "System Admin",
+
+        // Item details
         itemName: item.itemName || "N/A",
-        // Mapping the Location object
+        itemCodes: item.itemCodes || [],
+        quantity: item.quantity || 1, // Fallback to 1 if not provided
+
+        // Location (Assuming GET returns locationName)
         location: item.location?.locationName || "N/A",
         locationId: item.location?.locationId,
+
+        // Dates
         issueDate: item.issueDate,
-        dueDate: item.expectedReturnDate, // backend uses expectedReturnDate
-        quantity: item.quantity,
-        notes: item.notes,
-        isReturned: item.returned, // boolean from your new column
-        itemCodes: item.itemCodes || [],
+        dueDate: item.expectedReturnDate,
+
+        // Status & Notes
+        notes: item.notes || "",
+        isReturned: item.returned,
         categoryCode: item.itemCodes?.join(", ") || "N/A",
       }));
       setTableData(formattedData);
     } catch (error) {
       console.error("Fetch failed:", error);
+      toast.error("Could not load issued items.");
     } finally {
       setLoading(false);
     }
@@ -93,12 +105,13 @@ const Issue = () => {
       if (response.ok) {
         await fetchIssuedItems();
         setShowEditModal(false);
+        toast.success("Due date updated successfully!");
       } else {
         const errorMsg = await response.text();
-        alert("Error: " + errorMsg);
+        toast.error(`Update failed: ${errorMsg}`);
       }
     } catch (error) {
-      console.error("Update error:", error);
+      toast.error("A network error occurred.");
     } finally {
       setLoading(false);
     }
@@ -222,6 +235,7 @@ const Issue = () => {
 
   return (
     <div className='h-full flex flex-col px-6 py-4 bg-gray-100 dark:bg-gray-900 transition-colors duration-300'>
+      <Toaster position='top-right' reverseOrder={false} />
       <div className='flex items-center gap-3 mb-10'>
         <div className='bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg'>
           <PackageMinus
