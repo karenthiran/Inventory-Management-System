@@ -70,7 +70,7 @@ const Issue = () => {
 
         // Status & Notes
         notes: item.notes || "",
-        isReturned: item.returned,
+        isReturned: item.isReturned,
         categoryCode: item.itemCodes?.join(", ") || "N/A",
       }));
       setTableData(formattedData);
@@ -186,32 +186,37 @@ const Issue = () => {
       header: "Action",
       render: (row) => (
         <div className='flex justify-center gap-2 items-center'>
-          {!row.isReturned && (
+          {/* 1. Check if the item is NOT returned */}
+          {!row.isReturned ? (
             <>
+              {/* Show Edit Button */}
               <button
                 onClick={() => {
                   setEditingIssue(row);
                   setShowEditModal(true);
                 }}
-                className='text-red-700 p-1 hover:bg-red-100 rounded'
+                className='text-red-700 p-1 hover:bg-red-100 rounded transition-colors'
+                title='Edit Due Date'
               >
                 <SquarePen size={16} />
               </button>
 
+              {/* Show Return Button */}
               <button
                 onClick={() => {
                   setReturningIssue(row);
                   setShowReturnModal(true);
                 }}
-                className='text-indigo-600 p-1 hover:bg-gray-200 rounded'
+                className='text-indigo-600 p-1 hover:bg-gray-200 rounded transition-colors'
+                title='Process Return'
               >
                 <RotateCcw size={16} />
               </button>
             </>
-          )}
-          {row.isReturned && (
-            <span className='text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20'>
-              RETURNED
+          ) : (
+            /* 2. If it IS returned, show this Badge instead */
+            <span className='inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 uppercase tracking-wider'>
+              Returned
             </span>
           )}
         </div>

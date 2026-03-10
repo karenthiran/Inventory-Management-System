@@ -1,12 +1,13 @@
 import axios from "axios";
 import {
+  AlertCircle,
   Calendar,
+  CheckCircle2,
   ClipboardList,
   FileText,
   MapPin,
   Package,
   PackagePlusIcon,
-  Undo2,
   User,
   X,
 } from "lucide-react";
@@ -21,7 +22,7 @@ const Return = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedReturn, setSelectedReturn] = useState(null);
-  const pageSize = 5;
+  const pageSize = 8; // Adjusted for better screen utilization
 
   const fetchReturns = async () => {
     setLoading(true);
@@ -47,16 +48,17 @@ const Return = () => {
       render: (_, index) => (currentPage - 1) * pageSize + index + 1,
     },
     {
-      header: "Returned By", // RE-ADDED COLUMN
+      header: "Returned By",
       accessor: "returnedBy",
     },
     {
       header: "Item Name",
-      render: (row) => row.issuedItem?.category?.categoryName || "N/A",
+      // Maps to IssuedItem -> InventoryItem/Category logic from your backend
+      render: (row) => row.issuedItem?.itemName || "N/A",
     },
     {
-      header: "Issued To",
-      render: (row) => row.issuedItem?.issuedTo || "N/A",
+      header: "Original Recipient",
+      render: (row) => row.issuedItem?.issuedTo?.email || "N/A",
     },
     {
       header: "Return Date",
@@ -64,15 +66,25 @@ const Return = () => {
     },
     {
       header: "Condition",
-      accessor: "conditionStatus",
+      render: (row) => (
+        <span
+          className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+            row.conditionStatus === "Good"
+              ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
+              : "bg-amber-100 text-amber-700 border border-amber-200"
+          }`}
+        >
+          {row.conditionStatus}
+        </span>
+      ),
     },
     {
       header: "View",
       render: (row) => (
         <button
-          type="button"
+          type='button'
           onClick={() => setSelectedReturn(row)}
-          className="text-indigo-600 font-medium hover:underline cursor-pointer transition-all duration-200"
+          className='text-indigo-600 font-bold hover:text-indigo-800 cursor-pointer transition-colors'
         >
           Detail
         </button>
@@ -89,37 +101,47 @@ const Return = () => {
   }, [currentPage, tableData]);
 
   return (
-    <div className="px-6 py-4 bg-gray-100 dark:bg-gray-900 min-h-screen transition-colors duration-300">
-      <div className="max-w-7xl mx-auto">
-        {/* Top Bar Header */}
-
-        <div className="flex items-center gap-3 mb-10">
-          <div className="bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg">
-            <PackagePlusIcon
-              size={22}
-              className="text-indigo-600 dark:text-indigo-400"
-            />
+    <div className='px-6 py-4 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300'>
+      <div className='max-w-7xl mx-auto'>
+        {/* Header Section */}
+        <div className='flex items-center justify-between mb-8'>
+          <div className='flex items-center gap-3'>
+            <div className='bg-indigo-600 p-2 rounded-xl shadow-lg shadow-indigo-200 dark:shadow-none'>
+              <PackagePlusIcon size={24} className='text-white' />
+            </div>
+            <div>
+              <h1 className='text-2xl font-bold text-gray-800 dark:text-gray-100 uppercase tracking-tight'>
+                Return Management
+              </h1>
+              <p className='text-sm text-gray-500'>
+                History of items returned to inventory
+              </p>
+            </div>
           </div>
-          <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
-            Return Management
-          </h1>
         </div>
 
-        {/* Table Content */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        {/* Table Container */}
+        <div className='bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden'>
           {loading ? (
-            <div className="p-20 text-center text-gray-500 flex flex-col items-center gap-2">
-              <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-              <span>Fetching records...</span>
+            <div className='p-20 text-center flex flex-col items-center gap-4'>
+              <div className='w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin'></div>
+              <span className='text-gray-500 font-medium'>
+                Loading history...
+              </span>
+            </div>
+          ) : totalResults === 0 ? (
+            <div className='p-20 text-center text-gray-400'>
+              <AlertCircle size={48} className='mx-auto mb-4 opacity-20' />
+              <p>No return records found.</p>
             </div>
           ) : (
             <ReturnTable columns={tableColumns} data={paginatedData} />
           )}
         </div>
 
-        {/* Pagination bar */}
+        {/* Pagination */}
         {!loading && totalResults > 0 && (
-          <div className="mt-6">
+          <div className='mt-6 flex justify-end'>
             <PaginationBar
               totalResults={totalResults}
               currentPage={currentPage}
@@ -129,96 +151,106 @@ const Return = () => {
           </div>
         )}
 
-        {/* --- ENLARGED POPUP MODAL --- */}
+        {/* Detail Modal */}
         {selectedReturn && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md transition-opacity">
-            {/* max-w-3xl for increased width */}
-            <div className="bg-white dark:bg-gray-800 w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden transform transition-all animate-in fade-in zoom-in duration-300">
-              <div className="px-8 py-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
-                <h3 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
-                  <ClipboardList className="text-indigo-500" size={28} /> Full
-                  Return Details
-                </h3>
+          <div className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm animate-in fade-in duration-200'>
+            <div className='bg-white dark:bg-gray-800 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden border dark:border-gray-700'>
+              {/* Modal Header */}
+              <div className='px-8 py-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50'>
+                <div className='flex items-center gap-3'>
+                  <CheckCircle2 className='text-emerald-500' size={28} />
+                  <h3 className='text-xl font-bold text-gray-800 dark:text-white'>
+                    Return Receipt Details
+                  </h3>
+                </div>
                 <button
                   onClick={() => setSelectedReturn(null)}
-                  className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 transition-colors"
+                  className='p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-400 transition-colors'
                 >
                   <X size={24} />
                 </button>
               </div>
 
-              {/* Increased padding (p-8) and gap (gap-10) */}
-              <div className="p-10 grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div className="space-y-6">
-                  <h4 className="text-sm font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest border-b border-indigo-50 dark:border-indigo-900/30 pb-2">
-                    Issuance Info
+              {/* Modal Body */}
+              <div className='p-8 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8'>
+                {/* Left Side: Issuance Context */}
+                <div className='space-y-6'>
+                  <h4 className='text-[11px] font-black text-indigo-500 uppercase tracking-[0.2em]'>
+                    Original Issuance
                   </h4>
                   <DetailItem
-                    icon={<Package size={20} />}
-                    label="Item Category"
-                    value={selectedReturn.issuedItem?.category?.categoryName}
+                    icon={<Package size={18} />}
+                    label='Item Name'
+                    value={selectedReturn.issuedItem?.itemName}
                   />
                   <DetailItem
-                    icon={<MapPin size={20} />}
-                    label="Issued to"
-                    value={selectedReturn.issuedItem?.issuedTo}
+                    icon={<MapPin size={18} />}
+                    label='Issued To'
+                    value={selectedReturn.issuedItem?.issuedTo?.email}
                   />
                   <DetailItem
-                    icon={<User size={20} />}
-                    label="obtained by"
-                    value={selectedReturn.issuedItem?.username}
-                  />
-                  <DetailItem
-                    icon={<ClipboardList size={20} />}
-                    label="Inventory Codes"
-                    value={selectedReturn.issuedItem?.itemCodes?.join(", ")}
+                    icon={<ClipboardList size={18} />}
+                    label='Asset Codes'
+                    value={
+                      <div className='flex flex-wrap gap-1 mt-1'>
+                        {selectedReturn.issuedItem?.itemCodes?.map((code) => (
+                          <span
+                            key={code}
+                            className='px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-[10px] border border-gray-200 dark:border-gray-600 font-mono'
+                          >
+                            {code}
+                          </span>
+                        ))}
+                      </div>
+                    }
                   />
                 </div>
 
-                <div className="space-y-6">
-                  <h4 className="text-sm font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest border-b border-indigo-50 dark:border-indigo-900/30 pb-2">
-                    Return Status
+                {/* Right Side: Return Context */}
+                <div className='space-y-6'>
+                  <h4 className='text-[11px] font-black text-emerald-500 uppercase tracking-[0.2em]'>
+                    Return Processing
                   </h4>
                   <DetailItem
-                    icon={<Calendar size={20} />}
-                    label="Date Processed"
+                    icon={<Calendar size={18} />}
+                    label='Date Returned'
                     value={selectedReturn.returnDate}
                   />
                   <DetailItem
-                    icon={<User size={20} />}
-                    label="Returned By"
+                    icon={<User size={18} />}
+                    label='Processed By'
                     value={selectedReturn.returnedBy}
                   />
-                  <div className="flex flex-col">
-                    <span className="text-xs text-gray-400 uppercase font-bold tracking-tighter">
-                      Condition Status
-                    </span>
-                    <span
-                      className={`mt-2 px-4 py-1.5 rounded-full text-sm font-bold w-fit ${
-                        selectedReturn.conditionStatus === "Good"
-                          ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                          : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                      }`}
-                    >
-                      {selectedReturn.conditionStatus}
-                    </span>
-                  </div>
                   <DetailItem
-                    icon={<FileText size={20} />}
-                    label="Admin Remarks"
+                    icon={<FileText size={18} />}
+                    label='Condition & Remarks'
                     value={
-                      selectedReturn.remarks || "No specific remarks provided."
+                      <div>
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded border mb-2 inline-block ${
+                            selectedReturn.conditionStatus === "Good"
+                              ? "bg-green-50 text-green-600 border-green-200"
+                              : "bg-red-50 text-red-600 border-red-200"
+                          }`}
+                        >
+                          STATUS: {selectedReturn.conditionStatus}
+                        </span>
+                        <p className='text-sm text-gray-600 dark:text-gray-400 italic'>
+                          "{selectedReturn.remarks || "No remarks provided"}"
+                        </p>
+                      </div>
                     }
                   />
                 </div>
               </div>
 
-              <div className="px-8 py-6 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-700 text-right">
+              {/* Modal Footer */}
+              <div className='px-8 py-5 bg-gray-50 dark:bg-gray-800/80 border-t border-gray-100 dark:border-gray-700 text-right'>
                 <button
                   onClick={() => setSelectedReturn(null)}
-                  className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-indigo-200 dark:shadow-none active:scale-95"
+                  className='px-6 py-2.5 bg-gray-800 hover:bg-black text-white rounded-xl text-sm font-bold transition-all active:scale-95'
                 >
-                  Close
+                  Close Receipt
                 </button>
               </div>
             </div>
@@ -230,17 +262,15 @@ const Return = () => {
 };
 
 const DetailItem = ({ icon, label, value }) => (
-  <div className="flex items-start gap-4">
-    <div className="text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 p-2 rounded-lg">
-      {icon}
-    </div>
+  <div className='flex items-start gap-3'>
+    <div className='text-indigo-500 mt-1'>{icon}</div>
     <div>
-      <p className="text-xs text-gray-400 uppercase font-bold tracking-widest">
+      <p className='text-[10px] text-gray-400 uppercase font-black tracking-wider leading-none mb-1'>
         {label}
       </p>
-      <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
+      <div className='text-sm font-semibold text-gray-800 dark:text-gray-200'>
         {value || "N/A"}
-      </p>
+      </div>
     </div>
   </div>
 );

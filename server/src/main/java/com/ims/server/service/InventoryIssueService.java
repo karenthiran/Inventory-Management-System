@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.ims.server.model.CurrentIssuedInventory;
 import com.ims.server.model.IssuedItem;
@@ -19,6 +18,7 @@ import com.ims.server.repository.LocationRepository;
 import com.ims.server.repository.ReturnedItemRepository;
 import com.ims.server.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -42,7 +42,6 @@ public class InventoryIssueService {
 
     @Transactional
     public IssuedItem issueItems(IssuedItem request) {
-        // 1. Safe extraction of Email
         if (request.getIssuedTo() == null || request.getIssuedTo().getEmail() == null) {
             throw new RuntimeException("Validation Error: Recipient email is required.");
         }
@@ -74,7 +73,6 @@ public class InventoryIssueService {
             currentRepo.save(new CurrentIssuedInventory(code));
 
             inventoryItemRepo.findById(code).ifPresent(item -> {
-                // Ensure we don't go below zero
                 if (item.getQuantity() > 0) {
                     item.setQuantity(item.getQuantity() - 1);
                     inventoryItemRepo.save(item);
@@ -84,8 +82,6 @@ public class InventoryIssueService {
 
         request.setIssueDate(LocalDate.now());
         request.setQuantity(requestedCodes.size());
-
-        // Ensure isReturned is explicitly false on creation
         request.setIsReturned(false);
 
         return issueRepo.save(request);
@@ -101,44 +97,57 @@ public class InventoryIssueService {
     }
 
     @Transactional
+    public IssuedItem updateExpectedReturnDate(Long id, LocalDate newDate) {
+        IssuedItem existingIssue = getIssueById(id);
+
+        if (Boolean.TRUE.equals(existingIssue.getIsReturned())) {
+            throw new RuntimeException("Cannot edit dates for a record that has already been returned.");
+        }
+
+        existingIssue.setExpectedReturnDate(newDate);
+        return issueRepo.save(existingIssue);
+    }
+
+    @Transactional
     public void processReturn(ReturnedItem returnRequest) {
+        // 1. Validation
         if (returnRequest.getIssuedItem() == null || returnRequest.getIssuedItem().getId() == null) {
             throw new RuntimeException("Validation Error: Issued Item ID is missing.");
         }
 
+        // 2. Retrieve existing Issue
         Long issueId = returnRequest.getIssuedItem().getId();
         IssuedItem persistentIssue = getIssueById(issueId);
 
-        Set<String> codesToReturn = persistentIssue.getItemCodes();
-        for (String code : codesToReturn) {
+        if (Boolean.TRUE.equals(persistentIssue.getIsReturned())) {
+            throw new RuntimeException("This item has already been marked as returned.");
+        }
+
+        // 3. Update Inventory Stock & Remove from Current (Blacklist)
+        // We capture the codes BEFORE clearing them from the record
+        Set<String> codesToProcess = persistentIssue.getItemCodes();
+
+        for (String code : codesToProcess) {
+            // Increment inventory quantity
             inventoryItemRepo.findById(code).ifPresent(item -> {
                 item.setQuantity(item.getQuantity() + 1);
                 inventoryItemRepo.save(item);
             });
         }
 
-        currentRepo.deleteAllById(codesToReturn);
+        // Remove from the 'CurrentIssuedInventory' table so codes can be reused
+        currentRepo.deleteAllById(codesToProcess);
 
-        // Mark the record as returned
+        // 4. DELETE codes from the IssuedItem's collection table
+        // This wipes the entries in the 'issued_item_codes' table for this ID
+        persistentIssue.getItemCodes().clear();
+
+        // 5. Update Status
         persistentIssue.setIsReturned(true);
         issueRepo.save(persistentIssue);
 
+        // 6. Save Return History
         returnRequest.setIssuedItem(persistentIssue);
         returnedItemRepo.save(returnRequest);
-    }
-
-    @Transactional
-    public IssuedItem updateExpectedReturnDate(Long id, LocalDate newDate) {
-        IssuedItem existingIssue = issueRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Issue record not found with ID: " + id));
-
-        // FIXED: Use getIsReturned() and add null check for Boolean object
-        if (Boolean.TRUE.equals(existingIssue.getIsReturned())) {
-            throw new RuntimeException("Cannot edit dates for a record that has already been returned.");
-        }
-
-        existingIssue.setExpectedReturnDate(newDate);
-
-        return issueRepo.save(existingIssue);
     }
 }

@@ -3,6 +3,8 @@ package com.ims.server.model;
 import java.time.LocalDate;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -63,4 +65,10 @@ public class IssuedItem {
     // In IssuedItem.java
     @Column(name = "is_returned", nullable = false)
     private Boolean isReturned = false; // Default to false for new issues
+
+    // Add this annotation to ensure the JSON matches your Frontend mapping
+    @JsonProperty("isReturned")
+    public Boolean getIsReturned() {
+        return isReturned;
+    }
 }

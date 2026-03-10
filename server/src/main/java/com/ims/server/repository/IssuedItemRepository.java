@@ -34,4 +34,10 @@ public interface IssuedItemRepository extends JpaRepository<IssuedItem, Long> {
      */
     @Query("SELECT i FROM IssuedItem i JOIN i.itemCodes c WHERE c = :itemCode")
     List<IssuedItem> findIssuesBySpecificCode(@Param("itemCode") String itemCode);
+
+    // Fetches only items that are still out with users
+    List<IssuedItem> findByIsReturnedFalse();
+
+    // Fetches everything (what you are using now)
+    List<IssuedItem> findAll();
 }

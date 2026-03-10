@@ -29,7 +29,7 @@ public class CurrentStatusController {
         return ResponseEntity.ok(currentRepo.findAll());
     }
 
-    // 3. DELETE multiple items at once
+    // // 3. DELETE multiple items at once
     // @DeleteMapping("/return-bulk")
     // public ResponseEntity<?> returnMultipleItems(@RequestBody List<String>
     // itemCodes) {
