@@ -123,31 +123,28 @@ public class InventoryIssueService {
             throw new RuntimeException("This item has already been marked as returned.");
         }
 
-        // 3. Update Inventory Stock & Remove from Current (Blacklist)
-        // We capture the codes BEFORE clearing them from the record
+        // 3. Update Inventory Stock & Remove from Current (the blacklist table)
         Set<String> codesToProcess = persistentIssue.getItemCodes();
 
         for (String code : codesToProcess) {
-            // Increment inventory quantity
+            // Increment the main inventory quantity
             inventoryItemRepo.findById(code).ifPresent(item -> {
                 item.setQuantity(item.getQuantity() + 1);
                 inventoryItemRepo.save(item);
             });
         }
 
-        // Remove from the 'CurrentIssuedInventory' table so codes can be reused
+        // This makes the codes "Available" again for the next user to borrow
         currentRepo.deleteAllById(codesToProcess);
 
-        // 4. DELETE codes from the IssuedItem's collection table
-        // This wipes the entries in the 'issued_item_codes' table for this ID
-        persistentIssue.getItemCodes().clear();
-
-        // 5. Update Status
+        // 4. Update Status (KEEP THE CODES IN THE COLLECTION FOR HISTORY)
         persistentIssue.setIsReturned(true);
-        issueRepo.save(persistentIssue);
 
-        // 6. Save Return History
-        returnRequest.setIssuedItem(persistentIssue);
+        // We save the issue record without clearing its codes
+        IssuedItem savedIssue = issueRepo.save(persistentIssue);
+
+        // 5. Save Return History linked to the updated issue
+        returnRequest.setIssuedItem(savedIssue);
         returnedItemRepo.save(returnRequest);
     }
 }
