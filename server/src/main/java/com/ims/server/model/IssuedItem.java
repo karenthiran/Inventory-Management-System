@@ -1,7 +1,7 @@
 package com.ims.server.model;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -28,41 +28,39 @@ public class IssuedItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Connects to your Category model
-    @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
+    @Column(name = "item_name", nullable = false)
+    private String itemName;
 
-    @Column(name = "processed_by_user", nullable = false) // Optional: custom column name
-    private String username;
-
-    // Stores the multiple item codes selected in the UI
     @ElementCollection
     @CollectionTable(name = "issued_item_codes", joinColumns = @JoinColumn(name = "issue_id"))
     @Column(name = "item_code")
-    private List<String> itemCodes;
+    private Set<String> itemCodes;
 
+    @Column(name = "issued_by", nullable = false)
+    private String issuedBy;
+
+    @ManyToOne
+    @JoinColumn(name = "user_email", referencedColumnName = "email", nullable = false)
+    private User issuedTo;
+
+    @ManyToOne
+    @JoinColumn(name = "location_id", referencedColumnName = "location_id", nullable = false)
+    private Location location;
+
+    // This should match the size of itemCodes list automatically in your logic
     @Column(nullable = false)
     private Integer quantity;
-
-    @Column(name = "issued_to", nullable = false)
-    private String issuedTo; // Maps to "Issue To (User / Lab)"
 
     @Column(name = "issue_date", nullable = false)
     private LocalDate issueDate;
 
-    @Column(name = "due_date")
-    private LocalDate dueDate;
+    @Column(name = "expected_return_date")
+    private LocalDate expectedReturnDate;
 
     @Column(columnDefinition = "TEXT")
     private String notes;
 
-    // Change this line in com.ims.server.model.IssuedItem
+    // In IssuedItem.java
     @Column(name = "is_returned", nullable = false)
-    private Boolean isReturned = false; // Use Boolean wrapper instead of boolean primitive
-
-    // Keep your existing setter logic, but ensure it handles the Boolean wrapper
-    public void setIsReturned(Boolean isReturned) {
-        this.isReturned = isReturned != null ? isReturned : false;
-    }
+    private boolean isReturned = false; // Default to false for new issues
 }

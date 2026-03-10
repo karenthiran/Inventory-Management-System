@@ -4,9 +4,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,13 +30,15 @@ public class CurrentStatusController {
     }
 
     // 3. DELETE multiple items at once
-    @DeleteMapping("/return-bulk")
-    public ResponseEntity<?> returnMultipleItems(@RequestBody List<String> itemCodes) {
-        try {
-            issueService.returnMultipleItems(itemCodes);
-            return ResponseEntity.ok("Items " + itemCodes + " successfully returned.");
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body("Error returning items: " + e.getMessage());
-        }
-    }
+    // @DeleteMapping("/return-bulk")
+    // public ResponseEntity<?> returnMultipleItems(@RequestBody List<String>
+    // itemCodes) {
+    // try {
+    // issueService.returnMultipleItems(itemCodes);
+    // return ResponseEntity.ok("Items " + itemCodes + " successfully returned.");
+    // } catch (RuntimeException e) {
+    // return ResponseEntity.badRequest().body("Error returning items: " +
+    // e.getMessage());
+    // }
+    // }
 }

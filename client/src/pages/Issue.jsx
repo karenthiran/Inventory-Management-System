@@ -3,10 +3,8 @@ import {
   ClockAlert,
   FileText,
   Hourglass,
-  LayoutGrid,
   PackageMinus,
   Plus,
-  Redo2,
   RotateCcw,
   Search,
   SquarePen,
@@ -40,22 +38,28 @@ const Issue = () => {
   const fetchIssuedItems = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/api/inventory/issue/all`);
+      // Updated path to match your IssuedItemController @GetMapping("/all")
+      const response = await fetch(`${API_BASE_URL}/api/issues/all`);
       if (!response.ok) throw new Error("Failed to fetch");
       const data = await response.json();
 
       const formattedData = [...data].reverse().map((item, index) => ({
         no: index + 1,
         dbId: item.id,
-        user: item.username,
-        itemName: item.category?.categoryName || "N/A",
-        categoryId: item.category?.categoryId, // CRITICAL: Store actual ID
-        location: item.issuedTo,
+        // The backend returns the User object in 'issuedTo'
+        user: item.issuedTo?.username || "N/A",
+        userEmail: item.issuedTo?.email, // Used for the update payload later
+        // The backend now stores itemName directly as a String
+        itemName: item.itemName || "N/A",
+        // Mapping the Location object
+        location: item.location?.locationName || "N/A",
+        locationId: item.location?.locationId,
         issueDate: item.issueDate,
-        dueDate: item.dueDate,
+        dueDate: item.expectedReturnDate, // backend uses expectedReturnDate
         quantity: item.quantity,
         notes: item.notes,
-        isReturned: item.isReturned || item.returned,
+        isReturned: item.returned, // boolean from your new column
+        itemCodes: item.itemCodes || [],
         categoryCode: item.itemCodes?.join(", ") || "N/A",
       }));
       setTableData(formattedData);
@@ -75,34 +79,23 @@ const Issue = () => {
     try {
       setLoading(true);
       const item = tableData.find((i) => i.dbId === id);
-      const updatePayload = {
-        id: item.dbId,
-        username: item.user,
-        issuedTo: item.location,
-        issueDate: item.issueDate,
-        dueDate: newDate,
-        quantity: item.quantity,
-        notes: item.notes,
-        isReturned: false,
-        category: { categoryId: item.categoryId }, // Correct ID mapping
-        itemCodes:
-          item.categoryCode !== "N/A"
-            ? item.categoryCode.split(", ").map((c) => c.trim())
-            : [],
-      };
 
+      // This matches the @PutMapping("/{id}/update-date") we discussed
+      // Using @RequestParam in the URL is the easiest way
       const response = await fetch(
-        `${API_BASE_URL}/api/inventory/issue/update/${id}`,
+        `${API_BASE_URL}/api/issues/${id}/update-date?newDate=${newDate}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(updatePayload),
         },
       );
 
       if (response.ok) {
         await fetchIssuedItems();
         setShowEditModal(false);
+      } else {
+        const errorMsg = await response.text();
+        alert("Error: " + errorMsg);
       }
     } catch (error) {
       console.error("Update error:", error);
@@ -179,7 +172,7 @@ const Issue = () => {
     {
       header: "Action",
       render: (row) => (
-        <div className="flex justify-center gap-2 items-center">
+        <div className='flex justify-center gap-2 items-center'>
           {!row.isReturned && (
             <>
               <button
@@ -187,7 +180,7 @@ const Issue = () => {
                   setEditingIssue(row);
                   setShowEditModal(true);
                 }}
-                className="text-red-700 p-1 hover:bg-red-100 rounded"
+                className='text-red-700 p-1 hover:bg-red-100 rounded'
               >
                 <SquarePen size={16} />
               </button>
@@ -197,14 +190,14 @@ const Issue = () => {
                   setReturningIssue(row);
                   setShowReturnModal(true);
                 }}
-                className="text-indigo-600 p-1 hover:bg-gray-200 rounded"
+                className='text-indigo-600 p-1 hover:bg-gray-200 rounded'
               >
                 <RotateCcw size={16} />
               </button>
             </>
           )}
           {row.isReturned && (
-            <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+            <span className='text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20'>
               RETURNED
             </span>
           )}
@@ -219,7 +212,7 @@ const Issue = () => {
             setSelectedIssue(row);
             setShowDetailModal(true);
           }}
-          className="text-indigo-600 font-medium hover:underline"
+          className='text-indigo-600 font-medium hover:underline'
         >
           Detail
         </button>
@@ -228,62 +221,62 @@ const Issue = () => {
   ];
 
   return (
-    <div className="h-full flex flex-col px-6 py-4 bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
-      <div className="flex items-center gap-3 mb-10">
-        <div className="bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg">
+    <div className='h-full flex flex-col px-6 py-4 bg-gray-100 dark:bg-gray-900 transition-colors duration-300'>
+      <div className='flex items-center gap-3 mb-10'>
+        <div className='bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg'>
           <PackageMinus
             size={22}
-            className="text-indigo-600 dark:text-indigo-400"
+            className='text-indigo-600 dark:text-indigo-400'
           />
         </div>
-        <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+        <h1 className='text-xl font-semibold text-gray-800 dark:text-gray-100'>
           Issue Management
         </h1>
       </div>
 
-      <section className="flex justify-center mb-14">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
+      <section className='flex justify-center mb-14'>
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl'>
           {cardData.map((card, i) => (
             <DashboardCard key={i} {...card} />
           ))}
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
-            <FileText size={25} className="text-indigo-600" />
-            <span className="text-xl font-semibold dark:text-white">
+      <div className='max-w-7xl mx-auto'>
+        <div className='flex items-center justify-between mb-6'>
+          <div className='flex items-center gap-2'>
+            <FileText size={25} className='text-indigo-600' />
+            <span className='text-xl font-semibold dark:text-white'>
               Detailed Report
             </span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className='flex items-center gap-4'>
             <button
               onClick={() => setShowIssueModal(true)}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"
+              className='bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2'
             >
               <Plus size={18} /> Issue Item
             </button>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 dark:text-white"
+              className='border rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 dark:text-white'
             >
-              <option value="All">All Status</option>
-              <option value="Overdue">Overdue</option>
-              <option value="Due Soon">Due Soon</option>
+              <option value='All'>All Status</option>
+              <option value='Overdue'>Overdue</option>
+              <option value='Due Soon'>Due Soon</option>
             </select>
-            <div className="relative">
+            <div className='relative'>
               <input
-                type="text"
-                placeholder="Search..."
+                type='text'
+                placeholder='Search...'
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="border rounded-lg px-4 py-2 text-sm bg-white dark:bg-gray-800 dark:text-white"
+                className='border rounded-lg px-4 py-2 text-sm bg-white dark:bg-gray-800 dark:text-white'
               />
               <Search
                 size={16}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-500'
               />
             </div>
           </div>

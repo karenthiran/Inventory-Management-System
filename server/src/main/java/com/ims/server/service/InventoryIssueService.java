@@ -1,20 +1,23 @@
 package com.ims.server.service;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ims.server.model.CurrentIssuedInventory;
-import com.ims.server.model.InventoryItem;
 import com.ims.server.model.IssuedItem;
+import com.ims.server.model.Location;
 import com.ims.server.model.ReturnedItem;
-import com.ims.server.repository.CategoryRepository;
+import com.ims.server.model.User;
 import com.ims.server.repository.CurrentInventoryRepository;
 import com.ims.server.repository.InventoryItemRepository;
 import com.ims.server.repository.IssuedItemRepository;
+import com.ims.server.repository.LocationRepository;
 import com.ims.server.repository.ReturnedItemRepository;
+import com.ims.server.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,53 +27,73 @@ public class InventoryIssueService {
 
     private final IssuedItemRepository issueRepo;
     private final CurrentInventoryRepository currentRepo;
-    private final CategoryRepository categoryRepo;
-    // In InventoryIssueService.java
     private final InventoryItemRepository inventoryItemRepo;
-    // Add this to your existing private final fields
     private final ReturnedItemRepository returnedItemRepo;
+    private final UserRepository userRepo;
+    private final LocationRepository locationRepo;
 
-    public List<InventoryItem> getAvailableItems() {
-        return inventoryItemRepo.findAllAvailableItems();
+    /**
+     * Fetch items available for the dropdown (Quantity > 0)
+     */
+    public List<String> getUniqueAvailableItemNames() {
+        return inventoryItemRepo.findUniqueAvailableItemNames();
     }
 
-    public List<InventoryItem> getAvailableItemsByCategory(String categoryId) {
-        return inventoryItemRepo.findAvailableItemsByCategory(categoryId);
+    /**
+     * Fetch specific codes for a chosen item name that aren't already issued
+     */
+    public List<String> getAvailableCodesByItemName(String itemName) {
+        return inventoryItemRepo.findAvailableCodesByItemName(itemName);
     }
 
     @Transactional
     public IssuedItem issueItems(IssuedItem request) {
-        // 1. Validate Category exists
-        if (request.getCategory() == null || request.getCategory().getCategoryId() == null) {
-            throw new RuntimeException("Category ID is required.");
+
+        String email = request.getIssuedTo().getEmail();
+
+        User persistentUser = userRepo.findById(email)
+                .orElseThrow(() -> new RuntimeException("User with email " + email + " not found."));
+
+        // 2. IMPORTANT: Replace the "loose" user object with the "managed" one
+        request.setIssuedTo(persistentUser);
+
+        // 3. Do the same for Location if it's a @ManyToOne relationship
+        if (request.getLocation() != null) {
+            Location persistentLocation = locationRepo.findById(request.getLocation().getLocationId())
+                    .orElseThrow(() -> new RuntimeException("Location not found"));
+            request.setLocation(persistentLocation);
+        }
+        // 1. Validation: Ensure itemCodes are provided
+        Set<String> requestedCodes = request.getItemCodes();
+        if (requestedCodes == null || requestedCodes.isEmpty()) {
+            throw new RuntimeException("Validation Error: At least one Item Code must be selected.");
         }
 
-        categoryRepo.findById(request.getCategory().getCategoryId())
-                .orElseThrow(() -> new RuntimeException(
-                        "Category not found with ID: " + request.getCategory().getCategoryId()));
-
-        // 2. Business Logic: Check if any requested Item Code is already issued
-        List<String> requestedCodes = request.getItemCodes();
+        // 2. Business Logic: Check if any requested code is already in use
         for (String code : requestedCodes) {
             if (currentRepo.existsById(code)) {
                 throw new RuntimeException("Validation Error: Item Code '" + code + "' is already currently issued.");
             }
         }
 
-        // 3. Save the Transaction Record
-        IssuedItem savedIssue = issueRepo.save(request);
+        // 3. Update Inventory Stock & Status
+        for (String code : requestedCodes) {
+            // Mark as "Locked" in currently issued table
+            currentRepo.save(new CurrentIssuedInventory(code));
 
-        // 4. Update the Status Table
-        List<CurrentIssuedInventory> statusEntries = requestedCodes.stream()
-                .map(code -> new CurrentIssuedInventory(code))
-                .collect(Collectors.toList());
+            // Reduce quantity in the main inventory table for each specific unit
+            inventoryItemRepo.findById(code).ifPresent(item -> {
+                item.setQuantity(Math.max(0, item.getQuantity() - 1));
+                inventoryItemRepo.save(item);
+            });
+        }
 
-        currentRepo.saveAll(statusEntries);
+        // 4. Finalize the Record
+        request.setIssueDate(LocalDate.now());
+        request.setQuantity(requestedCodes.size()); // Auto-sync quantity to the number of items
 
-        return savedIssue;
+        return issueRepo.save(request);
     }
-
-    // --- NEW METHODS (Placed outside issueItems) ---
 
     public List<IssuedItem> getAllIssuedItems() {
         return issueRepo.findAll();
@@ -82,60 +105,48 @@ public class InventoryIssueService {
     }
 
     @Transactional
-    public IssuedItem updateIssue(Long id, IssuedItem updatedDetails) {
-        IssuedItem existingIssue = getIssueById(id);
-
-        // Update metadata fields
-        existingIssue.setIssuedTo(updatedDetails.getIssuedTo());
-        existingIssue.setIssueDate(updatedDetails.getIssueDate()); // Good to include this too
-        existingIssue.setDueDate(updatedDetails.getDueDate());
-        existingIssue.setNotes(updatedDetails.getNotes());
-        existingIssue.setQuantity(updatedDetails.getQuantity());
-        existingIssue.setUsername(updatedDetails.getUsername());
-
-        return issueRepo.save(existingIssue);
-    }
-
-    @Transactional
-    public void returnItem(String itemCode) {
-        if (!currentRepo.existsById(itemCode)) {
-            throw new RuntimeException("Item Code " + itemCode + " is not currently marked as issued.");
-        }
-        currentRepo.deleteById(itemCode);
-    }
-
-    @Transactional
-    public void returnMultipleItems(List<String> itemCodes) {
-        // Optional: Validate if they exist first, or just perform the delete
-        currentRepo.deleteAllById(itemCodes);
-    }
-
-    @Transactional
     public void processReturn(ReturnedItem returnRequest) {
-        // 1. Extract ID safely
         if (returnRequest.getIssuedItem() == null || returnRequest.getIssuedItem().getId() == null) {
             throw new RuntimeException("Validation Error: Issued Item ID is missing.");
         }
 
         Long issueId = returnRequest.getIssuedItem().getId();
+        IssuedItem persistentIssue = getIssueById(issueId);
 
-        // 2. Fetch the REAL entity from the DB
-        IssuedItem persistentIssue = issueRepo.findById(issueId)
-                .orElseThrow(() -> new RuntimeException("Original issue record not found for ID: " + issueId));
+        // 1. Update Inventory Quantity: Add back the stock
+        Set<String> codesToReturn = persistentIssue.getItemCodes();
+        for (String code : codesToReturn) {
+            inventoryItemRepo.findById(code).ifPresent(item -> {
+                item.setQuantity(item.getQuantity() + 1);
+                inventoryItemRepo.save(item);
+            });
+        }
 
-        // 3. Link the REAL entity to the return request
+        // 2. Clear from Current Issued (Unlock the items)
+        currentRepo.deleteAllById(codesToReturn);
+
+        // 3. Save History
         returnRequest.setIssuedItem(persistentIssue);
-
-        // 4. Update the Issue status
-        persistentIssue.setIsReturned(true);
-        issueRepo.save(persistentIssue);
-
-        // 5. Save Return History
         returnedItemRepo.save(returnRequest);
 
-        // 6. Clear from current inventory
-        if (persistentIssue.getItemCodes() != null) {
-            currentRepo.deleteAllById(persistentIssue.getItemCodes());
-        }
     }
+
+    @Transactional
+    public IssuedItem updateExpectedReturnDate(Long id, LocalDate newDate) {
+        // 1. Find the existing record
+        IssuedItem existingIssue = issueRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Issue record not found with ID: " + id));
+
+        // 2. Optional: Check if the item is already returned
+        if (existingIssue.isReturned()) {
+            throw new RuntimeException("Cannot edit dates for a record that has already been returned.");
+        }
+
+        // 3. Update only the specific field
+        existingIssue.setExpectedReturnDate(newDate);
+
+        // 4. Save and return the updated entity
+        return issueRepo.save(existingIssue);
+    }
+
 }
