@@ -4,7 +4,9 @@ import {
   FileText,
   Hourglass,
   LayoutGrid,
+  PackageMinus,
   Plus,
+  Redo2,
   RotateCcw,
   Search,
   SquarePen,
@@ -177,7 +179,7 @@ const Issue = () => {
     {
       header: "Action",
       render: (row) => (
-        <div className='flex justify-center gap-2 items-center'>
+        <div className="flex justify-center gap-2 items-center">
           {!row.isReturned && (
             <>
               <button
@@ -185,7 +187,7 @@ const Issue = () => {
                   setEditingIssue(row);
                   setShowEditModal(true);
                 }}
-                className='text-red-700 p-1 hover:bg-red-100 rounded'
+                className="text-red-700 p-1 hover:bg-red-100 rounded"
               >
                 <SquarePen size={16} />
               </button>
@@ -195,14 +197,14 @@ const Issue = () => {
                   setReturningIssue(row);
                   setShowReturnModal(true);
                 }}
-                className='text-indigo-600 p-1 hover:bg-gray-200 rounded'
+                className="text-indigo-600 p-1 hover:bg-gray-200 rounded"
               >
                 <RotateCcw size={16} />
               </button>
             </>
           )}
           {row.isReturned && (
-            <span className='text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20'>
+            <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
               RETURNED
             </span>
           )}
@@ -217,7 +219,7 @@ const Issue = () => {
             setSelectedIssue(row);
             setShowDetailModal(true);
           }}
-          className='text-indigo-600 font-medium hover:underline'
+          className="text-indigo-600 font-medium hover:underline"
         >
           Detail
         </button>
@@ -226,59 +228,62 @@ const Issue = () => {
   ];
 
   return (
-    <div className='px-6 py-4 bg-gray-100 dark:bg-gray-900 min-h-screen'>
-      <div className='flex items-center gap-3 mb-10'>
-        <div className='bg-indigo-100 p-2 rounded-lg'>
-          <LayoutGrid size={22} className='text-indigo-600' />
+    <div className="h-full flex flex-col px-6 py-4 bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+      <div className="flex items-center gap-3 mb-10">
+        <div className="bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg">
+          <PackageMinus
+            size={22}
+            className="text-indigo-600 dark:text-indigo-400"
+          />
         </div>
-        <h1 className='text-xl font-semibold text-gray-800 dark:text-gray-200'>
-          Overview
+        <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+          Issue Management
         </h1>
       </div>
 
-      <section className='flex justify-center mb-14'>
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl'>
+      <section className="flex justify-center mb-14">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
           {cardData.map((card, i) => (
             <DashboardCard key={i} {...card} />
           ))}
         </div>
       </section>
 
-      <div className='max-w-7xl mx-auto'>
-        <div className='flex items-center justify-between mb-6'>
-          <div className='flex items-center gap-2'>
-            <FileText size={25} className='text-indigo-600' />
-            <span className='text-xl font-semibold dark:text-white'>
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-2">
+            <FileText size={25} className="text-indigo-600" />
+            <span className="text-xl font-semibold dark:text-white">
               Detailed Report
             </span>
           </div>
-          <div className='flex items-center gap-4'>
+          <div className="flex items-center gap-4">
             <button
               onClick={() => setShowIssueModal(true)}
-              className='bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2'
+              className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"
             >
               <Plus size={18} /> Issue Item
             </button>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className='border rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 dark:text-white'
+              className="border rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 dark:text-white"
             >
-              <option value='All'>All Status</option>
-              <option value='Overdue'>Overdue</option>
-              <option value='Due Soon'>Due Soon</option>
+              <option value="All">All Status</option>
+              <option value="Overdue">Overdue</option>
+              <option value="Due Soon">Due Soon</option>
             </select>
-            <div className='relative'>
+            <div className="relative">
               <input
-                type='text'
-                placeholder='Search...'
+                type="text"
+                placeholder="Search..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className='border rounded-lg px-4 py-2 text-sm bg-white dark:bg-gray-800 dark:text-white'
+                className="border rounded-lg px-4 py-2 text-sm bg-white dark:bg-gray-800 dark:text-white"
               />
               <Search
                 size={16}
-                className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-500'
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
               />
             </div>
           </div>
