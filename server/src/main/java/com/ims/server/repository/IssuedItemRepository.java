@@ -20,7 +20,8 @@ public interface IssuedItemRepository extends JpaRepository<IssuedItem, Long> {
 
     List<IssuedItem> findByItemName(String itemName);
 
-    @Query("SELECT i FROM IssuedItem i JOIN i.itemCodes c WHERE c = :itemCode")
+    // ✅ itemCodes @ElementCollection is removed — search snapshot string instead
+    @Query("SELECT i FROM IssuedItem i WHERE i.itemCodesSnapshot LIKE %:itemCode%")
     List<IssuedItem> findIssuesBySpecificCode(@Param("itemCode") String itemCode);
 
     List<IssuedItem> findByIsReturnedFalse();

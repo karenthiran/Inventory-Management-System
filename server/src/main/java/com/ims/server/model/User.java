@@ -4,10 +4,7 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,10 +29,6 @@ public class User {
 
     @Column(name = "role", length = 50)
     private String role; // Values: SUPER_ADMIN, ADMIN, USER
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "locationid", referencedColumnName = "location_id")
-    private Location location;
 
     @Column(name = "createdat", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
