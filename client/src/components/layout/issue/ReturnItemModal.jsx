@@ -8,6 +8,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 const ReturnItemModal = ({ data, onClose, onRefresh }) => {
   const [loading, setLoading] = useState(false);
   // Custom Toast State
+  const today = new Date().toISOString().split("T")[0];
 
   const [formData, setFormData] = useState({
     returnedBy: "",
@@ -105,6 +106,7 @@ const ReturnItemModal = ({ data, onClose, onRefresh }) => {
             </label>
             <input
               type='date'
+              min={today}
               name='returnDate'
               value={formData.returnDate}
               onChange={handleChange}
