@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 import ConfirmModal from "../../common/ConfirmModal";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
@@ -20,7 +20,6 @@ const UserSettings = () => {
     email: "",
     role: "",
     password: "User@123",
-    location: { locationId: "LCT100" },
   });
 
   const [showForm, setShowForm] = useState(false);
@@ -58,7 +57,9 @@ const UserSettings = () => {
     setIsDeleting(true);
     try {
       await axios.delete(`${API_BASE_URL}/api/users/${userToDelete}`);
-      setUsers(prevUsers => prevUsers.filter((user) => user.username !== userToDelete));
+      setUsers((prevUsers) =>
+        prevUsers.filter((user) => user.username !== userToDelete),
+      );
       toast.success(`User ${userToDelete} removed.`);
       setIsModalOpen(false);
     } catch (err) {
@@ -69,10 +70,10 @@ const UserSettings = () => {
       setIsDeleting(false);
       setUserToDelete(null);
     }
-};
+  };
   const handleSave = async () => {
     if (loading) return; // Prevent double submit
-    
+
     setLoading(true);
     try {
       await axios.post(`${API_BASE_URL}/api/users/register`, form);
@@ -89,7 +90,7 @@ const UserSettings = () => {
   };
 
   const handleCancel = () => {
-    if (loading) return; 
+    if (loading) return;
     setShowForm(false);
     setEditIndex(null);
     setForm({
@@ -97,24 +98,23 @@ const UserSettings = () => {
       email: "",
       role: "",
       password: "User@123",
-      location: { locationId: "LCT100" },
     });
     setErrors({});
   };
 
   return (
     <div className='space-y-6 font-[Poppins]'>
-      <Toaster position="top-right" reverseOrder={false} />
-      
+      <Toaster position='top-right' reverseOrder={false} />
+
       <ConfirmModal
         isOpen={isModalOpen}
         title='Confirm Deletion'
         message={`Are you sure you want to remove ${userToDelete}? This action cannot be undone.`}
         onConfirm={handleConfirmDelete}
         onClose={() => !isDeleting && setIsModalOpen(false)} // Prevent close while deleting
-        confirmText={isDeleting ? 'Deleting...' : 'Delete User'}
+        confirmText={isDeleting ? "Deleting..." : "Delete User"}
         isDanger={true}
-        loading={isDeleting} 
+        loading={isDeleting}
       />
 
       <div className='flex justify-between items-center'>
@@ -137,7 +137,9 @@ const UserSettings = () => {
                 <th className='px-6 py-3 text-sm font-semibold'>Username</th>
                 <th className='px-6 py-3 text-sm font-semibold'>Email</th>
                 <th className='px-6 py-3 text-sm font-semibold'>Role</th>
-                <th className='px-6 py-3 text-sm font-semibold text-center'>Actions</th>
+                <th className='px-6 py-3 text-sm font-semibold text-center'>
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -149,7 +151,10 @@ const UserSettings = () => {
                 </tr>
               ) : (
                 users.map((user) => (
-                  <tr key={user.username} className='border-t border-gray-200 dark:border-slate-700'>
+                  <tr
+                    key={user.username}
+                    className='border-t border-gray-200 dark:border-slate-700'
+                  >
                     <td className='px-6 py-3 text-center'>{user.username}</td>
                     <td className='px-6 py-3 text-center'>{user.email}</td>
                     <td className='px-6 py-3 text-center'>
@@ -180,30 +185,38 @@ const UserSettings = () => {
             </h3>
 
             {errors.server && (
-              <p className='text-red-500 text-xs mb-3 italic'>{errors.server}</p>
+              <p className='text-red-500 text-xs mb-3 italic'>
+                {errors.server}
+              </p>
             )}
 
             <div className='space-y-4'>
               <div>
-                <label className='text-sm text-gray-500 block mb-1'>Username</label>
+                <label className='text-sm text-gray-500 block mb-1'>
+                  Username
+                </label>
                 <input
                   disabled={loading}
                   placeholder='Enter username'
                   value={form.username}
-                  onChange={(e) => setForm({ ...form, username: e.target.value })}
-                  className={`${inputClass} ${loading && 'opacity-50'}`}
+                  onChange={(e) =>
+                    setForm({ ...form, username: e.target.value })
+                  }
+                  className={`${inputClass} ${loading && "opacity-50"}`}
                 />
               </div>
 
               <div>
-                <label className='text-sm text-gray-500 block mb-1'>Email</label>
+                <label className='text-sm text-gray-500 block mb-1'>
+                  Email
+                </label>
                 <input
                   disabled={loading}
                   type='email'
                   placeholder='user@eng.jfn.ac.lk'
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className={`${inputClass} ${loading && 'opacity-50'}`}
+                  className={`${inputClass} ${loading && "opacity-50"}`}
                 />
               </div>
 
@@ -213,7 +226,7 @@ const UserSettings = () => {
                   disabled={loading}
                   value={form.role}
                   onChange={(e) => setForm({ ...form, role: e.target.value })}
-                  className={`${inputClass} ${loading && 'opacity-50'}`}
+                  className={`${inputClass} ${loading && "opacity-50"}`}
                 >
                   <option value=''>Select Role</option>
                   <option value='ADMIN'>Admin</option>
