@@ -137,4 +137,12 @@ public class MaintenanceController {
             return true;
         return false;
     }
+
+    @GetMapping("/active-codes")
+    public List<String> getActiveMaintenanceCodes() {
+        return activeMaintenanceRepository.findAll()
+                .stream()
+                .map(ActiveMaintenance::getItemCode)
+                .collect(java.util.stream.Collectors.toList());
+    }
 }

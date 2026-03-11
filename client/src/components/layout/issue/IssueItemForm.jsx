@@ -72,17 +72,28 @@ const IssueItemForm = ({
         return;
       }
       try {
-        const res = await axios.get(
-          `${API_BASE_URL}/api/issues/available-codes/${formData.itemName}`,
+        const [codesRes, activeMaintenanceRes] = await Promise.all([
+          axios.get(
+            `${API_BASE_URL}/api/issues/available-codes/${formData.itemName}`,
+          ),
+          axios.get(`${API_BASE_URL}/api/maintenance/active-codes`),
+        ]);
+
+        const allAvailableCodes = codesRes.data;
+        const activeMaintenanceCodes = activeMaintenanceRes.data; // string[]
+
+        // ✅ Filter out any codes currently in active maintenance
+        const filteredCodes = allAvailableCodes.filter(
+          (code) => !activeMaintenanceCodes.includes(code),
         );
-        setAvailableItemCodes(res.data);
+
+        setAvailableItemCodes(filteredCodes);
       } catch (err) {
         toast.error("Could not fetch available codes.");
       }
     };
     fetchCodes();
   }, [formData.itemName]);
-
   const handleToggleItemCode = (code) => {
     setFormData((prev) => {
       const isSelected = prev.itemCodes.includes(code);
