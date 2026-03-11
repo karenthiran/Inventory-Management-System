@@ -56,17 +56,17 @@ const ReturnItemModal = ({ data, onClose, onRefresh }) => {
       );
 
       if (response.status === 200) {
+        // Wait 2 seconds so user sees the message before modal unmounts
+        setTimeout(async () => {
+          await onRefresh();
+          onClose();
+        }, 1000);
+
         // Trigger Success Toast
         setSuccessToast({
           show: true,
           message: "Return processed successfully!",
         });
-
-        // Wait 2 seconds so user sees the message before modal unmounts
-        setTimeout(async () => {
-          await onRefresh();
-          onClose();
-        }, 2000);
       }
     } catch (error) {
       const errorMsg = error.response?.data || "Backend Error";
