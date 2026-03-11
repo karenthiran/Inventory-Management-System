@@ -57,7 +57,11 @@ const Issue = () => {
 
         // Item details
         itemName: item.itemName || "N/A",
-        itemCodes: item.itemCodes || [],
+        itemCodes: item.itemCodesSnapshot
+          ? item.itemCodesSnapshot.split(",")
+          : item.itemCodes || [],
+        categoryCode:
+          item.itemCodesSnapshot || item.itemCodes?.join(", ") || "N/A",
         quantity: item.quantity || 1, // Fallback to 1 if not provided
 
         // Location (Assuming GET returns locationName)
@@ -71,7 +75,6 @@ const Issue = () => {
         // Status & Notes
         notes: item.notes || "",
         isReturned: item.isReturned,
-        categoryCode: item.itemCodes?.join(", ") || "N/A",
       }));
       setTableData(formattedData);
     } catch (error) {
