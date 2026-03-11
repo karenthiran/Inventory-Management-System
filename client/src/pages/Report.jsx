@@ -283,21 +283,6 @@ const Report = () => {
         >
           <FileText size={16} /> Export Full PDF
         </button>
-
-        <button
-          onClick={async () => {
-            const res = await axios.get(`${API_BASE_URL}/api/issues/all`);
-            console.log("FULL RECORD:", JSON.stringify(res.data[0], null, 2));
-            console.log("itemCodes:", res.data[0]?.itemCodes);
-            console.log("type:", typeof res.data[0]?.itemCodes);
-            console.log("isArray:", Array.isArray(res.data[0]?.itemCodes));
-            console.log("keys:", Object.keys(res.data[0]?.itemCodes || {}));
-            console.log("values:", Object.values(res.data[0]?.itemCodes || {}));
-          }}
-          className='px-4 py-2 bg-red-500 text-white rounded text-sm'
-        >
-          DEBUG
-        </button>
       </div>
 
       {/* Filters */}
