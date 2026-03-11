@@ -137,19 +137,24 @@ const Issue = () => {
     });
   }, [tableData, searchTerm, statusFilter]);
 
+  const activeData = useMemo(
+    () => tableData.filter((item) => !item.isReturned),
+    [tableData],
+  );
+
   const cardData = useMemo(() => {
     const today = new Date().setHours(0, 0, 0, 0);
     return [
       {
         title: "Currently Issued",
-        value: tableData.length.toString(),
+        value: activeData.length.toString(), // ✅ was tableData.length
         subtitle: "In use",
         icon: <ArrowRight size={20} />,
         gradient: "from-emerald-500 to-green-600",
       },
       {
         title: "Due in Soon",
-        value: tableData
+        value: activeData // ✅ was tableData
           .filter((i) => {
             const d = (new Date(i.dueDate) - today) / 86400000;
             return d >= 0 && d <= 3;
@@ -161,7 +166,7 @@ const Issue = () => {
       },
       {
         title: "Over Due",
-        value: tableData
+        value: activeData // ✅ was tableData
           .filter((i) => new Date(i.dueDate) < today)
           .length.toString(),
         subtitle: "Deadline Passed",
@@ -169,7 +174,7 @@ const Issue = () => {
         gradient: "bg-gradient-to-r from-red-500 to-red-700 text-white",
       },
     ];
-  }, [tableData]);
+  }, [activeData]); // ✅ was [tableData]
 
   const paginatedData = useMemo(
     () =>
