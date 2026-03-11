@@ -83,6 +83,7 @@ public class InventoryIssueService {
         request.setIssueDate(LocalDate.now());
         request.setQuantity(requestedCodes.size());
         request.setIsReturned(false);
+        request.setItemCodesSnapshot(String.join(",", requestedCodes));
 
         return issueRepo.save(request);
     }
