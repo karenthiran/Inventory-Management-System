@@ -26,11 +26,10 @@ const IssueItemForm = ({
   const [dataLoading, setDataLoading] = useState(false);
 
   const loggedInUser = localStorage.getItem("username") || "Admin";
-  const loggedInEmail = localStorage.getItem("userEmail");
 
   const [formData, setFormData] = useState({
     itemName: "",
-    itemCodes: [], // ✅ kept as array for UI selection logic
+    itemCodes: [],
     userName: loggedInUser,
     quantity: "0",
     issueToEmail: "",
@@ -122,7 +121,7 @@ const IssueItemForm = ({
         itemName: formData.itemName,
         // ✅ Convert array to comma-separated string for backend
         itemCodesSnapshot: formData.itemCodes.join(","),
-        issuedBy: loggedInEmail,
+        issuedBy: loggedInUser,
         issuedTo: { email: formData.issueToEmail },
         location: { locationId: formData.locationId },
         quantity: parseInt(formData.quantity, 10),
