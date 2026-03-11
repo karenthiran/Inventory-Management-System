@@ -30,7 +30,7 @@ const IssueItemForm = ({
 
   const [formData, setFormData] = useState({
     itemName: "",
-    itemCodes: [],
+    itemCodes: [], // ✅ kept as array for UI selection logic
     userName: loggedInUser,
     quantity: "0",
     issueToEmail: "",
@@ -120,7 +120,8 @@ const IssueItemForm = ({
     try {
       const payload = {
         itemName: formData.itemName,
-        itemCodes: formData.itemCodes,
+        // ✅ Convert array to comma-separated string for backend
+        itemCodesSnapshot: formData.itemCodes.join(","),
         issuedBy: loggedInEmail,
         issuedTo: { email: formData.issueToEmail },
         location: { locationId: formData.locationId },
@@ -147,16 +148,10 @@ const IssueItemForm = ({
       className='fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50'
       onClick={onClose}
     >
-      {/* CSS to hide scrollbars while allowing scroll functionality */}
       <style>
         {`
-          .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-          }
-          .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-          }
+          .hide-scrollbar::-webkit-scrollbar { display: none; }
+          .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         `}
       </style>
 
@@ -176,7 +171,7 @@ const IssueItemForm = ({
         </h2>
 
         <form onSubmit={handleSubmit} className='grid grid-cols-2 gap-6'>
-          {/* ... Item Name and Issued By sections remain unchanged ... */}
+          {/* Item Name */}
           <div className='flex flex-col relative'>
             <label className='text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200'>
               Item Name
@@ -212,6 +207,7 @@ const IssueItemForm = ({
             )}
           </div>
 
+          {/* Issued By */}
           <div className='flex flex-col'>
             <label className='text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200'>
               Issued By
@@ -224,7 +220,7 @@ const IssueItemForm = ({
             />
           </div>
 
-          {/* ... Available Item Codes remain unchanged ... */}
+          {/* Available Item Codes */}
           <div className='col-span-2 flex flex-col relative'>
             <label className='text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200'>
               Available Item Codes
@@ -234,14 +230,14 @@ const IssueItemForm = ({
                 formData.itemName &&
                 setShowItemCodeDropdown(!showItemCodeDropdown)
               }
-              className='min-h-[42px] rounded-lg px-3 py-2 border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#1f2937] flex flex-wrap gap-2 cursor-pointer'
+              className={`min-h-[42px] rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] flex flex-wrap gap-2 cursor-pointer ${errors.itemCodes ? "border-red-500" : "border-gray-300 dark:border-gray-600"}`}
             >
               {formData.itemCodes.map((code) => (
                 <span
                   key={code}
                   className='bg-indigo-600 text-white text-xs px-2 py-1 rounded flex items-center gap-1'
                 >
-                  {code}{" "}
+                  {code}
                   <X
                     size={12}
                     onClick={(e) => {
@@ -269,7 +265,7 @@ const IssueItemForm = ({
             )}
           </div>
 
-          {/* Issued To Dropdown - SCROLLABLE + HIDDEN SCROLLBAR */}
+          {/* Issued To */}
           <div className='flex flex-col relative'>
             <label className='text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200'>
               Issued To (User)
@@ -302,7 +298,7 @@ const IssueItemForm = ({
             )}
           </div>
 
-          {/* ... Remaining inputs (Location, Date, Notes, Buttons) remain unchanged ... */}
+          {/* Location */}
           <div className='flex flex-col'>
             <label className='text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200'>
               Location
@@ -323,6 +319,7 @@ const IssueItemForm = ({
             </select>
           </div>
 
+          {/* Issue Date */}
           <div className='flex flex-col'>
             <label className='text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200'>
               Issue Date
@@ -335,6 +332,7 @@ const IssueItemForm = ({
             />
           </div>
 
+          {/* Due Date */}
           <div className='flex flex-col'>
             <label className='text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200'>
               Due Date
@@ -350,6 +348,7 @@ const IssueItemForm = ({
             />
           </div>
 
+          {/* Notes */}
           <div className='col-span-2 flex flex-col'>
             <label className='text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200'>
               Notes
@@ -364,6 +363,7 @@ const IssueItemForm = ({
             />
           </div>
 
+          {/* Buttons */}
           <div className='col-span-2 flex justify-end gap-4 mt-2'>
             <button
               type='button'

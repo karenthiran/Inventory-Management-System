@@ -2,7 +2,6 @@ package com.ims.server.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
@@ -49,7 +48,6 @@ public class InventoryIssueService {
         String email = request.getIssuedTo().getEmail();
         User persistentUser = userRepo.findById(email)
                 .orElseThrow(() -> new RuntimeException("User with email " + email + " not found."));
-
         request.setIssuedTo(persistentUser);
 
         if (request.getLocation() != null) {
@@ -58,10 +56,13 @@ public class InventoryIssueService {
             request.setLocation(persistentLocation);
         }
 
-        Set<String> requestedCodes = request.getItemCodes();
-        if (requestedCodes == null || requestedCodes.isEmpty()) {
+        // ✅ Read codes from snapshot string sent by frontend e.g. "CODE1,CODE2"
+        String snapshotRaw = request.getItemCodesSnapshot();
+        if (snapshotRaw == null || snapshotRaw.isBlank()) {
             throw new RuntimeException("Validation Error: At least one Item Code must be selected.");
         }
+
+        List<String> requestedCodes = List.of(snapshotRaw.split(","));
 
         for (String code : requestedCodes) {
             if (currentRepo.existsById(code)) {
@@ -71,7 +72,6 @@ public class InventoryIssueService {
 
         for (String code : requestedCodes) {
             currentRepo.save(new CurrentIssuedInventory(code));
-
             inventoryItemRepo.findById(code).ifPresent(item -> {
                 if (item.getQuantity() > 0) {
                     item.setQuantity(item.getQuantity() - 1);
@@ -83,7 +83,7 @@ public class InventoryIssueService {
         request.setIssueDate(LocalDate.now());
         request.setQuantity(requestedCodes.size());
         request.setIsReturned(false);
-        request.setItemCodesSnapshot(String.join(",", requestedCodes));
+        // itemCodesSnapshot already set from frontend request
 
         return issueRepo.save(request);
     }
@@ -111,12 +111,10 @@ public class InventoryIssueService {
 
     @Transactional
     public void processReturn(ReturnedItem returnRequest) {
-        // 1. Validation
         if (returnRequest.getIssuedItem() == null || returnRequest.getIssuedItem().getId() == null) {
             throw new RuntimeException("Validation Error: Issued Item ID is missing.");
         }
 
-        // 2. Retrieve existing Issue
         Long issueId = returnRequest.getIssuedItem().getId();
         IssuedItem persistentIssue = getIssueById(issueId);
 
@@ -124,28 +122,28 @@ public class InventoryIssueService {
             throw new RuntimeException("This item has already been marked as returned.");
         }
 
-        // 3. Update Inventory Stock & Remove from Current (the blacklist table)
-        Set<String> codesToProcess = persistentIssue.getItemCodes();
+        // ✅ Read codes from snapshot instead of itemCodes Set
+        String snapshot = persistentIssue.getItemCodesSnapshot();
+        List<String> codesToProcess = (snapshot != null && !snapshot.isBlank())
+                ? List.of(snapshot.split(","))
+                : List.of();
 
         for (String code : codesToProcess) {
-            // Increment the main inventory quantity
             inventoryItemRepo.findById(code).ifPresent(item -> {
                 item.setQuantity(item.getQuantity() + 1);
                 inventoryItemRepo.save(item);
             });
         }
 
-        // This makes the codes "Available" again for the next user to borrow
+        // ✅ Remove from current_issued_inventory (availability tracker)
         currentRepo.deleteAllById(codesToProcess);
 
-        // 4. Update Status (KEEP THE CODES IN THE COLLECTION FOR HISTORY)
         persistentIssue.setIsReturned(true);
+        // ✅ itemCodesSnapshot untouched — permanent history preserved
 
-        // We save the issue record without clearing its codes
         IssuedItem savedIssue = issueRepo.save(persistentIssue);
-
-        // 5. Save Return History linked to the updated issue
         returnRequest.setIssuedItem(savedIssue);
         returnedItemRepo.save(returnRequest);
     }
+
 }
