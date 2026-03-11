@@ -1,6 +1,7 @@
 import axios from "axios";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useInventory } from "../../../context/InventoryContext";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
@@ -11,7 +12,7 @@ const AddItemForm = ({ onClose }) => {
   /* STATE & DROP-DOWN DATA */
   const [categories, setCategories] = useState([]);
   const [locations, setLocations] = useState([]);
-  const [itemTypes, setItemTypes] = useState([]); // Fixed: Was a constant []
+  const [itemTypes, setItemTypes] = useState([]);
 
   const [formData, setFormData] = useState({
     itemName: "",
@@ -99,11 +100,11 @@ const AddItemForm = ({ onClose }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Replace handleSubmit
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
-    // Mapping to nested object structure for Spring Boot JPA
     const payload = {
       itemCode: formData.itemCode,
       itemName: formData.itemName,
@@ -114,9 +115,13 @@ const AddItemForm = ({ onClose }) => {
       location: { locationId: formData.location },
     };
 
-    const success = await addItem(payload);
-    if (success) {
+    const result = await addItem(payload);
+
+    if (result?.success) {
       onClose();
+      toast.success(`"${formData.itemName}" added to inventory successfully!`);
+    } else {
+      toast.error(result?.message || "Failed to add item. Please try again.");
     }
   };
 
