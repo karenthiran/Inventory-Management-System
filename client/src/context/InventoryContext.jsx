@@ -36,7 +36,7 @@ export const InventoryProvider = ({ children }) => {
 
       if (response.status === 200 || response.status === 201) {
         setTableData((prev) => [...prev, response.data]);
-        return true;
+        return { success: true };
       }
     } catch (error) {
       console.error("Database Error:", error.response?.data || error.message);
@@ -45,7 +45,7 @@ export const InventoryProvider = ({ children }) => {
           (error.response?.data?.message ||
             "Check if Item Code already exists"),
       );
-      return false;
+      return { success: false, message };
     } finally {
       setLoading(false);
     }

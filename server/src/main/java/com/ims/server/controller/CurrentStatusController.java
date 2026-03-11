@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ims.server.model.CurrentIssuedInventory;
 import com.ims.server.repository.CurrentInventoryRepository;
-import com.ims.server.service.InventoryIssueService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 public class CurrentStatusController {
 
     private final CurrentInventoryRepository currentRepo;
-    private final InventoryIssueService issueService;
 
     // 1. GET all currently issued item codes (The "Blacklist")
     @GetMapping("/all")

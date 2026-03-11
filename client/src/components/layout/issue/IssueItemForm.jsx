@@ -143,9 +143,9 @@ const IssueItemForm = ({
       };
 
       await axios.post(`${API_BASE_URL}/api/issues/create`, payload);
-      toast.success("Item(s) issued successfully!");
       if (onIssueItem) await onIssueItem();
       onClose();
+      toast.success("Item(s) issued successfully!");
     } catch (error) {
       toast.error(error.response?.data || "Submit failed.");
     } finally {

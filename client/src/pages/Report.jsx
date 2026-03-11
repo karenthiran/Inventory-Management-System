@@ -400,7 +400,7 @@ const Report = () => {
                   {mapDataToRows(paginatedData).map((row, rowIndex) => (
                     <tr
                       key={rowIndex}
-                      className='hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors'
+                      className='hover:bg-gray-50 dark:hover:bg-[#ffffff27] transition-colors'
                     >
                       {row.map((cell, cellIndex) => (
                         <td
