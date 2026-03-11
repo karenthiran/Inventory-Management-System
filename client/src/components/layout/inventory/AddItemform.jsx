@@ -8,9 +8,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 const AddItemForm = ({ onClose }) => {
   const { addItem, loading } = useInventory();
 
-  /* =========================
-      STATE & DROP-DOWN DATA
-  ========================== */
+  /* STATE & DROP-DOWN DATA */
   const [categories, setCategories] = useState([]);
   const [locations, setLocations] = useState([]);
   const [itemTypes, setItemTypes] = useState([]); // Fixed: Was a constant []
@@ -65,12 +63,26 @@ const AddItemForm = ({ onClose }) => {
     return Object.keys(newErrors).length === 0;
   };
 
+  //handleChange — when itemType changes to Capital, force quantity to 1
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+
+    // ✅ If user selects Capital item type, lock quantity to 1
+    if (name === "itemType") {
+      const selectedType = itemTypes.find(
+        (t) => String(t.typeId) === String(value),
+      );
+      const isCapital = selectedType?.typeName?.toLowerCase() === "capital";
+      setFormData((prev) => ({
+        ...prev,
+        itemType: value,
+        quantity: isCapital ? 1 : prev.quantity,
+      }));
+      return;
     }
 
     if (name === "quantity") {
@@ -83,6 +95,7 @@ const AddItemForm = ({ onClose }) => {
       setFormData((prev) => ({ ...prev, quantity: numericValue }));
       return;
     }
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -169,50 +182,6 @@ const AddItemForm = ({ onClose }) => {
             displayKey='locationName'
           />
 
-          <div className='flex flex-col'>
-            <label className='text-sm font-semibold mb-1'>Quantity</label>
-            <div
-              className={`flex items-center border rounded-lg overflow-hidden ${errors.quantity ? "border-red-500" : "border-gray-300 dark:border-gray-600"} focus-within:ring-2 focus-within:ring-indigo-500`}
-            >
-              <button
-                type='button'
-                onClick={() =>
-                  setFormData((p) => ({
-                    ...p,
-                    quantity: Math.max(0, Number(p.quantity || 0) - 1),
-                  }))
-                }
-                className='px-4 py-2 bg-gray-200 dark:bg-gray-700 font-bold hover:bg-gray-300 dark:hover:bg-gray-600'
-              >
-                −
-              </button>
-              <input
-                type='number'
-                name='quantity'
-                value={formData.quantity}
-                onChange={handleChange}
-                className='w-full text-center bg-white dark:bg-gray-800 outline-none py-2'
-              />
-              <button
-                type='button'
-                onClick={() =>
-                  setFormData((p) => ({
-                    ...p,
-                    quantity: Number(p.quantity || 0) + 1,
-                  }))
-                }
-                className='px-4 py-2 bg-gray-200 dark:bg-gray-700 font-bold hover:bg-gray-300 dark:hover:bg-gray-600'
-              >
-                +
-              </button>
-            </div>
-            {errors.quantity && (
-              <span className='text-red-500 text-xs mt-1'>
-                {errors.quantity}
-              </span>
-            )}
-          </div>
-
           <SelectField
             label='Item Type'
             name='itemType'
@@ -223,6 +192,79 @@ const AddItemForm = ({ onClose }) => {
             dataKey='typeId'
             displayKey='typeName'
           />
+          {/* Quantity */}
+          <div className='flex flex-col'>
+            <label className='text-sm font-semibold mb-1'>
+              Quantity
+              {/* ✅ Show hint when Capital is selected */}
+              {(() => {
+                const selectedType = itemTypes.find(
+                  (t) => String(t.typeId) === String(formData.itemType),
+                );
+                return selectedType?.typeName?.toLowerCase() === "capital" ? (
+                  <span className='text-xs text-indigo-500 ml-2 font-normal'>
+                    (Capital items are always qty 1)
+                  </span>
+                ) : null;
+              })()}
+            </label>
+            {(() => {
+              const selectedType = itemTypes.find(
+                (t) => String(t.typeId) === String(formData.itemType),
+              );
+              const isCapital =
+                selectedType?.typeName?.toLowerCase() === "capital";
+              return (
+                <div
+                  className={`flex items-center border rounded-lg overflow-hidden ${
+                    errors.quantity
+                      ? "border-red-500"
+                      : "border-gray-300 dark:border-gray-600"
+                  } ${isCapital ? "opacity-60" : ""} focus-within:ring-2 focus-within:ring-indigo-500`}
+                >
+                  <button
+                    type='button'
+                    disabled={isCapital} // ✅ locked for Capital
+                    onClick={() =>
+                      setFormData((p) => ({
+                        ...p,
+                        quantity: Math.max(1, Number(p.quantity || 1) - 1),
+                      }))
+                    }
+                    className='px-4 py-2 bg-gray-200 dark:bg-gray-700 font-bold hover:bg-gray-300 dark:hover:bg-gray-600 disabled:cursor-not-allowed'
+                  >
+                    −
+                  </button>
+                  <input
+                    type='number'
+                    name='quantity'
+                    value={formData.quantity}
+                    onChange={handleChange}
+                    readOnly={isCapital} // ✅ locked for Capital
+                    className='w-full text-center bg-white dark:bg-gray-800 outline-none py-2 disabled:cursor-not-allowed'
+                  />
+                  <button
+                    type='button'
+                    disabled={isCapital} // ✅ locked for Capital
+                    onClick={() =>
+                      setFormData((p) => ({
+                        ...p,
+                        quantity: Number(p.quantity || 1) + 1,
+                      }))
+                    }
+                    className='px-4 py-2 bg-gray-200 dark:bg-gray-700 font-bold hover:bg-gray-300 dark:hover:bg-gray-600 disabled:cursor-not-allowed'
+                  >
+                    +
+                  </button>
+                </div>
+              );
+            })()}
+            {errors.quantity && (
+              <span className='text-red-500 text-xs mt-1'>
+                {errors.quantity}
+              </span>
+            )}
+          </div>
 
           <div className='col-span-2 flex flex-col'>
             <label className='text-sm font-semibold mb-1'>
