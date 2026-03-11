@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,16 +17,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ims.server.dto.LoginRequest;
 import com.ims.server.model.User;
+import com.ims.server.repository.IssuedItemRepository;
 import com.ims.server.repository.UserRepository;
 import com.ims.server.service.EmailService;
 
+import jakarta.transaction.Transactional;
+
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "${app.frontend.url}")
+
 public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private IssuedItemRepository issuedItemRepository;
 
     @Autowired
     private EmailService emailService;
@@ -62,10 +66,15 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
-        if (userRepository.existsById(user.getUsername())) {
+        // FIX: Check if username exists using custom method, NOT existsById
+        if (userRepository.existsByUsername(user.getUsername())) {
             return ResponseEntity.badRequest().body("Username already exists");
         }
-        // Encrypt password
+        // FIX: Check if email (the actual ID) already exists
+        if (userRepository.existsById(user.getEmail())) {
+            return ResponseEntity.badRequest().body("Email already registered");
+        }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return ResponseEntity.ok(userRepository.save(user));
     }
@@ -85,31 +94,25 @@ public class UserController {
 
     @GetMapping("/profile/{username}")
     public ResponseEntity<?> getUserByUsername(@PathVariable("username") String username) {
-        // 1. Log exactly what the server sees
-        System.out.println("DEBUG: Request received for username: [" + username + "]");
-
-        // 2. Try to find the user
-        return userRepository.findById(username)
+        // FIX: Use findByUsername because username is NOT the @Id
+        return userRepository.findByUsername(username)
                 .map(user -> {
-                    user.setPassword(null); // Security
+                    user.setPassword(null);
                     return ResponseEntity.ok((Object) user);
                 })
-                .orElseGet(() -> {
-                    // 3. Log if it failed to find the user in the DB
-                    System.out.println("DEBUG: Username [" + username + "] not found in database.");
-                    return ResponseEntity.status(404)
-                            .body("User profile not found for: " + username);
-                });
+                .orElse(ResponseEntity.status(404).body("User profile not found"));
     }
 
     @DeleteMapping("/{username}")
+    @Transactional
     public ResponseEntity<?> deleteUser(@PathVariable String username) {
-        return userRepository.findById(username)
+        return userRepository.findByUsername(username)
                 .map(user -> {
+                    issuedItemRepository.deleteByIssuedToEmail(user.getEmail()); // fix: was deleteByUserEmail
                     userRepository.delete(user);
                     return ResponseEntity.ok("User deleted successfully");
                 })
-                .orElse(ResponseEntity.status(404).body("User not found with username: " + username));
+                .orElse(ResponseEntity.status(404).body("User not found"));
     }
 
     @PostMapping("/forgot-password")
