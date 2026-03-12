@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.ims.server.dto.IssueNotificationRequest;
 import com.ims.server.model.CurrentIssuedInventory;
 import com.ims.server.model.IssuedItem;
 import com.ims.server.model.Location;
@@ -27,7 +28,7 @@ public class InventoryIssueService {
     private final InventoryItemRepository inventoryItemRepo;
     private final ReturnedItemRepository returnedItemRepo;
     private final LocationRepository locationRepo;
-    // ✅ Removed userRepo — no longer needed
+    private final EmailService emailService;
 
     public List<String> getUniqueAvailableItemNames() {
         return inventoryItemRepo.findUniqueAvailableItemNames();
@@ -40,12 +41,9 @@ public class InventoryIssueService {
     @Transactional
     public IssuedItem issueItems(IssuedItem request) {
 
-        // ✅ issuedTo is now a plain String username — just validate it's not empty
         if (request.getIssuedTo() == null || request.getIssuedTo().isBlank()) {
             throw new RuntimeException("Validation Error: Recipient username is required.");
         }
-
-        // ✅ No user lookup needed — username stored directly
 
         if (request.getLocation() != null) {
             Location persistentLocation = locationRepo.findById(request.getLocation().getLocationId())
@@ -80,7 +78,34 @@ public class InventoryIssueService {
         request.setQuantity(requestedCodes.size());
         request.setIsReturned(false);
 
-        return issueRepo.save(request);
+        // ✅ Save once
+        IssuedItem saved = issueRepo.save(request);
+
+        // ✅ Send email notification — don't fail transaction if email fails
+        try {
+            if (request.getIssuedToEmail() != null && !request.getIssuedToEmail().isBlank()) {
+                IssueNotificationRequest notification = new IssueNotificationRequest();
+                notification.setToEmail(request.getIssuedToEmail());
+                notification.setUsername(request.getIssuedTo());
+                notification.setItemName(request.getItemName());
+                notification.setItemCodes(request.getItemCodesSnapshot());
+                notification.setIssuedBy(request.getIssuedBy());
+                notification.setIssueDate(request.getIssueDate().toString());
+                notification.setExpectedReturnDate(
+                        request.getExpectedReturnDate() != null
+                                ? request.getExpectedReturnDate().toString()
+                                : "N/A");
+                notification.setLocation(
+                        request.getLocation() != null
+                                ? request.getLocation().getLocationName()
+                                : "N/A");
+                emailService.sendIssueNotification(notification);
+            }
+        } catch (Exception e) {
+            System.err.println("Email notification failed: " + e.getMessage());
+        }
+
+        return saved;
     }
 
     public List<IssuedItem> getAllIssuedItems() {
@@ -135,6 +160,24 @@ public class InventoryIssueService {
 
         IssuedItem savedIssue = issueRepo.save(persistentIssue);
         returnRequest.setIssuedItem(savedIssue);
-        returnedItemRepo.save(returnRequest);
+        ReturnedItem savedReturn = returnedItemRepo.save(returnRequest);
+
+        // ✅ Send return notification email
+        try {
+            String toEmail = persistentIssue.getIssuedToEmail();
+            if (toEmail != null && !toEmail.isBlank()) {
+                emailService.sendReturnNotification(
+                        toEmail,
+                        persistentIssue.getIssuedTo(),
+                        persistentIssue.getItemName(),
+                        persistentIssue.getItemCodesSnapshot(),
+                        savedReturn.getReturnDate() != null ? savedReturn.getReturnDate().toString()
+                                : LocalDate.now().toString(),
+                        savedReturn.getConditionStatus() != null ? savedReturn.getConditionStatus() : "N/A");
+            }
+        } catch (Exception e) {
+            System.err.println("Return email notification failed: " + e.getMessage());
+        }
     }
+
 }

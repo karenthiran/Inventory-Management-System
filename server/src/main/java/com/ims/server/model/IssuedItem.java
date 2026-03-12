@@ -39,6 +39,9 @@ public class IssuedItem {
     @Column(name = "issued_to", nullable = false)
     private String issuedTo;
 
+    @Column(name = "issued_to_email")
+    private String issuedToEmail;
+
     @ManyToOne
     @JoinColumn(name = "location_id", referencedColumnName = "location_id", nullable = false)
     private Location location;

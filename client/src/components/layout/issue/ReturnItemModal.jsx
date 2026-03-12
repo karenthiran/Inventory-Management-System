@@ -54,12 +54,10 @@ const ReturnItemModal = ({ data, onClose, onRefresh }) => {
     } catch (error) {
       const errorMsg = error.response?.data || "Backend Error";
       console.error("Return Process Failed:", errorMsg);
-      alert(
-        toast.error(
-          typeof errorMsg === "string"
-            ? errorMsg
-            : "Return failed. Check console.",
-        ),
+      toast.error(
+        typeof errorMsg === "string"
+          ? errorMsg
+          : "Return failed. Check console.",
       );
       setLoading(false);
     }
