@@ -168,11 +168,11 @@ function Login() {
             />
           </div>
 
-          <div className="text-center relative z-10 -mt-16">
-            <p className="text-indigo-100 text-sm font-light">
+          <div className="absolute bottom-2 left-0 w-full text-center  z-10">
+            <p className="text-white text-sm font-medium drop-shadow-md">
               Inventory Management System
             </p>
-            <p className="text-xs mt-1 opacity-60">
+            <p className="text-xs mt-1 text-white/80">
               © 2026 Faculty of Engineering
             </p>
           </div>
