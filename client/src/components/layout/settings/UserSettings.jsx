@@ -8,12 +8,14 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 const UserSettings = () => {
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false); // For Add/Update
-  const [isDeleting, setIsDeleting] = useState(false); // For Deletion
+  const [loading, setLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
+
+  // ✅ Get logged-in username to prevent self-deletion
+  const loggedInUser = localStorage.getItem("username");
 
   const [form, setForm] = useState({
     username: "",
@@ -47,7 +49,14 @@ const UserSettings = () => {
   }, []);
 
   const requestDelete = (username) => {
-    if (isDeleting) return; // Prevent opening modal if already deleting
+    if (isDeleting) return;
+
+    // ✅ Prevent self-deletion on frontend
+    if (username === loggedInUser) {
+      toast.error("You cannot delete your own account.");
+      return;
+    }
+
     setUserToDelete(username);
     setIsModalOpen(true);
   };
@@ -56,14 +65,15 @@ const UserSettings = () => {
     if (!userToDelete || isDeleting) return;
     setIsDeleting(true);
     try {
-      await axios.delete(`${API_BASE_URL}/api/users/${userToDelete}`);
+      await axios.delete(`${API_BASE_URL}/api/users/${userToDelete}`, {
+        headers: { "X-Username": loggedInUser }, // ✅ Send logged-in user to backend
+      });
       setUsers((prevUsers) =>
         prevUsers.filter((user) => user.username !== userToDelete),
       );
-      toast.success(`User ${userToDelete} removed.`);
+      toast.success(`User ${userToDelete} removed successfully.`);
       setIsModalOpen(false);
     } catch (err) {
-      console.error("Delete error:", err.response); // Add this to debug
       const message = err.response?.data || "Failed to delete user.";
       toast.error(message);
     } finally {
@@ -71,14 +81,29 @@ const UserSettings = () => {
       setUserToDelete(null);
     }
   };
+
   const handleSave = async () => {
-    if (loading) return; // Prevent double submit
+    if (loading) return;
+
+    // Basic frontend validation
+    if (!form.username.trim()) {
+      toast.error("Username is required.");
+      return;
+    }
+    if (!form.email.trim()) {
+      toast.error("Email is required.");
+      return;
+    }
+    if (!form.role) {
+      toast.error("Please select a role.");
+      return;
+    }
 
     setLoading(true);
     try {
       await axios.post(`${API_BASE_URL}/api/users/register`, form);
       await fetchUsers();
-      toast.success("User saved successfully!");
+      toast.success("User added successfully!");
       handleCancel();
     } catch (err) {
       const message = err.response?.data || "Failed to save user.";
@@ -93,25 +118,40 @@ const UserSettings = () => {
     if (loading) return;
     setShowForm(false);
     setEditIndex(null);
-    setForm({
-      username: "",
-      email: "",
-      role: "",
-      password: "User@123",
-    });
+    setForm({ username: "", email: "", role: "", password: "User@123" });
     setErrors({});
   };
 
   return (
     <div className='space-y-6 font-[Poppins]'>
-      <Toaster position='top-right' reverseOrder={false} />
+      <Toaster
+        position='top-right'
+        reverseOrder={false}
+        toastOptions={{
+          duration: 4000,
+          success: {
+            style: {
+              background: "#f0fdf4",
+              color: "#166534",
+              border: "1px solid #bbf7d0",
+            },
+          },
+          error: {
+            style: {
+              background: "#fef2f2",
+              color: "#991b1b",
+              border: "1px solid #fecaca",
+            },
+          },
+        }}
+      />
 
       <ConfirmModal
         isOpen={isModalOpen}
         title='Confirm Deletion'
-        message={`Are you sure you want to remove ${userToDelete}? This action cannot be undone.`}
+        message={`Are you sure you want to remove "${userToDelete}"? This action cannot be undone.`}
         onConfirm={handleConfirmDelete}
-        onClose={() => !isDeleting && setIsModalOpen(false)} // Prevent close while deleting
+        onClose={() => !isDeleting && setIsModalOpen(false)}
         confirmText={isDeleting ? "Deleting..." : "Delete User"}
         isDanger={true}
         loading={isDeleting}
@@ -149,13 +189,29 @@ const UserSettings = () => {
                     <Loader2 className='animate-spin mx-auto text-indigo-500' />
                   </td>
                 </tr>
+              ) : users.length === 0 ? (
+                <tr>
+                  <td colSpan='4' className='py-10 text-center text-gray-400'>
+                    No users found.
+                  </td>
+                </tr>
               ) : (
                 users.map((user) => (
                   <tr
                     key={user.username}
                     className='border-t border-gray-200 dark:border-slate-700'
                   >
-                    <td className='px-6 py-3 text-center'>{user.username}</td>
+                    <td className='px-6 py-3 text-center'>
+                      <div className='flex items-center justify-center gap-2'>
+                        {user.username}
+                        {/* ✅ Badge for logged-in user */}
+                        {user.username === loggedInUser && (
+                          <span className='text-[9px] px-2 py-0.5 bg-indigo-100 text-indigo-600 rounded-full font-bold uppercase'>
+                            You
+                          </span>
+                        )}
+                      </div>
+                    </td>
                     <td className='px-6 py-3 text-center'>{user.email}</td>
                     <td className='px-6 py-3 text-center'>
                       <span className='px-3 py-1 text-xs rounded-full bg-indigo-100 text-indigo-700 uppercase font-bold'>
@@ -165,8 +221,17 @@ const UserSettings = () => {
                     <td className='px-6 py-3 text-center'>
                       <button
                         onClick={() => requestDelete(user.username)}
-                        disabled={isDeleting || loading}
-                        className='p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-30'
+                        disabled={
+                          isDeleting ||
+                          loading ||
+                          user.username === loggedInUser
+                        }
+                        title={
+                          user.username === loggedInUser
+                            ? "Cannot delete your own account"
+                            : "Delete user"
+                        }
+                        className='p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed'
                       >
                         <Trash2 size={18} />
                       </button>
@@ -180,9 +245,7 @@ const UserSettings = () => {
 
         {showForm && (
           <div className='w-96 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm p-6 h-fit animate-in fade-in slide-in-from-right-2'>
-            <h3 className='text-lg font-semibold mb-4'>
-              {editIndex !== null ? "Update User" : "Add User"}
-            </h3>
+            <h3 className='text-lg font-semibold mb-4'>Add User</h3>
 
             {errors.server && (
               <p className='text-red-500 text-xs mb-3 italic'>
@@ -241,7 +304,7 @@ const UserSettings = () => {
                   className='flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2'
                 >
                   {loading && <Loader2 size={16} className='animate-spin' />}
-                  {editIndex !== null ? "Update" : "Save"}
+                  Save
                 </button>
                 <button
                   onClick={handleCancel}
