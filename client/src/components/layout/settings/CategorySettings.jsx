@@ -240,11 +240,7 @@ const CategorySettings = () => {
                   onClick={handleSave}
                   disabled={isSaving} // Prevents multiple clicks
                   className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg font-medium text-white transition-all 
-    ${
-      isSaving
-        ? "bg-indigo-400 cursor-not-allowed"
-        : "bg-indigo-600 hover:bg-indigo-700 active:scale-95"
-    }`}
+                  ${isSaving ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 active:scale-95"}`}
                 >
                   {isSaving ? (
                     <>
