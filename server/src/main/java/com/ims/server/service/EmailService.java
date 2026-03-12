@@ -5,9 +5,13 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ims.server.dto.IssueNotificationRequest;
+
+import jakarta.mail.internet.MimeMessage;
 
 @Service // This tells Spring to manage this class
 public class EmailService {
@@ -65,4 +69,31 @@ public class EmailService {
                         "Regards,\nIMS — Deparment of Computer Enginnering \nFaculty of Engineering ");
         mailSender.send(message);
     }
+
+    public void sendManualEmail(String toEmail, String subject, String message,
+            String fromEmail, String fromUsername,
+            MultipartFile attachment) throws Exception {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+
+        helper.setTo(toEmail);
+        helper.setSubject(subject);
+        helper.setText(message);
+
+        // ✅ Set reply-to as the logged-in user's email
+        if (fromEmail != null && !fromEmail.isBlank()) {
+            helper.setReplyTo(fromEmail, fromUsername != null ? fromUsername : fromEmail);
+        }
+
+        // ✅ Add sender name in the body footer
+        String fullMessage = message + "\n\n---\nSent by: " + fromUsername + " (" + fromEmail + ")";
+        helper.setText(fullMessage);
+
+        if (attachment != null && !attachment.isEmpty()) {
+            helper.addAttachment(attachment.getOriginalFilename(), attachment);
+        }
+
+        mailSender.send(mimeMessage);
+    }
+
 }

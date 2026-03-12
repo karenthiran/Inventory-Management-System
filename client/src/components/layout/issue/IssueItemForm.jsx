@@ -151,7 +151,7 @@ const IssueItemForm = ({
 
   return (
     <div
-      className='fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50'
+      className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
       onClick={onClose}
     >
       <style>{`
@@ -160,38 +160,38 @@ const IssueItemForm = ({
       `}</style>
 
       <div
-        className='bg-white dark:bg-[#111827] w-full max-w-2xl rounded-2xl shadow-2xl p-8 relative border border-gray-200 dark:border-gray-700'
+        className="bg-white dark:bg-[#111827] w-full max-w-2xl rounded-2xl shadow-2xl p-8 relative border border-gray-200 dark:border-gray-700"
         onClick={(e) => e.stopPropagation()}
       >
         <button
-          type='button'
+          type="button"
           onClick={onClose}
-          className='absolute top-4 right-4 text-gray-500 hover:text-red-500'
+          className="absolute top-4 right-4 text-gray-500 hover:text-red-500"
         >
           <X size={20} />
         </button>
 
-        <h2 className='text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-6'>
+        <h2 className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-6">
           Issue Item
         </h2>
 
-        <form onSubmit={handleSubmit} className='grid grid-cols-2 gap-6'>
+        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
           {/* Item Name */}
-          <div className='flex flex-col relative'>
-            <label className='text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200'>
+          <div className="flex flex-col relative">
+            <label className="text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">
               Item Name
             </label>
             <div
               onClick={() => setShowItemNameDropdown(!showItemNameDropdown)}
               className={`flex items-center justify-between rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] ${errors.itemName ? "border-red-500" : "border-gray-300 dark:border-gray-600"} cursor-pointer`}
             >
-              <span className='dark:text-white'>
+              <span className="dark:text-white">
                 {formData.itemName || "Select Item"}
               </span>
               <ChevronDown size={18} />
             </div>
             {showItemNameDropdown && (
-              <div className='absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[#1f2937] border rounded-lg shadow-xl z-[9999] max-h-40 overflow-y-auto hide-scrollbar'>
+              <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[#1f2937] border rounded-lg shadow-xl z-[9999] max-h-40 overflow-y-auto hide-scrollbar">
                 {uniqueItemNames.map((name) => (
                   <div
                     key={name}
@@ -203,7 +203,7 @@ const IssueItemForm = ({
                       });
                       setShowItemNameDropdown(false);
                     }}
-                    className='px-4 py-2 hover:bg-indigo-600 hover:text-white cursor-pointer border-b last:border-0 dark:border-gray-700 dark:text-gray-200'
+                    className="px-4 py-2 hover:bg-indigo-600 hover:text-white cursor-pointer border-b last:border-0 dark:border-gray-700 dark:text-gray-200"
                   >
                     {name}
                   </div>
@@ -211,28 +211,28 @@ const IssueItemForm = ({
               </div>
             )}
             {errors.itemName && (
-              <span className='text-red-500 text-xs mt-1'>
+              <span className="text-red-500 text-xs mt-1">
                 {errors.itemName}
               </span>
             )}
           </div>
 
           {/* Issued By */}
-          <div className='flex flex-col'>
-            <label className='text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200'>
+          <div className="flex flex-col">
+            <label className="text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">
               Issued By
             </label>
             <input
-              type='text'
+              type="text"
               readOnly
               value={formData.userName}
-              className='rounded-lg px-3 py-2 border bg-gray-200 dark:bg-gray-800 dark:text-gray-400 cursor-not-allowed border-gray-300 dark:border-gray-600 font-medium'
+              className="rounded-lg px-3 py-2 border bg-gray-200 dark:bg-gray-800 dark:text-gray-400 cursor-not-allowed border-gray-300 dark:border-gray-600 font-medium"
             />
           </div>
 
           {/* Available Item Codes */}
-          <div className='col-span-2 flex flex-col relative'>
-            <label className='text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200'>
+          <div className="col-span-2 flex flex-col relative">
+            <label className="text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">
               Available Item Codes
             </label>
             <div
@@ -243,7 +243,7 @@ const IssueItemForm = ({
               className={`min-h-[42px] rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] flex flex-wrap gap-2 cursor-pointer ${errors.itemCodes ? "border-red-500" : "border-gray-300 dark:border-gray-600"}`}
             >
               {formData.itemCodes.length === 0 && (
-                <span className='text-gray-400 text-sm'>
+                <span className="text-gray-400 text-sm">
                   {formData.itemName
                     ? "Click to select codes"
                     : "Select an item first"}
@@ -252,7 +252,7 @@ const IssueItemForm = ({
               {formData.itemCodes.map((code) => (
                 <span
                   key={code}
-                  className='bg-indigo-600 text-white text-xs px-2 py-1 rounded flex items-center gap-1'
+                  className="bg-indigo-600 text-white text-xs px-2 py-1 rounded flex items-center gap-1"
                 >
                   {code}
                   <X
@@ -266,11 +266,11 @@ const IssueItemForm = ({
               ))}
             </div>
             {showItemCodeDropdown && (
-              <div className='absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[#1f2937] border rounded-lg shadow-xl z-[9999] max-h-40 overflow-y-auto hide-scrollbar'>
+              <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[#1f2937] border rounded-lg shadow-xl z-[9999] max-h-40 overflow-y-auto hide-scrollbar">
                 {availableItemCodes.filter(
                   (c) => !formData.itemCodes.includes(c),
                 ).length === 0 ? (
-                  <div className='px-4 py-3 text-sm text-gray-400 italic'>
+                  <div className="px-4 py-3 text-sm text-gray-400 italic">
                     No available codes
                   </div>
                 ) : (
@@ -280,7 +280,7 @@ const IssueItemForm = ({
                       <div
                         key={code}
                         onClick={() => handleToggleItemCode(code)}
-                        className='px-4 py-2 hover:bg-indigo-600 hover:text-white cursor-pointer dark:text-gray-200'
+                        className="px-4 py-2 hover:bg-indigo-600 hover:text-white cursor-pointer dark:text-gray-200"
                       >
                         {code}
                       </div>
@@ -289,15 +289,15 @@ const IssueItemForm = ({
               </div>
             )}
             {errors.itemCodes && (
-              <span className='text-red-500 text-xs mt-1'>
+              <span className="text-red-500 text-xs mt-1">
                 {errors.itemCodes}
               </span>
             )}
           </div>
 
           {/* Issued To */}
-          <div className='flex flex-col relative'>
-            <label className='text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200'>
+          <div className="flex flex-col relative">
+            <label className="text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">
               Issued To (User)
             </label>
             {/* ✅ Fixed: trigger div just toggles dropdown, no broken reference to u */}
@@ -305,13 +305,13 @@ const IssueItemForm = ({
               onClick={() => setShowUserDropdown(!showUserDropdown)}
               className={`flex items-center justify-between rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] ${errors.issuedToUsername ? "border-red-500" : "border-gray-300 dark:border-gray-600"} cursor-pointer`}
             >
-              <span className='dark:text-white truncate'>
+              <span className="dark:text-white truncate">
                 {formData.issuedToUsername || "Select User"}
               </span>
               <ChevronDown size={18} />
             </div>
             {showUserDropdown && (
-              <div className='absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[#1f2937] border rounded-lg shadow-xl z-[9999] max-h-52 overflow-y-auto hide-scrollbar'>
+              <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[#1f2937] border rounded-lg shadow-xl z-[9999] max-h-52 overflow-y-auto hide-scrollbar">
                 {users.map((u) => (
                   <div
                     key={u.email}
@@ -324,12 +324,12 @@ const IssueItemForm = ({
                       });
                       setShowUserDropdown(false);
                     }}
-                    className='px-4 py-2 hover:bg-indigo-600 hover:text-white cursor-pointer border-b last:border-0 dark:border-gray-700'
+                    className="px-4 py-2 hover:bg-indigo-600 hover:text-white cursor-pointer border-b last:border-0 dark:border-gray-700"
                   >
-                    <div className='text-sm font-bold dark:text-white'>
+                    <div className="text-sm font-bold dark:text-white">
                       {u.username}
                     </div>
-                    <div className='text-[10px] opacity-80 dark:text-gray-400'>
+                    <div className="text-[10px] opacity-80 dark:text-gray-400">
                       {u.email}
                     </div>
                   </div>
@@ -337,15 +337,15 @@ const IssueItemForm = ({
               </div>
             )}
             {errors.issuedToUsername && (
-              <span className='text-red-500 text-xs mt-1'>
+              <span className="text-red-500 text-xs mt-1">
                 {errors.issuedToUsername}
               </span>
             )}
           </div>
 
           {/* Location */}
-          <div className='flex flex-col'>
-            <label className='text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200'>
+          <div className="flex flex-col">
+            <label className="text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">
               Location
             </label>
             <select
@@ -355,7 +355,7 @@ const IssueItemForm = ({
               }
               className={`rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] dark:text-white ${errors.locationId ? "border-red-500" : "border-gray-300 dark:border-gray-600"}`}
             >
-              <option value=''>Select Location</option>
+              <option value="">Select Location</option>
               {locations.map((loc) => (
                 <option key={loc.locationId} value={loc.locationId}>
                   {loc.locationName}
@@ -363,32 +363,32 @@ const IssueItemForm = ({
               ))}
             </select>
             {errors.locationId && (
-              <span className='text-red-500 text-xs mt-1'>
+              <span className="text-red-500 text-xs mt-1">
                 {errors.locationId}
               </span>
             )}
           </div>
 
           {/* Issue Date */}
-          <div className='flex flex-col'>
-            <label className='text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200'>
+          <div className="flex flex-col">
+            <label className="text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">
               Issue Date
             </label>
             <input
-              type='date'
+              type="date"
               readOnly
               value={formData.issueDate}
-              className='rounded-lg px-3 py-2 border bg-gray-200 dark:bg-gray-800 text-gray-500 cursor-not-allowed border-gray-300 dark:border-gray-600'
+              className="rounded-lg px-3 py-2 border bg-gray-200 dark:bg-gray-800 text-gray-500 cursor-not-allowed border-gray-300 dark:border-gray-600"
             />
           </div>
 
           {/* Due Date */}
-          <div className='flex flex-col'>
-            <label className='text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200'>
+          <div className="flex flex-col">
+            <label className="text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">
               Due Date
             </label>
             <input
-              type='date'
+              type="date"
               min={formData.issueDate}
               value={formData.dueDate}
               onChange={(e) =>
@@ -397,15 +397,15 @@ const IssueItemForm = ({
               className={`rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] dark:text-white ${errors.dueDate ? "border-red-500" : "border-gray-300 dark:border-gray-600"}`}
             />
             {errors.dueDate && (
-              <span className='text-red-500 text-xs mt-1'>
+              <span className="text-red-500 text-xs mt-1">
                 {errors.dueDate}
               </span>
             )}
           </div>
 
           {/* Notes */}
-          <div className='col-span-2 flex flex-col'>
-            <label className='text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200'>
+          <div className="col-span-2 flex flex-col">
+            <label className="text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">
               Notes
             </label>
             <textarea
@@ -413,25 +413,25 @@ const IssueItemForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, notes: e.target.value })
               }
-              rows='2'
-              placeholder='Optional notes...'
-              className='rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] dark:text-white border-gray-300 dark:border-gray-600 resize-none'
+              rows="2"
+              placeholder="Optional notes..."
+              className="rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] dark:text-white border-gray-300 dark:border-gray-600 resize-none"
             />
           </div>
 
           {/* Buttons */}
-          <div className='col-span-2 flex justify-end gap-4 mt-2'>
+          <div className="col-span-2 flex justify-end gap-4 mt-2">
             <button
-              type='button'
+              type="button"
               onClick={onClose}
-              className='text-gray-500 px-4 hover:text-gray-700'
+              className="text-gray-500 px-4 hover:text-gray-700"
             >
               Cancel
             </button>
             <button
-              type='submit'
+              type="submit"
               disabled={internalLoading}
-              className='bg-indigo-600 text-white px-10 py-2.5 rounded-lg font-bold hover:bg-indigo-700 transition-colors disabled:opacity-50'
+              className="bg-indigo-600 text-white px-10 py-2.5 rounded-lg font-bold hover:bg-indigo-700 transition-colors disabled:opacity-50"
             >
               {internalLoading ? "Confirming..." : "Confirm Issue"}
             </button>
