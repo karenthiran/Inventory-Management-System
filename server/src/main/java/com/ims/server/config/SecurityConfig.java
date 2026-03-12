@@ -53,6 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/itemtypes/**").permitAll()
                         .requestMatchers("/api/maintenance/**").permitAll()
                         .requestMatchers("/api/issues/**").permitAll()
+                        .requestMatchers("/api/email/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(form -> form.disable())
