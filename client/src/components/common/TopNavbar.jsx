@@ -209,10 +209,7 @@ const Topbar = () => {
           </div>
 
           {/* Email */}
-          <button
-            onClick={() => setIsEmailOpen(true)}
-            className="relative"
-          >
+          <button onClick={() => setIsEmailOpen(true)} className="relative">
             <Mail
               size={20}
               className="text-indigo-500 hover:scale-110 transition cursor-pointer"
@@ -229,10 +226,7 @@ const Topbar = () => {
         </div>
       </div>
 
-      <Email
-        isOpen={isEmailOpen}
-        onClose={() => setIsEmailOpen(false)}
-      />
+      <Email isOpen={isEmailOpen} onClose={() => setIsEmailOpen(false)} />
     </>
   );
 };
