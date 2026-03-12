@@ -12,29 +12,6 @@ const getTodayDate = () => {
   return `${year}-${month}-${day}`;
 };
 
-//create userefef for category and item code dropdowns to handle outside clicks
-const categoryRef = useRef(null);
-const itemCodeRef = useRef(null);
-
-//handle outside clicks to close dropdowns
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    if (categoryRef.current && !categoryRef.current.contains(event.target)) {
-      setShowCategoryDropdown(false);
-    }
-
-    if (itemCodeRef.current && !itemCodeRef.current.contains(event.target)) {
-      setShowItemCodeDropdown(false);
-    }
-  };
-
-  document.addEventListener("mousedown", handleClickOutside);
-
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, []);
-
 const IssueItemForm = ({
   onClose,
   onIssueItem,
@@ -189,6 +166,29 @@ const IssueItemForm = ({
       setInternalLoading(false);
     }
   };
+
+  //create userefef for category and item code dropdowns to handle outside clicks
+  const categoryRef = useRef(null);
+  const itemCodeRef = useRef(null);
+
+  //handle outside clicks to close dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (categoryRef.current && !categoryRef.current.contains(event.target)) {
+        setShowCategoryDropdown(false);
+      }
+
+      if (itemCodeRef.current && !itemCodeRef.current.contains(event.target)) {
+        setShowItemCodeDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div
