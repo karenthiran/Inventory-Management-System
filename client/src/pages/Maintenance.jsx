@@ -27,6 +27,7 @@ const Maintenance = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const rowsPerPage = 5;
+  const userRole = localStorage.getItem("role");
 
   const [formData, setFormData] = useState({
     receivedFrom: "",
@@ -257,16 +258,18 @@ const Maintenance = () => {
               <option value='IN_PROGRESS'>In Progress</option>
               <option value='COMPLETED'>Completed</option>
             </select>
-            <button
-              onClick={() => {
-                setEditId(null);
-                resetForm();
-                setShowRequest(true);
-              }}
-              className='bg-indigo-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm'
-            >
-              <Plus size={16} /> New Request
-            </button>
+            {userRole == "SUPERADMIN" && (
+              <button
+                onClick={() => {
+                  setEditId(null);
+                  resetForm();
+                  setShowRequest(true);
+                }}
+                className='bg-indigo-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm'
+              >
+                <Plus size={16} /> New Request
+              </button>
+            )}
           </div>
         </div>
 

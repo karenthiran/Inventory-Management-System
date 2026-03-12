@@ -35,6 +35,7 @@ const Issue = () => {
   const [showReturnModal, setShowReturnModal] = useState(false);
   const [returningIssue, setReturningIssue] = useState(null);
   const pageSize = 5;
+  const userRole = localStorage.getItem("role");
 
   const fetchIssuedItems = async () => {
     try {
@@ -193,41 +194,48 @@ const Issue = () => {
     { header: "Issue Date", accessor: "issueDate" },
     { header: "EXPT RTN Date", accessor: "dueDate" },
     { header: "Quantity", accessor: "quantity" },
-    {
-      header: "Action",
-      render: (row) => (
-        <div className='flex justify-center gap-2 items-center'>
-          {!row.isReturned ? (
-            <>
-              <button
-                onClick={() => {
-                  setEditingIssue(row);
-                  setShowEditModal(true);
-                }}
-                className='text-red-700 p-1 hover:bg-red-100 rounded transition-colors'
-                title='Edit Due Date'
-              >
-                <SquarePen size={16} />
-              </button>
-              <button
-                onClick={() => {
-                  setReturningIssue(row);
-                  setShowReturnModal(true);
-                }}
-                className='text-indigo-600 p-1 hover:bg-gray-200 rounded transition-colors'
-                title='Process Return'
-              >
-                <RotateCcw size={16} />
-              </button>
-            </>
-          ) : (
-            <span className='inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 uppercase tracking-wider'>
-              Returned
-            </span>
-          )}
-        </div>
-      ),
-    },
+
+    // ✅ Only show Action column for ADMIN
+    ...(userRole === "ADMIN"
+      ? [
+          {
+            header: "Action",
+            render: (row) => (
+              <div className='flex justify-center gap-2 items-center'>
+                {!row.isReturned ? (
+                  <>
+                    <button
+                      onClick={() => {
+                        setEditingIssue(row);
+                        setShowEditModal(true);
+                      }}
+                      className='text-red-700 p-1 hover:bg-red-100 rounded transition-colors'
+                      title='Edit Due Date'
+                    >
+                      <SquarePen size={16} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setReturningIssue(row);
+                        setShowReturnModal(true);
+                      }}
+                      className='text-indigo-600 p-1 hover:bg-gray-200 rounded transition-colors'
+                      title='Process Return'
+                    >
+                      <RotateCcw size={16} />
+                    </button>
+                  </>
+                ) : (
+                  <span className='inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 uppercase tracking-wider'>
+                    Returned
+                  </span>
+                )}
+              </div>
+            ),
+          },
+        ]
+      : []),
+
     {
       header: "View",
       render: (row) => (
@@ -297,12 +305,14 @@ const Issue = () => {
             </span>
           </div>
           <div className='flex items-center gap-4'>
-            <button
-              onClick={() => setShowIssueModal(true)}
-              className='bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2'
-            >
-              <Plus size={18} /> Issue Item
-            </button>
+            {userRole === "ADMIN" && (
+              <button
+                onClick={() => setShowIssueModal(true)}
+                className='bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2'
+              >
+                <Plus size={18} /> Issue Item
+              </button>
+            )}
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}

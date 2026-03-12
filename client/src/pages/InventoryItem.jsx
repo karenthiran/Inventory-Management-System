@@ -49,6 +49,7 @@ const InventoryItem = () => {
 
   const filterRef = useRef(null);
   const ITEMS_PER_PAGE = 5;
+  const userRole = localStorage.getItem("role");
 
   /* ================= FETCH DATA ================= */
   useEffect(() => {
@@ -188,32 +189,36 @@ const InventoryItem = () => {
         );
       },
     },
-    {
-      header: "Actions",
-      render: (row) => (
-        <div className='flex items-center gap-3'>
-          <button
-            onClick={() => {
-              setItemToEdit(row); // Set the row data
-              setShowEditModal(true); // Open Popup
-            }}
-            className='text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 transition-colors'
-            title='Edit'
-          >
-            <Edit size={20} strokeWidth={1.25} />
-          </button>
+    ...(userRole == "ADMIN"
+      ? [
+          {
+            header: "Actions",
+            render: (row) => (
+              <div className='flex items-center gap-3'>
+                <button
+                  onClick={() => {
+                    setItemToEdit(row); // Set the row data
+                    setShowEditModal(true); // Open Popup
+                  }}
+                  className='text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 transition-colors'
+                  title='Edit'
+                >
+                  <Edit size={20} strokeWidth={1.25} />
+                </button>
 
-          {/* Delete Button */}
-          <button
-            onClick={() => initiateDelete(row.itemCode)} // CALLS THE POPUP
-            className='text-red-600 dark:text-red-400 hover:text-red-800 transition-colors'
-            title='Delete'
-          >
-            <Trash2 size={20} strokeWidth={1.25} />
-          </button>
-        </div>
-      ),
-    },
+                {/* Delete Button */}
+                <button
+                  onClick={() => initiateDelete(row.itemCode)} // CALLS THE POPUP
+                  className='text-red-600 dark:text-red-400 hover:text-red-800 transition-colors'
+                  title='Delete'
+                >
+                  <Trash2 size={20} strokeWidth={1.25} />
+                </button>
+              </div>
+            ),
+          },
+        ]
+      : []),
   ];
 
   /* ================= DYNAMIC FILTER OPTIONS ================= */
@@ -292,12 +297,14 @@ const InventoryItem = () => {
         </div>
 
         <div className='flex items-center gap-4 flex-wrap'>
-          <button
-            onClick={() => setShowModal(true)}
-            className='bg-indigo-500 text-white px-4 py-1 rounded-lg hover:bg-indigo-600 transition flex items-center gap-2'
-          >
-            <span className='text-lg font-bold'>+</span> Add Item
-          </button>
+          {userRole == "ADMIN" && (
+            <button
+              onClick={() => setShowModal(true)}
+              className='bg-indigo-500 text-white px-4 py-1 rounded-lg hover:bg-indigo-600 transition flex items-center gap-2'
+            >
+              <span className='text-lg font-bold'>+</span> Add Item
+            </button>
+          )}
 
           {/* FILTER DROPDOWN */}
           <div className='relative' ref={filterRef}>
