@@ -3,7 +3,7 @@ import { LogOut, Mail, Search, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Email from "../../pages/Email";
-import InventoryDetails from "./inventory/InventoryDetails";
+import InventoryDetails from "../layout/inventory/InventoryDetails";
 import ThemeToggle from "./ThemeToggle";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
@@ -81,28 +81,28 @@ const Topbar = () => {
 
   return (
     <>
-      <div className='fixed top-0 left-64 right-0 h-16 bg-gray-100 dark:bg-gray-900 px-8 flex items-center justify-between border-b border-gray-300 dark:border-gray-700 z-40'>
-        <h1 className='text-2xl font-semibold text-indigo-600 dark:text-white'>
+      <div className="fixed top-0 left-64 right-0 h-16 bg-gray-100 dark:bg-gray-900 px-8 flex items-center justify-between border-b border-gray-300 dark:border-gray-700 z-40">
+        <h1 className="text-2xl font-semibold text-indigo-600 dark:text-white">
           {title}
         </h1>
 
-        <div className='flex items-center gap-6'>
+        <div className="flex items-center gap-6">
           {/* ✅ Search with dropdown */}
-          <div className='relative' ref={searchRef}>
+          <div className="relative" ref={searchRef}>
             <Search
               size={18}
-              className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
             />
             <input
-              type='text'
-              placeholder='Search inventory...'
+              type="text"
+              placeholder="Search inventory..."
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
                 setShowResults(true);
               }}
               onFocus={() => searchTerm && setShowResults(true)}
-              className='w-72 bg-gray-200 dark:bg-gray-800 rounded-lg py-2 pl-10 pr-8 text-sm text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-700 outline-none focus:ring-2 focus:ring-indigo-400'
+              className="w-72 bg-gray-200 dark:bg-gray-800 rounded-lg py-2 pl-10 pr-8 text-sm text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-700 outline-none focus:ring-2 focus:ring-indigo-400"
             />
             {/* Clear button */}
             {searchTerm && (
@@ -111,7 +111,7 @@ const Topbar = () => {
                   setSearchTerm("");
                   setShowResults(false);
                 }}
-                className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600'
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
                 <X size={14} />
               </button>
@@ -119,21 +119,21 @@ const Topbar = () => {
 
             {/* Search results dropdown */}
             {showResults && filteredItems.length > 0 && (
-              <div className='absolute left-0 right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-[9999] max-h-64 overflow-y-auto'>
+              <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-[9999] max-h-64 overflow-y-auto">
                 {filteredItems.map((item) => (
                   <div
                     key={item.itemCode}
                     onClick={() => handleSelectItem(item)}
-                    className='flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 cursor-pointer border-b last:border-0 border-gray-100 dark:border-gray-700'
+                    className="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 cursor-pointer border-b last:border-0 border-gray-100 dark:border-gray-700"
                   >
-                    <div className='w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center shrink-0'>
-                      <Search size={12} className='text-indigo-500' />
+                    <div className="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center shrink-0">
+                      <Search size={12} className="text-indigo-500" />
                     </div>
                     <div>
-                      <div className='text-sm font-semibold text-gray-800 dark:text-white'>
+                      <div className="text-sm font-semibold text-gray-800 dark:text-white">
                         {item.itemName}
                       </div>
-                      <div className='text-[10px] text-gray-400 font-mono'>
+                      <div className="text-[10px] text-gray-400 font-mono">
                         {item.itemCode}
                       </div>
                     </div>
@@ -144,16 +144,16 @@ const Topbar = () => {
 
             {/* No results */}
             {showResults && searchTerm.trim() && filteredItems.length === 0 && (
-              <div className='absolute left-0 right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-[9999] px-4 py-3 text-sm text-gray-400 italic'>
+              <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-[9999] px-4 py-3 text-sm text-gray-400 italic">
                 No items found for "{searchTerm}"
               </div>
             )}
           </div>
 
-          <button onClick={() => setIsEmailOpen(true)} className='relative'>
+          <button onClick={() => setIsEmailOpen(true)} className="relative">
             <Mail
               size={20}
-              className='text-indigo-500 hover:scale-110 transition cursor-pointer'
+              className="text-indigo-500 hover:scale-110 transition cursor-pointer"
             />
           </button>
 
@@ -161,7 +161,7 @@ const Topbar = () => {
 
           <LogOut
             size={20}
-            className='text-red-500 cursor-pointer hover:scale-110 transition'
+            className="text-red-500 cursor-pointer hover:scale-110 transition"
             onClick={handleLogout}
           />
         </div>

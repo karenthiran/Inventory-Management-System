@@ -424,7 +424,7 @@ const IssueItemForm = ({
             <button
               type="button"
               onClick={onClose}
-              className="text-gray-500 px-4 hover:text-gray-700"
+              className="px-5 py-2.5 bg-red-600 text-white font-medium rounded-lg shadow-sm hover:bg-red-700 hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
             >
               Cancel
             </button>
