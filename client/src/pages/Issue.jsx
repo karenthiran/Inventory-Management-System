@@ -39,7 +39,6 @@ const Issue = () => {
   const fetchIssuedItems = async () => {
     try {
       setLoading(true);
-      // Updated path to match your IssuedItemController @GetMapping("/all")
       const response = await fetch(`${API_BASE_URL}/api/issues/all`);
       if (!response.ok) throw new Error("Failed to fetch");
       const data = await response.json();
@@ -48,31 +47,26 @@ const Issue = () => {
         no: index + 1,
         dbId: item.id,
 
-        // Who got it
-        user: item.issuedTo?.username || "N/A", // Keep this as .username if it exists in GET
-        userEmail: item.issuedTo?.email,
+        // ✅ issuedTo is now a plain string username
+        user: item.issuedTo || "N/A",
+        userEmail: null,
 
-        // FIX: Map issuedBy as a direct string based on your Postman JSON
         issuedBy: item.issuedBy || "System Admin",
 
-        // Item details
         itemName: item.itemName || "N/A",
         itemCodes: item.itemCodesSnapshot
           ? item.itemCodesSnapshot.split(",")
           : item.itemCodes || [],
         categoryCode:
           item.itemCodesSnapshot || item.itemCodes?.join(", ") || "N/A",
-        quantity: item.quantity || 1, // Fallback to 1 if not provided
+        quantity: item.quantity || 1,
 
-        // Location (Assuming GET returns locationName)
         location: item.location?.locationName || "N/A",
         locationId: item.location?.locationId,
 
-        // Dates
         issueDate: item.issueDate,
         dueDate: item.expectedReturnDate,
 
-        // Status & Notes
         notes: item.notes || "",
         isReturned: item.isReturned,
       }));
@@ -93,10 +87,6 @@ const Issue = () => {
     if (loading) return;
     try {
       setLoading(true);
-      const item = tableData.find((i) => i.dbId === id);
-
-      // This matches the @PutMapping("/{id}/update-date") we discussed
-      // Using @RequestParam in the URL is the easiest way
       const response = await fetch(
         `${API_BASE_URL}/api/issues/${id}/update-date?newDate=${newDate}`,
         {
@@ -104,7 +94,6 @@ const Issue = () => {
           headers: { "Content-Type": "application/json" },
         },
       );
-
       if (response.ok) {
         await fetchIssuedItems();
         setShowEditModal(false);
@@ -120,6 +109,7 @@ const Issue = () => {
     }
   };
 
+  // ✅ Filters — Overdue and Due Soon exclude returned items
   const filteredData = useMemo(() => {
     const today = new Date().setHours(0, 0, 0, 0);
     return tableData.filter((item) => {
@@ -130,19 +120,21 @@ const Issue = () => {
       const itemDueDate = new Date(item.dueDate).setHours(0, 0, 0, 0);
       const diffDays = (itemDueDate - today) / (1000 * 60 * 60 * 24);
 
-      if (statusFilter === "Returned") return matchesSearch && item.isReturned; // ✅ new
+      if (statusFilter === "Returned") return matchesSearch && item.isReturned;
 
       if (statusFilter === "Overdue")
-        return matchesSearch && !item.isReturned && itemDueDate < today; // ✅ excludes returned
+        return matchesSearch && !item.isReturned && itemDueDate < today;
 
       if (statusFilter === "Due Soon")
         return (
           matchesSearch && !item.isReturned && diffDays >= 0 && diffDays <= 3
-        ); // ✅ excludes returned
+        );
 
-      return matchesSearch; // "All" shows everything
+      return matchesSearch; // "All"
     });
   }, [tableData, searchTerm, statusFilter]);
+
+  // ✅ Cards only count active (non-returned) items
   const activeData = useMemo(
     () => tableData.filter((item) => !item.isReturned),
     [tableData],
@@ -153,14 +145,14 @@ const Issue = () => {
     return [
       {
         title: "Currently Issued",
-        value: activeData.length.toString(), // ✅ was tableData.length
+        value: activeData.length.toString(),
         subtitle: "In use",
         icon: <ArrowRight size={20} />,
         gradient: "from-emerald-500 to-green-600",
       },
       {
         title: "Due in Soon",
-        value: activeData // ✅ was tableData
+        value: activeData
           .filter((i) => {
             const d = (new Date(i.dueDate) - today) / 86400000;
             return d >= 0 && d <= 3;
@@ -172,15 +164,15 @@ const Issue = () => {
       },
       {
         title: "Over Due",
-        value: activeData // ✅ was tableData
-          .filter((i) => new Date(i.dueDate) < today)
+        value: activeData
+          .filter((i) => new Date(i.dueDate).setHours(0, 0, 0, 0) < today)
           .length.toString(),
         subtitle: "Deadline Passed",
         icon: <ClockAlert size={20} />,
-        gradient: "bg-gradient-to-r from-red-500 to-red-700 text-white",
+        gradient: "from-red-500 to-red-700",
       },
     ];
-  }, [activeData]); // ✅ was [tableData]
+  }, [activeData]);
 
   const paginatedData = useMemo(
     () =>
@@ -188,11 +180,16 @@ const Issue = () => {
     [currentPage, filteredData],
   );
 
+  // ✅ Reset to page 1 when filter or search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter, searchTerm]);
+
   const tableColumns = [
     { header: "NO.", accessor: "no" },
     { header: "User", accessor: "user" },
     { header: "Item Name", accessor: "itemName" },
-    { header: "Issued to", accessor: "location" },
+    { header: "Location", accessor: "location" },
     { header: "Issue Date", accessor: "issueDate" },
     { header: "EXPT RTN Date", accessor: "dueDate" },
     { header: "Quantity", accessor: "quantity" },
@@ -200,10 +197,8 @@ const Issue = () => {
       header: "Action",
       render: (row) => (
         <div className='flex justify-center gap-2 items-center'>
-          {/* 1. Check if the item is NOT returned */}
           {!row.isReturned ? (
             <>
-              {/* Show Edit Button */}
               <button
                 onClick={() => {
                   setEditingIssue(row);
@@ -214,8 +209,6 @@ const Issue = () => {
               >
                 <SquarePen size={16} />
               </button>
-
-              {/* Show Return Button */}
               <button
                 onClick={() => {
                   setReturningIssue(row);
@@ -228,7 +221,6 @@ const Issue = () => {
               </button>
             </>
           ) : (
-            /* 2. If it IS returned, show this Badge instead */
             <span className='inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 uppercase tracking-wider'>
               Returned
             </span>
@@ -254,7 +246,28 @@ const Issue = () => {
 
   return (
     <div className='h-full flex flex-col px-6 py-4 bg-gray-100 dark:bg-gray-900 transition-colors duration-300'>
-      <Toaster position='top-right' reverseOrder={false} />
+      <Toaster
+        position='top-right'
+        reverseOrder={false}
+        toastOptions={{
+          duration: 4000,
+          success: {
+            style: {
+              background: "#f0fdf4",
+              color: "#166534",
+              border: "1px solid #bbf7d0",
+            },
+          },
+          error: {
+            style: {
+              background: "#fef2f2",
+              color: "#991b1b",
+              border: "1px solid #fecaca",
+            },
+          },
+        }}
+      />
+
       <div className='flex items-center gap-3 mb-10'>
         <div className='bg-indigo-100 dark:bg-indigo-900/40 p-2 rounded-lg'>
           <PackageMinus
@@ -315,6 +328,7 @@ const Issue = () => {
             </div>
           </div>
         </div>
+
         <IssueTable columns={tableColumns} data={paginatedData} />
         <PaginationBar
           totalResults={filteredData.length}
@@ -345,7 +359,6 @@ const Issue = () => {
           loading={loading}
         />
       )}
-
       {showReturnModal && returningIssue && (
         <ReturnItemModal
           data={returningIssue}

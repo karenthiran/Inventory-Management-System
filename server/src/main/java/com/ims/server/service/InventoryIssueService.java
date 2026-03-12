@@ -9,13 +9,11 @@ import com.ims.server.model.CurrentIssuedInventory;
 import com.ims.server.model.IssuedItem;
 import com.ims.server.model.Location;
 import com.ims.server.model.ReturnedItem;
-import com.ims.server.model.User;
 import com.ims.server.repository.CurrentInventoryRepository;
 import com.ims.server.repository.InventoryItemRepository;
 import com.ims.server.repository.IssuedItemRepository;
 import com.ims.server.repository.LocationRepository;
 import com.ims.server.repository.ReturnedItemRepository;
-import com.ims.server.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +26,8 @@ public class InventoryIssueService {
     private final CurrentInventoryRepository currentRepo;
     private final InventoryItemRepository inventoryItemRepo;
     private final ReturnedItemRepository returnedItemRepo;
-    private final UserRepository userRepo;
     private final LocationRepository locationRepo;
+    // ✅ Removed userRepo — no longer needed
 
     public List<String> getUniqueAvailableItemNames() {
         return inventoryItemRepo.findUniqueAvailableItemNames();
@@ -41,14 +39,13 @@ public class InventoryIssueService {
 
     @Transactional
     public IssuedItem issueItems(IssuedItem request) {
-        if (request.getIssuedTo() == null || request.getIssuedTo().getEmail() == null) {
-            throw new RuntimeException("Validation Error: Recipient email is required.");
+
+        // ✅ issuedTo is now a plain String username — just validate it's not empty
+        if (request.getIssuedTo() == null || request.getIssuedTo().isBlank()) {
+            throw new RuntimeException("Validation Error: Recipient username is required.");
         }
 
-        String email = request.getIssuedTo().getEmail();
-        User persistentUser = userRepo.findById(email)
-                .orElseThrow(() -> new RuntimeException("User with email " + email + " not found."));
-        request.setIssuedTo(persistentUser);
+        // ✅ No user lookup needed — username stored directly
 
         if (request.getLocation() != null) {
             Location persistentLocation = locationRepo.findById(request.getLocation().getLocationId())
@@ -56,7 +53,6 @@ public class InventoryIssueService {
             request.setLocation(persistentLocation);
         }
 
-        // ✅ Read codes from snapshot string sent by frontend e.g. "CODE1,CODE2"
         String snapshotRaw = request.getItemCodesSnapshot();
         if (snapshotRaw == null || snapshotRaw.isBlank()) {
             throw new RuntimeException("Validation Error: At least one Item Code must be selected.");
@@ -83,7 +79,6 @@ public class InventoryIssueService {
         request.setIssueDate(LocalDate.now());
         request.setQuantity(requestedCodes.size());
         request.setIsReturned(false);
-        // itemCodesSnapshot already set from frontend request
 
         return issueRepo.save(request);
     }
@@ -122,7 +117,6 @@ public class InventoryIssueService {
             throw new RuntimeException("This item has already been marked as returned.");
         }
 
-        // ✅ Read codes from snapshot instead of itemCodes Set
         String snapshot = persistentIssue.getItemCodesSnapshot();
         List<String> codesToProcess = (snapshot != null && !snapshot.isBlank())
                 ? List.of(snapshot.split(","))
@@ -135,15 +129,12 @@ public class InventoryIssueService {
             });
         }
 
-        // ✅ Remove from current_issued_inventory (availability tracker)
         currentRepo.deleteAllById(codesToProcess);
 
         persistentIssue.setIsReturned(true);
-        // ✅ itemCodesSnapshot untouched — permanent history preserved
 
         IssuedItem savedIssue = issueRepo.save(persistentIssue);
         returnRequest.setIssuedItem(savedIssue);
         returnedItemRepo.save(returnRequest);
     }
-
 }

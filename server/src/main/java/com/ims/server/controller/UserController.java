@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,11 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ims.server.dto.LoginRequest;
 import com.ims.server.model.User;
-import com.ims.server.repository.IssuedItemRepository;
 import com.ims.server.repository.UserRepository;
 import com.ims.server.service.EmailService;
-
-import jakarta.transaction.Transactional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -30,8 +26,6 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private IssuedItemRepository issuedItemRepository;
 
     @Autowired
     private EmailService emailService;
@@ -101,18 +95,6 @@ public class UserController {
                     return ResponseEntity.ok((Object) user);
                 })
                 .orElse(ResponseEntity.status(404).body("User profile not found"));
-    }
-
-    @DeleteMapping("/{username}")
-    @Transactional
-    public ResponseEntity<?> deleteUser(@PathVariable String username) {
-        return userRepository.findByUsername(username)
-                .map(user -> {
-                    issuedItemRepository.deleteByIssuedToEmail(user.getEmail()); // fix: was deleteByUserEmail
-                    userRepository.delete(user);
-                    return ResponseEntity.ok("User deleted successfully");
-                })
-                .orElse(ResponseEntity.status(404).body("User not found"));
     }
 
     @PostMapping("/forgot-password")

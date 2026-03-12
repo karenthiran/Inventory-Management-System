@@ -32,7 +32,7 @@ const IssueItemForm = ({
     itemCodes: [],
     userName: loggedInUser,
     quantity: "0",
-    issueToEmail: "",
+    issuedToUsername: "",
     locationId: "",
     issueDate: getTodayDate(),
     dueDate: "",
@@ -80,13 +80,12 @@ const IssueItemForm = ({
         ]);
 
         const allAvailableCodes = codesRes.data;
-        const activeMaintenanceCodes = activeMaintenanceRes.data; // string[]
+        const activeMaintenanceCodes = activeMaintenanceRes.data;
 
-        // ✅ Filter out any codes currently in active maintenance
+        // ✅ Filter out codes currently in active maintenance
         const filteredCodes = allAvailableCodes.filter(
           (code) => !activeMaintenanceCodes.includes(code),
         );
-
         setAvailableItemCodes(filteredCodes);
       } catch (err) {
         toast.error("Could not fetch available codes.");
@@ -94,6 +93,7 @@ const IssueItemForm = ({
     };
     fetchCodes();
   }, [formData.itemName]);
+
   const handleToggleItemCode = (code) => {
     setFormData((prev) => {
       const isSelected = prev.itemCodes.includes(code);
@@ -114,8 +114,8 @@ const IssueItemForm = ({
     if (!formData.itemName) newErrors.itemName = "Item Name is required";
     if (formData.itemCodes.length === 0)
       newErrors.itemCodes = "Select at least one code";
-    if (!formData.issueToEmail)
-      newErrors.issueToEmail = "Recipient is required";
+    if (!formData.issuedToUsername)
+      newErrors.issuedToUsername = "Recipient is required";
     if (!formData.locationId) newErrors.locationId = "Location is required";
     if (!formData.dueDate) newErrors.dueDate = "Due date is required";
     setErrors(newErrors);
@@ -130,10 +130,9 @@ const IssueItemForm = ({
     try {
       const payload = {
         itemName: formData.itemName,
-        // ✅ Convert array to comma-separated string for backend
         itemCodesSnapshot: formData.itemCodes.join(","),
         issuedBy: loggedInUser,
-        issuedTo: { email: formData.issueToEmail },
+        issuedTo: formData.issuedToUsername, // ✅ plain string username
         location: { locationId: formData.locationId },
         quantity: parseInt(formData.quantity, 10),
         issueDate: formData.issueDate,
@@ -143,9 +142,9 @@ const IssueItemForm = ({
       };
 
       await axios.post(`${API_BASE_URL}/api/issues/create`, payload);
+      toast.success("Item(s) issued successfully!");
       if (onIssueItem) await onIssueItem();
       onClose();
-      toast.success("Item(s) issued successfully!");
     } catch (error) {
       toast.error(error.response?.data || "Submit failed.");
     } finally {
@@ -176,6 +175,7 @@ const IssueItemForm = ({
         >
           <X size={20} />
         </button>
+
         <h2 className='text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-6'>
           Issue Item
         </h2>
@@ -188,7 +188,11 @@ const IssueItemForm = ({
             </label>
             <div
               onClick={() => setShowItemNameDropdown(!showItemNameDropdown)}
-              className={`flex items-center justify-between rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] ${errors.itemName ? "border-red-500" : "border-gray-300 dark:border-gray-600"} cursor-pointer`}
+              className={`flex items-center justify-between rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] ${
+                errors.itemName
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-600"
+              } cursor-pointer`}
             >
               <span className='dark:text-white'>
                 {formData.itemName || "Select Item"}
@@ -215,6 +219,11 @@ const IssueItemForm = ({
                 ))}
               </div>
             )}
+            {errors.itemName && (
+              <span className='text-red-500 text-xs mt-1'>
+                {errors.itemName}
+              </span>
+            )}
           </div>
 
           {/* Issued By */}
@@ -240,8 +249,19 @@ const IssueItemForm = ({
                 formData.itemName &&
                 setShowItemCodeDropdown(!showItemCodeDropdown)
               }
-              className={`min-h-[42px] rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] flex flex-wrap gap-2 cursor-pointer ${errors.itemCodes ? "border-red-500" : "border-gray-300 dark:border-gray-600"}`}
+              className={`min-h-[42px] rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] flex flex-wrap gap-2 cursor-pointer ${
+                errors.itemCodes
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-600"
+              }`}
             >
+              {formData.itemCodes.length === 0 && (
+                <span className='text-gray-400 text-sm'>
+                  {formData.itemName
+                    ? "Click to select codes"
+                    : "Select an item first"}
+                </span>
+              )}
               {formData.itemCodes.map((code) => (
                 <span
                   key={code}
@@ -260,18 +280,31 @@ const IssueItemForm = ({
             </div>
             {showItemCodeDropdown && (
               <div className='absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[#1f2937] border rounded-lg shadow-xl z-[9999] max-h-40 overflow-y-auto hide-scrollbar'>
-                {availableItemCodes
-                  .filter((c) => !formData.itemCodes.includes(c))
-                  .map((code) => (
-                    <div
-                      key={code}
-                      onClick={() => handleToggleItemCode(code)}
-                      className='px-4 py-2 hover:bg-indigo-600 hover:text-white cursor-pointer dark:text-gray-200'
-                    >
-                      {code}
-                    </div>
-                  ))}
+                {availableItemCodes.filter(
+                  (c) => !formData.itemCodes.includes(c),
+                ).length === 0 ? (
+                  <div className='px-4 py-3 text-sm text-gray-400 italic'>
+                    No available codes
+                  </div>
+                ) : (
+                  availableItemCodes
+                    .filter((c) => !formData.itemCodes.includes(c))
+                    .map((code) => (
+                      <div
+                        key={code}
+                        onClick={() => handleToggleItemCode(code)}
+                        className='px-4 py-2 hover:bg-indigo-600 hover:text-white cursor-pointer dark:text-gray-200'
+                      >
+                        {code}
+                      </div>
+                    ))
+                )}
               </div>
+            )}
+            {errors.itemCodes && (
+              <span className='text-red-500 text-xs mt-1'>
+                {errors.itemCodes}
+              </span>
             )}
           </div>
 
@@ -282,10 +315,14 @@ const IssueItemForm = ({
             </label>
             <div
               onClick={() => setShowUserDropdown(!showUserDropdown)}
-              className={`flex items-center justify-between rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] ${errors.issueToEmail ? "border-red-500" : "border-gray-300 dark:border-gray-600"} cursor-pointer`}
+              className={`flex items-center justify-between rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] ${
+                errors.issuedToUsername
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-600"
+              } cursor-pointer`}
             >
               <span className='dark:text-white truncate'>
-                {formData.issueToEmail || "Select User"}
+                {formData.issuedToUsername || "Select User"}
               </span>
               <ChevronDown size={18} />
             </div>
@@ -295,16 +332,28 @@ const IssueItemForm = ({
                   <div
                     key={u.email}
                     onClick={() => {
-                      setFormData({ ...formData, issueToEmail: u.email });
+                      setFormData({
+                        ...formData,
+                        issuedToUsername: u.username,
+                      }); // ✅ username
                       setShowUserDropdown(false);
                     }}
                     className='px-4 py-2 hover:bg-indigo-600 hover:text-white cursor-pointer border-b last:border-0 dark:border-gray-700'
                   >
-                    <div className='text-sm font-bold'>{u.username}</div>
-                    <div className='text-[10px] opacity-80'>{u.email}</div>
+                    <div className='text-sm font-bold dark:text-white'>
+                      {u.username}
+                    </div>
+                    <div className='text-[10px] opacity-80 dark:text-gray-400'>
+                      {u.email}
+                    </div>
                   </div>
                 ))}
               </div>
+            )}
+            {errors.issuedToUsername && (
+              <span className='text-red-500 text-xs mt-1'>
+                {errors.issuedToUsername}
+              </span>
             )}
           </div>
 
@@ -318,7 +367,11 @@ const IssueItemForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, locationId: e.target.value })
               }
-              className='rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] dark:text-white border-gray-300 dark:border-gray-600'
+              className={`rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] dark:text-white ${
+                errors.locationId
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-600"
+              }`}
             >
               <option value=''>Select Location</option>
               {locations.map((loc) => (
@@ -327,6 +380,11 @@ const IssueItemForm = ({
                 </option>
               ))}
             </select>
+            {errors.locationId && (
+              <span className='text-red-500 text-xs mt-1'>
+                {errors.locationId}
+              </span>
+            )}
           </div>
 
           {/* Issue Date */}
@@ -354,8 +412,17 @@ const IssueItemForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, dueDate: e.target.value })
               }
-              className={`rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] dark:text-white ${errors.dueDate ? "border-red-500" : "border-gray-300 dark:border-gray-600"}`}
+              className={`rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] dark:text-white ${
+                errors.dueDate
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-600"
+              }`}
             />
+            {errors.dueDate && (
+              <span className='text-red-500 text-xs mt-1'>
+                {errors.dueDate}
+              </span>
+            )}
           </div>
 
           {/* Notes */}
@@ -369,6 +436,7 @@ const IssueItemForm = ({
                 setFormData({ ...formData, notes: e.target.value })
               }
               rows='2'
+              placeholder='Optional notes...'
               className='rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] dark:text-white border-gray-300 dark:border-gray-600 resize-none'
             />
           </div>
@@ -378,14 +446,14 @@ const IssueItemForm = ({
             <button
               type='button'
               onClick={onClose}
-              className='text-gray-500 px-4'
+              className='text-gray-500 px-4 hover:text-gray-700'
             >
               Cancel
             </button>
             <button
               type='submit'
               disabled={internalLoading}
-              className='bg-indigo-600 text-white px-10 py-2.5 rounded-lg font-bold hover:bg-indigo-700 transition-colors'
+              className='bg-indigo-600 text-white px-10 py-2.5 rounded-lg font-bold hover:bg-indigo-700 transition-colors disabled:opacity-50'
             >
               {internalLoading ? "Confirming..." : "Confirm Issue"}
             </button>

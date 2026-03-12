@@ -36,9 +36,8 @@ public class IssuedItem {
     @Column(name = "item_codes_snapshot", columnDefinition = "TEXT")
     private String itemCodesSnapshot;
 
-    @ManyToOne
-    @JoinColumn(name = "user_email", referencedColumnName = "email", nullable = false)
-    private User issuedTo;
+    @Column(name = "issued_to", nullable = false)
+    private String issuedTo;
 
     @ManyToOne
     @JoinColumn(name = "location_id", referencedColumnName = "location_id", nullable = false)
