@@ -9,12 +9,14 @@ import com.ims.server.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
-
-    // Used for Login and Password Reset verification
     Optional<User> findByEmail(String email);
 
     Optional<User> findByEmailIgnoreCase(String email);
 
-    // ADD THIS: Used in /forgot-password to check if the user exists
     boolean existsByEmail(String email);
+
+    // ADD THESE:
+    Optional<User> findByUsername(String username);
+
+    boolean existsByUsername(String username);
 }

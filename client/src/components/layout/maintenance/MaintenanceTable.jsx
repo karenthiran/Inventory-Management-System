@@ -5,6 +5,7 @@ const MaintenanceTable = ({
   setShowRequest,
   onStatusChange,
 }) => {
+  const userRole = localStorage.getItem("role");
   const getStatusStyles = (status) => {
     switch (status) {
       case "COMPLETED":
@@ -41,9 +42,11 @@ const MaintenanceTable = ({
             <th className='p-4 text-xs font-bold uppercase text-gray-500'>
               Status
             </th>
-            <th className='p-4 text-xs font-bold uppercase text-gray-500 text-center'>
-              Actions
-            </th>
+            {userRole === "SUPER_ADMIN" && (
+              <th className='p-4 text-xs font-bold uppercase text-gray-500 text-center'>
+                Actions
+              </th>
+            )}
           </tr>
         </thead>
         <tbody className='divide-y divide-gray-200 dark:divide-gray-700'>
@@ -87,18 +90,20 @@ const MaintenanceTable = ({
                 </select>
               </td>
 
-              <td className='p-4 text-center'>
-                <button
-                  onClick={() => {
-                    setFormData(row);
-                    setEditId(row.requestId);
-                    setShowRequest(true);
-                  }}
-                  className='text-indigo-600 hover:text-indigo-800 font-bold text-sm'
-                >
-                  Edit
-                </button>
-              </td>
+              {userRole === "SUPER_ADMIN &&" && (
+                <td className='p-4 text-center'>
+                  <button
+                    onClick={() => {
+                      setFormData(row);
+                      setEditId(row.requestId);
+                      setShowRequest(true);
+                    }}
+                    className='text-indigo-600 hover:text-indigo-800 font-bold text-sm'
+                  >
+                    Edit
+                  </button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

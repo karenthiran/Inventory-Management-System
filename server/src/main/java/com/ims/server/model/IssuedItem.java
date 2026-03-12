@@ -1,11 +1,10 @@
 package com.ims.server.model;
 
 import java.time.LocalDate;
-import java.util.List;
 
-import jakarta.persistence.CollectionTable;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,41 +27,45 @@ public class IssuedItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Connects to your Category model
-    @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
+    @Column(name = "item_name", nullable = false)
+    private String itemName;
 
-    @Column(name = "processed_by_user", nullable = false) // Optional: custom column name
-    private String username;
+    @Column(name = "issued_by", nullable = false)
+    private String issuedBy;
 
-    // Stores the multiple item codes selected in the UI
-    @ElementCollection
-    @CollectionTable(name = "issued_item_codes", joinColumns = @JoinColumn(name = "issue_id"))
-    @Column(name = "item_code")
-    private List<String> itemCodes;
-
-    @Column(nullable = false)
-    private Integer quantity;
+    @Column(name = "item_codes_snapshot", columnDefinition = "TEXT")
+    private String itemCodesSnapshot;
 
     @Column(name = "issued_to", nullable = false)
-    private String issuedTo; // Maps to "Issue To (User / Lab)"
+    private String issuedTo;
+
+    @Column(name = "issued_to_email")
+    private String issuedToEmail;
+
+    @ManyToOne
+    @JoinColumn(name = "location_id", referencedColumnName = "location_id", nullable = false)
+    private Location location;
+
+    // This should match the size of itemCodes list automatically in your logic
+    @Column(nullable = false)
+    private Integer quantity;
 
     @Column(name = "issue_date", nullable = false)
     private LocalDate issueDate;
 
-    @Column(name = "due_date")
-    private LocalDate dueDate;
+    @Column(name = "expected_return_date")
+    private LocalDate expectedReturnDate;
 
     @Column(columnDefinition = "TEXT")
     private String notes;
 
-    // Change this line in com.ims.server.model.IssuedItem
+    // In IssuedItem.java
     @Column(name = "is_returned", nullable = false)
-    private Boolean isReturned = false; // Use Boolean wrapper instead of boolean primitive
+    private Boolean isReturned = false; // Default to false for new issues
 
-    // Keep your existing setter logic, but ensure it handles the Boolean wrapper
-    public void setIsReturned(Boolean isReturned) {
-        this.isReturned = isReturned != null ? isReturned : false;
+    // Add this annotation to ensure the JSON matches your Frontend mapping
+    @JsonProperty("isReturned")
+    public Boolean getIsReturned() {
+        return isReturned;
     }
 }

@@ -1,21 +1,22 @@
 package com.ims.server.service;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import com.ims.server.dto.IssueNotificationRequest;
 import com.ims.server.model.CurrentIssuedInventory;
-import com.ims.server.model.InventoryItem;
 import com.ims.server.model.IssuedItem;
+import com.ims.server.model.Location;
 import com.ims.server.model.ReturnedItem;
-import com.ims.server.repository.CategoryRepository;
 import com.ims.server.repository.CurrentInventoryRepository;
 import com.ims.server.repository.InventoryItemRepository;
 import com.ims.server.repository.IssuedItemRepository;
+import com.ims.server.repository.LocationRepository;
 import com.ims.server.repository.ReturnedItemRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -24,53 +25,88 @@ public class InventoryIssueService {
 
     private final IssuedItemRepository issueRepo;
     private final CurrentInventoryRepository currentRepo;
-    private final CategoryRepository categoryRepo;
-    // In InventoryIssueService.java
     private final InventoryItemRepository inventoryItemRepo;
-    // Add this to your existing private final fields
     private final ReturnedItemRepository returnedItemRepo;
+    private final LocationRepository locationRepo;
+    private final EmailService emailService;
 
-    public List<InventoryItem> getAvailableItems() {
-        return inventoryItemRepo.findAllAvailableItems();
+    public List<String> getUniqueAvailableItemNames() {
+        return inventoryItemRepo.findUniqueAvailableItemNames();
     }
 
-    public List<InventoryItem> getAvailableItemsByCategory(String categoryId) {
-        return inventoryItemRepo.findAvailableItemsByCategory(categoryId);
+    public List<String> getAvailableCodesByItemName(String itemName) {
+        return inventoryItemRepo.findAvailableCodesByItemName(itemName);
     }
 
     @Transactional
     public IssuedItem issueItems(IssuedItem request) {
-        // 1. Validate Category exists
-        if (request.getCategory() == null || request.getCategory().getCategoryId() == null) {
-            throw new RuntimeException("Category ID is required.");
+
+        if (request.getIssuedTo() == null || request.getIssuedTo().isBlank()) {
+            throw new RuntimeException("Validation Error: Recipient username is required.");
         }
 
-        categoryRepo.findById(request.getCategory().getCategoryId())
-                .orElseThrow(() -> new RuntimeException(
-                        "Category not found with ID: " + request.getCategory().getCategoryId()));
+        if (request.getLocation() != null) {
+            Location persistentLocation = locationRepo.findById(request.getLocation().getLocationId())
+                    .orElseThrow(() -> new RuntimeException("Location not found"));
+            request.setLocation(persistentLocation);
+        }
 
-        // 2. Business Logic: Check if any requested Item Code is already issued
-        List<String> requestedCodes = request.getItemCodes();
+        String snapshotRaw = request.getItemCodesSnapshot();
+        if (snapshotRaw == null || snapshotRaw.isBlank()) {
+            throw new RuntimeException("Validation Error: At least one Item Code must be selected.");
+        }
+
+        List<String> requestedCodes = List.of(snapshotRaw.split(","));
+
         for (String code : requestedCodes) {
             if (currentRepo.existsById(code)) {
                 throw new RuntimeException("Validation Error: Item Code '" + code + "' is already currently issued.");
             }
         }
 
-        // 3. Save the Transaction Record
-        IssuedItem savedIssue = issueRepo.save(request);
+        for (String code : requestedCodes) {
+            currentRepo.save(new CurrentIssuedInventory(code));
+            inventoryItemRepo.findById(code).ifPresent(item -> {
+                if (item.getQuantity() > 0) {
+                    item.setQuantity(item.getQuantity() - 1);
+                    inventoryItemRepo.save(item);
+                }
+            });
+        }
 
-        // 4. Update the Status Table
-        List<CurrentIssuedInventory> statusEntries = requestedCodes.stream()
-                .map(code -> new CurrentIssuedInventory(code))
-                .collect(Collectors.toList());
+        request.setIssueDate(LocalDate.now());
+        request.setQuantity(requestedCodes.size());
+        request.setIsReturned(false);
 
-        currentRepo.saveAll(statusEntries);
+        // ✅ Save once
+        IssuedItem saved = issueRepo.save(request);
 
-        return savedIssue;
+        // ✅ Send email notification — don't fail transaction if email fails
+        try {
+            if (request.getIssuedToEmail() != null && !request.getIssuedToEmail().isBlank()) {
+                IssueNotificationRequest notification = new IssueNotificationRequest();
+                notification.setToEmail(request.getIssuedToEmail());
+                notification.setUsername(request.getIssuedTo());
+                notification.setItemName(request.getItemName());
+                notification.setItemCodes(request.getItemCodesSnapshot());
+                notification.setIssuedBy(request.getIssuedBy());
+                notification.setIssueDate(request.getIssueDate().toString());
+                notification.setExpectedReturnDate(
+                        request.getExpectedReturnDate() != null
+                                ? request.getExpectedReturnDate().toString()
+                                : "N/A");
+                notification.setLocation(
+                        request.getLocation() != null
+                                ? request.getLocation().getLocationName()
+                                : "N/A");
+                emailService.sendIssueNotification(notification);
+            }
+        } catch (Exception e) {
+            System.err.println("Email notification failed: " + e.getMessage());
+        }
+
+        return saved;
     }
-
-    // --- NEW METHODS (Placed outside issueItems) ---
 
     public List<IssuedItem> getAllIssuedItems() {
         return issueRepo.findAll();
@@ -82,60 +118,66 @@ public class InventoryIssueService {
     }
 
     @Transactional
-    public IssuedItem updateIssue(Long id, IssuedItem updatedDetails) {
+    public IssuedItem updateExpectedReturnDate(Long id, LocalDate newDate) {
         IssuedItem existingIssue = getIssueById(id);
 
-        // Update metadata fields
-        existingIssue.setIssuedTo(updatedDetails.getIssuedTo());
-        existingIssue.setIssueDate(updatedDetails.getIssueDate()); // Good to include this too
-        existingIssue.setDueDate(updatedDetails.getDueDate());
-        existingIssue.setNotes(updatedDetails.getNotes());
-        existingIssue.setQuantity(updatedDetails.getQuantity());
-        existingIssue.setUsername(updatedDetails.getUsername());
+        if (Boolean.TRUE.equals(existingIssue.getIsReturned())) {
+            throw new RuntimeException("Cannot edit dates for a record that has already been returned.");
+        }
 
+        existingIssue.setExpectedReturnDate(newDate);
         return issueRepo.save(existingIssue);
     }
 
     @Transactional
-    public void returnItem(String itemCode) {
-        if (!currentRepo.existsById(itemCode)) {
-            throw new RuntimeException("Item Code " + itemCode + " is not currently marked as issued.");
-        }
-        currentRepo.deleteById(itemCode);
-    }
-
-    @Transactional
-    public void returnMultipleItems(List<String> itemCodes) {
-        // Optional: Validate if they exist first, or just perform the delete
-        currentRepo.deleteAllById(itemCodes);
-    }
-
-    @Transactional
     public void processReturn(ReturnedItem returnRequest) {
-        // 1. Extract ID safely
         if (returnRequest.getIssuedItem() == null || returnRequest.getIssuedItem().getId() == null) {
             throw new RuntimeException("Validation Error: Issued Item ID is missing.");
         }
 
         Long issueId = returnRequest.getIssuedItem().getId();
+        IssuedItem persistentIssue = getIssueById(issueId);
 
-        // 2. Fetch the REAL entity from the DB
-        IssuedItem persistentIssue = issueRepo.findById(issueId)
-                .orElseThrow(() -> new RuntimeException("Original issue record not found for ID: " + issueId));
+        if (Boolean.TRUE.equals(persistentIssue.getIsReturned())) {
+            throw new RuntimeException("This item has already been marked as returned.");
+        }
 
-        // 3. Link the REAL entity to the return request
-        returnRequest.setIssuedItem(persistentIssue);
+        String snapshot = persistentIssue.getItemCodesSnapshot();
+        List<String> codesToProcess = (snapshot != null && !snapshot.isBlank())
+                ? List.of(snapshot.split(","))
+                : List.of();
 
-        // 4. Update the Issue status
+        for (String code : codesToProcess) {
+            inventoryItemRepo.findById(code).ifPresent(item -> {
+                item.setQuantity(item.getQuantity() + 1);
+                inventoryItemRepo.save(item);
+            });
+        }
+
+        currentRepo.deleteAllById(codesToProcess);
+
         persistentIssue.setIsReturned(true);
-        issueRepo.save(persistentIssue);
 
-        // 5. Save Return History
-        returnedItemRepo.save(returnRequest);
+        IssuedItem savedIssue = issueRepo.save(persistentIssue);
+        returnRequest.setIssuedItem(savedIssue);
+        ReturnedItem savedReturn = returnedItemRepo.save(returnRequest);
 
-        // 6. Clear from current inventory
-        if (persistentIssue.getItemCodes() != null) {
-            currentRepo.deleteAllById(persistentIssue.getItemCodes());
+        // ✅ Send return notification email
+        try {
+            String toEmail = persistentIssue.getIssuedToEmail();
+            if (toEmail != null && !toEmail.isBlank()) {
+                emailService.sendReturnNotification(
+                        toEmail,
+                        persistentIssue.getIssuedTo(),
+                        persistentIssue.getItemName(),
+                        persistentIssue.getItemCodesSnapshot(),
+                        savedReturn.getReturnDate() != null ? savedReturn.getReturnDate().toString()
+                                : LocalDate.now().toString(),
+                        savedReturn.getConditionStatus() != null ? savedReturn.getConditionStatus() : "N/A");
+            }
+        } catch (Exception e) {
+            System.err.println("Return email notification failed: " + e.getMessage());
         }
     }
+
 }

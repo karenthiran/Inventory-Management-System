@@ -1,23 +1,14 @@
 import axios from "axios";
-import {
-  AlertCircle,
-  Calendar,
-  CheckCircle2,
-  ClipboardEdit,
-  User,
-  X,
-} from "lucide-react";
+import { AlertCircle, Calendar, ClipboardEdit, User, X } from "lucide-react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 const ReturnItemModal = ({ data, onClose, onRefresh }) => {
   const [loading, setLoading] = useState(false);
   // Custom Toast State
-  const [successToast, setSuccessToast] = useState({
-    show: false,
-    message: "",
-  });
+  const today = new Date().toISOString().split("T")[0];
 
   const [formData, setFormData] = useState({
     returnedBy: "",
@@ -33,10 +24,9 @@ const ReturnItemModal = ({ data, onClose, onRefresh }) => {
 
   const handleConfirmReturn = async () => {
     if (!formData.returnedBy.trim()) {
-      alert("Please enter who is returning the item.");
+      toast.error("Please enter who is returning the item."); // ✅ was alert()
       return;
     }
-
     setLoading(true);
     try {
       const payload = {
@@ -56,23 +46,18 @@ const ReturnItemModal = ({ data, onClose, onRefresh }) => {
       );
 
       if (response.status === 200) {
-        // Trigger Success Toast
-        setSuccessToast({
-          show: true,
-          message: "Return processed successfully!",
-        });
-
         // Wait 2 seconds so user sees the message before modal unmounts
-        setTimeout(async () => {
-          await onRefresh();
-          onClose();
-        }, 2000);
+        await onRefresh();
+        onClose();
+        toast.success("Item returned successfully!");
       }
     } catch (error) {
       const errorMsg = error.response?.data || "Backend Error";
       console.error("Return Process Failed:", errorMsg);
-      alert(
-        typeof errorMsg === "string" ? errorMsg : "Check console for details",
+      toast.error(
+        typeof errorMsg === "string"
+          ? errorMsg
+          : "Return failed. Check console.",
       );
       setLoading(false);
     }
@@ -83,14 +68,6 @@ const ReturnItemModal = ({ data, onClose, onRefresh }) => {
       className='fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4'
       onClick={onClose}
     >
-      {/* --- Custom Success Toast --- */}
-      {successToast.show && (
-        <div className='fixed top-5 right-5 z-110 flex items-center gap-3 bg-green-600 text-white px-6 py-3 rounded-lg shadow-2xl animate-in fade-in slide-in-from-right-4 duration-300'>
-          <CheckCircle2 size={20} />
-          <span className='font-medium'>{successToast.message}</span>
-        </div>
-      )}
-
       <div
         className='bg-[#111827] w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl'
         onClick={(e) => e.stopPropagation()}
@@ -127,6 +104,7 @@ const ReturnItemModal = ({ data, onClose, onRefresh }) => {
             </label>
             <input
               type='date'
+              min={today}
               name='returnDate'
               value={formData.returnDate}
               onChange={handleChange}
@@ -192,17 +170,14 @@ const ReturnItemModal = ({ data, onClose, onRefresh }) => {
           >
             Cancel
           </button>
+
           <button
             type='button'
             onClick={handleConfirmReturn}
             disabled={loading}
             className='bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-2 rounded-lg font-bold disabled:bg-gray-800 transition-all flex items-center justify-center min-w-35'
           >
-            {loading
-              ? successToast.show
-                ? "Success!"
-                : "Processing..."
-              : "Complete Return"}
+            {loading ? "Processing..." : "Confirm Return"}
           </button>
         </div>
       </div>
