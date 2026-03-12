@@ -180,7 +180,7 @@ const ReturnItemModal = ({ data, onClose, onRefresh }) => {
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors"
+            className="px-5 py-2.5 bg-red-600 text-white font-medium rounded-lg shadow-sm hover:bg-red-700 hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
           >
             Cancel
           </button>
