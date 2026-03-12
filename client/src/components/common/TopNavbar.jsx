@@ -3,8 +3,7 @@ import { LogOut, Mail, Search, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Email from "../../pages/Email";
-
-import InventoryDetails from "../layout/inventory/InventoryDetails";
+import InventoryDetails from "./inventory/InventoryDetails";
 import ThemeToggle from "./ThemeToggle";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
