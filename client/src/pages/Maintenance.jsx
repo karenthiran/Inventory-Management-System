@@ -258,7 +258,7 @@ const Maintenance = () => {
               <option value='IN_PROGRESS'>In Progress</option>
               <option value='COMPLETED'>Completed</option>
             </select>
-            {userRole == "SUPERADMIN" && (
+            {userRole == "SUPER_ADMIN" && (
               <button
                 onClick={() => {
                   setEditId(null);

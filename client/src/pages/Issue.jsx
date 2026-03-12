@@ -36,6 +36,8 @@ const Issue = () => {
   const [returningIssue, setReturningIssue] = useState(null);
   const pageSize = 5;
   const userRole = localStorage.getItem("role");
+  const isAdmin =
+    userRole === "ADMIN" || userRole === "SUPER_ADMIN" ? true : false;
 
   const fetchIssuedItems = async () => {
     try {
@@ -196,7 +198,7 @@ const Issue = () => {
     { header: "Quantity", accessor: "quantity" },
 
     // ✅ Only show Action column for ADMIN
-    ...(userRole === "ADMIN"
+    ...(isAdmin
       ? [
           {
             header: "Action",
@@ -305,7 +307,7 @@ const Issue = () => {
             </span>
           </div>
           <div className='flex items-center gap-4'>
-            {userRole === "ADMIN" && (
+            {isAdmin && (
               <button
                 onClick={() => setShowIssueModal(true)}
                 className='bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2'

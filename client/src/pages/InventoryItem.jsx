@@ -50,6 +50,8 @@ const InventoryItem = () => {
   const filterRef = useRef(null);
   const ITEMS_PER_PAGE = 5;
   const userRole = localStorage.getItem("role");
+  const isAdmin =
+    userRole === "ADMIN" || userRole === "SUPER_ADMIN" ? true : false;
 
   /* ================= FETCH DATA ================= */
   useEffect(() => {
@@ -189,7 +191,7 @@ const InventoryItem = () => {
         );
       },
     },
-    ...(userRole == "ADMIN"
+    ...(isAdmin
       ? [
           {
             header: "Actions",
@@ -297,7 +299,7 @@ const InventoryItem = () => {
         </div>
 
         <div className='flex items-center gap-4 flex-wrap'>
-          {userRole == "ADMIN" && (
+          {isAdmin && (
             <button
               onClick={() => setShowModal(true)}
               className='bg-indigo-500 text-white px-4 py-1 rounded-lg hover:bg-indigo-600 transition flex items-center gap-2'

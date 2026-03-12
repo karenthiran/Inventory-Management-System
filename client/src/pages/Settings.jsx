@@ -43,7 +43,7 @@ const Settings = () => {
           <Tag size={18} /> Item Type
         </button>
 
-        {userRole == "SUPERADMIN" && (
+        {userRole == "SUPER_ADMIN" && (
           <button
             onClick={() => setActiveTab("user")}
             className={tabBtn("user")}
