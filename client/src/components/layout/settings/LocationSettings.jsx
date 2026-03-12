@@ -114,82 +114,82 @@ const LocationSettings = () => {
     "w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500";
 
   return (
-    <div className='space-y-6 relative'>
+    <div className="space-y-6 relative">
       {/* SUCCESS TOAST */}
       {successToast.show && (
-        <div className='fixed top-5 right-5 z-110 flex items-center gap-3 bg-green-600 text-white px-6 py-3 rounded-lg shadow-2xl animate-in slide-in-from-right-full'>
+        <div className="fixed top-5 right-5 z-110 flex items-center gap-3 bg-green-600 text-white px-6 py-3 rounded-lg shadow-2xl animate-in slide-in-from-right-full">
           <CheckCircle2 size={20} />
-          <span className='font-medium'>{successToast.message}</span>
+          <span className="font-medium">{successToast.message}</span>
         </div>
       )}
 
       {/* DELETE MODAL */}
       <ConfirmModal
         isOpen={deleteModal.isOpen}
-        title='Delete Location'
-        message='Are you sure you want to delete this location? This action cannot be undone.'
+        title="Delete Location"
+        message="Are you sure you want to delete this location? This action cannot be undone."
         onConfirm={handleDelete}
         onClose={() => setDeleteModal({ isOpen: false, id: null })}
-        confirmText='Delete'
+        confirmText="Delete"
         isDanger={true}
       />
 
-      <div className='flex justify-between items-center'>
-        <h2 className='text-xl font-semibold'>Location Management</h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold">Location Management</h2>
         <button
           onClick={() => {
             resetForm();
             setShowForm(true);
           }}
-          className='flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow-sm transition'
+          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow-sm transition"
         >
           <Plus size={16} /> Add Location
         </button>
       </div>
 
-      <div className='flex gap-6'>
+      <div className="flex gap-6">
         {/* TABLE */}
-        <div className='flex-1 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden'>
-          <table className='w-full'>
-            <thead className='bg-gray-50 dark:bg-slate-800 text-center'>
+        <div className="flex-1 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-gray-50 dark:bg-slate-800 text-center">
               <tr>
-                <th className='px-6 py-3 text-sm font-semibold'>Location ID</th>
-                <th className='px-6 py-3 text-sm font-semibold'>Name</th>
-                <th className='px-6 py-3 text-sm font-semibold'>Actions</th>
+                <th className="px-6 py-3 text-sm font-semibold">Location ID</th>
+                <th className="px-6 py-3 text-sm font-semibold">Name</th>
+                <th className="px-6 py-3 text-sm font-semibold">Actions</th>
               </tr>
             </thead>
-            <tbody className='divide-y divide-gray-200 dark:divide-slate-700'>
+            <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
               {loading ? (
                 <tr>
-                  <td colSpan='3' className='py-10 text-center'>
-                    <Loader2 className='animate-spin mx-auto' />
+                  <td colSpan="3" className="py-10 text-center">
+                    <Loader2 className="animate-spin mx-auto" />
                   </td>
                 </tr>
               ) : (
                 locations.map((item) => (
                   <tr
                     key={item.locationId}
-                    className='hover:bg-gray-50 dark:hover:bg-slate-800 text-center'
+                    className="hover:bg-gray-50 dark:hover:bg-slate-800 text-center"
                   >
-                    <td className='px-6 py-3 font-mono text-xs'>
+                    <td className="px-6 py-3 font-mono text-xs">
                       {item.locationId}
                     </td>
-                    <td className='px-6 py-3'>{item.locationName}</td>
-                    <td className='px-6 py-3'>
-                      <div className='flex justify-center items-center gap-3'>
+                    <td className="px-6 py-3">{item.locationName}</td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center gap-3">
                         <button
                           onClick={() => {
                             setForm(item);
                             setIsEditing(true);
                             setShowForm(true);
                           }}
-                          className='text-indigo-600 hover:text-indigo-800'
+                          className="text-indigo-600 hover:text-indigo-800"
                         >
                           <Pencil size={18} />
                         </button>
                         <button
                           onClick={() => openDeleteConfirm(item.locationId)}
-                          className='text-red-500 hover:text-red-700'
+                          className="text-red-500 hover:text-red-700"
                         >
                           <Trash2 size={18} />
                         </button>
@@ -204,16 +204,16 @@ const LocationSettings = () => {
 
         {/* FORM */}
         {showForm && (
-          <div className='w-96 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm p-6 h-fit'>
-            <h3 className='text-lg font-semibold mb-4'>
+          <div className="w-96 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm p-6 h-fit">
+            <h3 className="text-lg font-semibold mb-4">
               {isEditing ? "Edit Location" : "Add Location"}
             </h3>
-            <div className='space-y-4'>
+            <div className="space-y-4">
               <div>
-                <label className='text-sm text-gray-500'>Location ID</label>
+                <label className="text-sm text-gray-500">Location ID</label>
                 <input
                   disabled={isEditing}
-                  placeholder='eg:- LCT-001'
+                  placeholder="eg:- LCT-001"
                   value={form.locationId}
                   onChange={(e) =>
                     setForm({ ...form, locationId: e.target.value })
@@ -222,9 +222,9 @@ const LocationSettings = () => {
                 />
               </div>
               <div>
-                <label className='text-sm text-gray-500'>Location Name</label>
+                <label className="text-sm text-gray-500">Location Name</label>
                 <input
-                  placeholder='CO-2'
+                  placeholder="CO-2"
                   value={form.locationName}
                   onChange={(e) =>
                     setForm({ ...form, locationName: e.target.value })
@@ -232,7 +232,7 @@ const LocationSettings = () => {
                   className={inputClass}
                 />
               </div>
-              <div className='flex gap-3 pt-2'>
+              <div className="flex gap-3 pt-2">
                 <button
                   onClick={handleSave}
                   disabled={isSaving}
@@ -241,7 +241,7 @@ const LocationSettings = () => {
                 >
                   {isSaving ? (
                     <>
-                      <Loader2 size={16} className='animate-spin' />{" "}
+                      <Loader2 size={16} className="animate-spin" />{" "}
                       {isEditing ? "Updating..." : "Saving..."}
                     </>
                   ) : isEditing ? (
@@ -252,7 +252,7 @@ const LocationSettings = () => {
                 </button>
                 <button
                   onClick={resetForm}
-                  className='flex-1 border border-gray-300 py-2 rounded-lg hover:bg-gray-50'
+                  className="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 transition"
                 >
                   Cancel
                 </button>
