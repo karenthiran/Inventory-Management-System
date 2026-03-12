@@ -33,6 +33,7 @@ const IssueItemForm = ({
     userName: loggedInUser,
     quantity: "0",
     issuedToUsername: "",
+    issuedToEmail: "", // ✅ added
     locationId: "",
     issueDate: getTodayDate(),
     dueDate: "",
@@ -78,13 +79,8 @@ const IssueItemForm = ({
           ),
           axios.get(`${API_BASE_URL}/api/maintenance/active-codes`),
         ]);
-
-        const allAvailableCodes = codesRes.data;
-        const activeMaintenanceCodes = activeMaintenanceRes.data;
-
-        // ✅ Filter out codes currently in active maintenance
-        const filteredCodes = allAvailableCodes.filter(
-          (code) => !activeMaintenanceCodes.includes(code),
+        const filteredCodes = codesRes.data.filter(
+          (code) => !activeMaintenanceRes.data.includes(code),
         );
         setAvailableItemCodes(filteredCodes);
       } catch (err) {
@@ -132,7 +128,8 @@ const IssueItemForm = ({
         itemName: formData.itemName,
         itemCodesSnapshot: formData.itemCodes.join(","),
         issuedBy: loggedInUser,
-        issuedTo: formData.issuedToUsername, // ✅ plain string username
+        issuedTo: formData.issuedToUsername,
+        issuedToEmail: formData.issuedToEmail, // ✅ send actual email
         location: { locationId: formData.locationId },
         quantity: parseInt(formData.quantity, 10),
         issueDate: formData.issueDate,
@@ -157,12 +154,10 @@ const IssueItemForm = ({
       className='fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50'
       onClick={onClose}
     >
-      <style>
-        {`
-          .hide-scrollbar::-webkit-scrollbar { display: none; }
-          .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        `}
-      </style>
+      <style>{`
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
 
       <div
         className='bg-white dark:bg-[#111827] w-full max-w-2xl rounded-2xl shadow-2xl p-8 relative border border-gray-200 dark:border-gray-700'
@@ -188,11 +183,7 @@ const IssueItemForm = ({
             </label>
             <div
               onClick={() => setShowItemNameDropdown(!showItemNameDropdown)}
-              className={`flex items-center justify-between rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] ${
-                errors.itemName
-                  ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-600"
-              } cursor-pointer`}
+              className={`flex items-center justify-between rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] ${errors.itemName ? "border-red-500" : "border-gray-300 dark:border-gray-600"} cursor-pointer`}
             >
               <span className='dark:text-white'>
                 {formData.itemName || "Select Item"}
@@ -249,11 +240,7 @@ const IssueItemForm = ({
                 formData.itemName &&
                 setShowItemCodeDropdown(!showItemCodeDropdown)
               }
-              className={`min-h-[42px] rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] flex flex-wrap gap-2 cursor-pointer ${
-                errors.itemCodes
-                  ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-600"
-              }`}
+              className={`min-h-[42px] rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] flex flex-wrap gap-2 cursor-pointer ${errors.itemCodes ? "border-red-500" : "border-gray-300 dark:border-gray-600"}`}
             >
               {formData.itemCodes.length === 0 && (
                 <span className='text-gray-400 text-sm'>
@@ -313,13 +300,10 @@ const IssueItemForm = ({
             <label className='text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200'>
               Issued To (User)
             </label>
+            {/* ✅ Fixed: trigger div just toggles dropdown, no broken reference to u */}
             <div
               onClick={() => setShowUserDropdown(!showUserDropdown)}
-              className={`flex items-center justify-between rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] ${
-                errors.issuedToUsername
-                  ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-600"
-              } cursor-pointer`}
+              className={`flex items-center justify-between rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] ${errors.issuedToUsername ? "border-red-500" : "border-gray-300 dark:border-gray-600"} cursor-pointer`}
             >
               <span className='dark:text-white truncate'>
                 {formData.issuedToUsername || "Select User"}
@@ -332,10 +316,12 @@ const IssueItemForm = ({
                   <div
                     key={u.email}
                     onClick={() => {
+                      // ✅ Fixed: stores both username and email
                       setFormData({
                         ...formData,
                         issuedToUsername: u.username,
-                      }); // ✅ username
+                        issuedToEmail: u.email,
+                      });
                       setShowUserDropdown(false);
                     }}
                     className='px-4 py-2 hover:bg-indigo-600 hover:text-white cursor-pointer border-b last:border-0 dark:border-gray-700'
@@ -367,11 +353,7 @@ const IssueItemForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, locationId: e.target.value })
               }
-              className={`rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] dark:text-white ${
-                errors.locationId
-                  ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-600"
-              }`}
+              className={`rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] dark:text-white ${errors.locationId ? "border-red-500" : "border-gray-300 dark:border-gray-600"}`}
             >
               <option value=''>Select Location</option>
               {locations.map((loc) => (
@@ -412,11 +394,7 @@ const IssueItemForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, dueDate: e.target.value })
               }
-              className={`rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] dark:text-white ${
-                errors.dueDate
-                  ? "border-red-500"
-                  : "border-gray-300 dark:border-gray-600"
-              }`}
+              className={`rounded-lg px-3 py-2 border bg-gray-100 dark:bg-[#1f2937] dark:text-white ${errors.dueDate ? "border-red-500" : "border-gray-300 dark:border-gray-600"}`}
             />
             {errors.dueDate && (
               <span className='text-red-500 text-xs mt-1'>

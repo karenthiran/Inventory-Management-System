@@ -8,6 +8,7 @@ import UserSettings from "../components/layout/settings/UserSettings";
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState("category");
+  const userRole = localStorage.getItem("role");
 
   const tabBtn = (tab) =>
     `flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
@@ -42,9 +43,14 @@ const Settings = () => {
           <Tag size={18} /> Item Type
         </button>
 
-        <button onClick={() => setActiveTab("user")} className={tabBtn("user")}>
-          <UserCircle size={18} /> Users
-        </button>
+        {userRole == "SUPER_ADMIN" && (
+          <button
+            onClick={() => setActiveTab("user")}
+            className={tabBtn("user")}
+          >
+            <UserCircle size={18} /> Users
+          </button>
+        )}
       </div>
 
       {/* Content Card */}
