@@ -293,6 +293,7 @@ const UserSettings = () => {
                 >
                   <option value=''>Select Role</option>
                   <option value='ADMIN'>Admin</option>
+                  <option value='USER'>HOD</option>
                   <option value='USER'>User</option>
                 </select>
               </div>

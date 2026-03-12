@@ -60,7 +60,7 @@ const Home = () => {
           .map((i) => ({
             itemId: i.itemCodesSnapshot || "N/A",
             itemName: i.itemName,
-            userName: i.issuedTo?.username || i.issuedTo?.email || "N/A",
+            userName: i.issuedTo || "N/A",
             dueDate: i.expectedReturnDate,
           }));
         setDueSoonItems(dueSoon);
@@ -73,7 +73,7 @@ const Home = () => {
           .map((i) => ({
             itemId: i.itemCodesSnapshot || "N/A",
             itemName: i.itemName,
-            userName: i.issuedTo?.username || i.issuedTo?.email || "N/A",
+            userName: i.issuedTo || "N/A",
             dueDate: i.expectedReturnDate,
           }));
         setOverDueItems(overdue);
