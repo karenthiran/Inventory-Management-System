@@ -109,7 +109,7 @@ public class EmailService {
                         "  Role     : " + role + "\n" +
                         "  Password : " + tempPassword + "\n\n" +
                         "⚠️  IMPORTANT: Please change your password immediately after your first login.\n\n" +
-                        "Login here: http://localhost:5173\n\n" +
+                        "Login here: https://inventrax.sytes.net\n\n" +
                         "Regards,\nIMS — Faculty of Engineering, University of Jaffna");
         mailSender.send(message);
     }

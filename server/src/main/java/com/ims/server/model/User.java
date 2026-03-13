@@ -34,11 +34,12 @@ public class User {
     @Column(name = "createdat", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Column(name = "must_change_password", nullable = false, columnDefinition = "boolean default true")
+    private Boolean mustChangePassword = true;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
 
-    @Column(name = "must_change_password", nullable = false)
-    private Boolean mustChangePassword = true; // ✅ true for all new users
 }
