@@ -2,12 +2,14 @@ import axios from "axios";
 import {
   Calendar,
   Loader2,
-  LocateFixed,
   Mail,
+  RotateCcwKey,
   Shield,
   UserCircle,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+
+import { useNavigate } from "react-router-dom";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
@@ -15,6 +17,8 @@ const UserProfile = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     /** * 1. Check your PostgreSQL database.
@@ -129,14 +133,20 @@ const UserProfile = () => {
             </div>
 
             <div className='flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-700/40 rounded-xl'>
-              <LocateFixed className='text-indigo-400' size={24} />
-              <div>
-                <p className='text-[10px] text-gray-500 font-bold uppercase'>
-                  Location
-                </p>
-                <p className='text-gray-800 dark:text-gray-200 font-semibold'>
-                  {user?.location?.locationName || "No Location Assigned"}
-                </p>
+              <RotateCcwKey
+                strokeWidth={2}
+                className='text-indigo-400'
+                size={24}
+              />
+
+              <div className='text-right'>
+                <button
+                  type='button'
+                  onClick={() => navigate("/forgot-password")}
+                  className='text-sm text-indigo-500 font-medium hover:underline transition-all'
+                >
+                  Change Password
+                </button>
               </div>
             </div>
           </div>
