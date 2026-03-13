@@ -5,7 +5,7 @@ const AdminRoute = ({ children }) => {
   if (!user) return <Navigate to='/' replace />;
 
   const role = user.role?.trim().toUpperCase();
-  const isAdmin = role === "ADMIN" || role === "SUPER_ADMIN";
+  const isAdmin = role === "ADMIN" || role === "SUPER_ADMIN" || role === "HOD";
 
   return isAdmin ? children : <Navigate to='/dashboard/home' replace />;
 };

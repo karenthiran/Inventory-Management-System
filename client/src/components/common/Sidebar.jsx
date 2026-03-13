@@ -18,7 +18,8 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 const Sidebar = () => {
   const [userName, setUserName] = useState("Loading...");
 
-  const userRole = localStorage.getItem("role");
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userRole = user?.role;
   const storedUsername = localStorage.getItem("username");
 
   useEffect(() => {
@@ -56,17 +57,28 @@ const Sidebar = () => {
       name: "Setting",
       icon: Settings,
       path: "/dashboard/setting",
-      adminOnly: true,
+      superAdminOnly: true,
     },
   ];
 
   const filteredMenuItems = menuItems.filter((item) => {
-    if (!item.adminOnly) return true;
-    if (!userRole) return false;
+    const normalizedRole = userRole?.trim().toUpperCase();
 
-    const normalizedRole = userRole.trim().toUpperCase();
-    // Validates against your Java Model roles
-    return normalizedRole === "ADMIN" || normalizedRole === "SUPER_ADMIN";
+    // ✅ Check superAdminOnly FIRST before adminOnly
+    if (item.superAdminOnly) {
+      return normalizedRole === "ADMIN" || normalizedRole === "SUPER_ADMIN";
+    }
+
+    if (item.adminOnly) {
+      return (
+        normalizedRole === "ADMIN" ||
+        normalizedRole === "SUPER_ADMIN" ||
+        normalizedRole === "HOD"
+      );
+    }
+
+    // ✅ Public items — no role needed
+    return true;
   });
 
   return (

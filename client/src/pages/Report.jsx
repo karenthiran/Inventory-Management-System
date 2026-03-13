@@ -361,7 +361,7 @@ const Report = () => {
       </div>
 
       {/* Table */}
-      <div className='bg-white dark:bg-gray-800 rounded-2xl shadow-sm border overflow-hidden flex-1'>
+      <div className='bg-white dark:bg-gray-800 rounded-2xl shadow-sm  overflow-hidden flex-1'>
         {loading ? (
           <div className='p-20 text-center'>
             <Loader2
@@ -384,7 +384,7 @@ const Report = () => {
           <>
             <div className='overflow-x-auto'>
               <table className='w-full text-left'>
-                <thead className='bg-gray-50 dark:bg-gray-700'>
+                <thead className='bg-gray-200 dark:bg-gray-700'>
                   <tr>
                     {getColumns().map((col, i) => (
                       <th
@@ -396,7 +396,7 @@ const Report = () => {
                     ))}
                   </tr>
                 </thead>
-                <tbody className='divide-y dark:divide-gray-700'>
+                <tbody className='divide-y divide-gray-200 dark:divide-gray-700'>
                   {mapDataToRows(paginatedData).map((row, rowIndex) => (
                     <tr
                       key={rowIndex}

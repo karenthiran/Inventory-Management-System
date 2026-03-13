@@ -273,7 +273,7 @@ const Maintenance = () => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border dark:border-gray-700 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm  overflow-hidden">
           {isLoading ? (
             <div className="p-20 text-center text-gray-500">Loading...</div>
           ) : (
