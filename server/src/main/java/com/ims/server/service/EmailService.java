@@ -96,4 +96,22 @@ public class EmailService {
         mailSender.send(mimeMessage);
     }
 
+    public void sendWelcomeEmail(String toEmail, String username, String role, String tempPassword) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setSubject("Welcome to IMS — Your Account Details");
+        message.setText(
+                "Dear " + username + ",\n\n" +
+                        "Your IMS account has been created successfully.\n\n" +
+                        "Your Login Details:\n" +
+                        "  Username : " + username + "\n" +
+                        "  Email    : " + toEmail + "\n" +
+                        "  Role     : " + role + "\n" +
+                        "  Password : " + tempPassword + "\n\n" +
+                        "⚠️  IMPORTANT: Please change your password immediately after your first login.\n\n" +
+                        "Login here: http://localhost:5173\n\n" +
+                        "Regards,\nIMS — Faculty of Engineering, University of Jaffna");
+        mailSender.send(message);
+    }
+
 }

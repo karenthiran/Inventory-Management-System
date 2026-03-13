@@ -1,5 +1,6 @@
 package com.ims.server.controller;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -63,8 +64,38 @@ public class UserController {
         if (userRepository.existsById(user.getEmail())) {
             return ResponseEntity.badRequest().body("Email already registered");
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return ResponseEntity.ok(userRepository.save(user));
+
+        // ✅ Generate a secure random temp password instead of using what admin typed
+        String tempPassword = generateTempPassword();
+
+        user.setPassword(passwordEncoder.encode(tempPassword));
+        user.setMustChangePassword(true); // ✅ force change on first login
+        User savedUser = userRepository.save(user);
+
+        // ✅ Send welcome email with temp password
+        try {
+            emailService.sendWelcomeEmail(
+                    savedUser.getEmail(),
+                    savedUser.getUsername(),
+                    savedUser.getRole(),
+                    tempPassword // ✅ temp only — user must change immediately
+            );
+        } catch (Exception e) {
+            System.err.println("Welcome email failed: " + e.getMessage());
+        }
+
+        return ResponseEntity.ok(savedUser);
+    }
+
+    // ✅ Generates a secure 10-char random password
+    private String generateTempPassword() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$!";
+        SecureRandom random = new SecureRandom();
+        StringBuilder sb = new StringBuilder(10);
+        for (int i = 0; i < 10; i++) {
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        return sb.toString();
     }
 
     @PostMapping("/login")

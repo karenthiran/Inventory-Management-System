@@ -21,7 +21,6 @@ const UserSettings = () => {
     username: "",
     email: "",
     role: "",
-    password: "User@123",
   });
 
   const [showForm, setShowForm] = useState(false);
@@ -123,9 +122,9 @@ const UserSettings = () => {
   };
 
   return (
-    <div className="space-y-6 ">
+    <div className='space-y-6 '>
       <Toaster
-        position="top-right"
+        position='top-right'
         reverseOrder={false}
         toastOptions={{
           duration: 4000,
@@ -148,7 +147,7 @@ const UserSettings = () => {
 
       <ConfirmModal
         isOpen={isModalOpen}
-        title="Confirm Deletion"
+        title='Confirm Deletion'
         message={`Are you sure you want to remove "${userToDelete}"? This action cannot be undone.`}
         onConfirm={handleConfirmDelete}
         onClose={() => !isDeleting && setIsModalOpen(false)}
@@ -157,27 +156,27 @@ const UserSettings = () => {
         loading={isDeleting}
       />
 
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">User Management</h2>
+      <div className='flex justify-between items-center'>
+        <h2 className='text-xl font-semibold'>User Management</h2>
         <button
           onClick={() => setShowForm(true)}
           disabled={loading || isDeleting}
-          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className='flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed'
         >
           <Plus size={16} />
           Add User
         </button>
       </div>
 
-      <div className="flex gap-6">
-        <div className="flex-1 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-slate-800 text-center">
+      <div className='flex gap-6'>
+        <div className='flex-1 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden'>
+          <table className='w-full'>
+            <thead className='bg-gray-50 dark:bg-slate-800 text-center'>
               <tr>
-                <th className="px-6 py-3 text-sm font-semibold">Username</th>
-                <th className="px-6 py-3 text-sm font-semibold">Email</th>
-                <th className="px-6 py-3 text-sm font-semibold">Role</th>
-                <th className="px-6 py-3 text-sm font-semibold text-center">
+                <th className='px-6 py-3 text-sm font-semibold'>Username</th>
+                <th className='px-6 py-3 text-sm font-semibold'>Email</th>
+                <th className='px-6 py-3 text-sm font-semibold'>Role</th>
+                <th className='px-6 py-3 text-sm font-semibold text-center'>
                   Actions
                 </th>
               </tr>
@@ -185,13 +184,13 @@ const UserSettings = () => {
             <tbody>
               {fetchLoading ? (
                 <tr>
-                  <td colSpan="4" className="py-10 text-center">
-                    <Loader2 className="animate-spin mx-auto text-indigo-500" />
+                  <td colSpan='4' className='py-10 text-center'>
+                    <Loader2 className='animate-spin mx-auto text-indigo-500' />
                   </td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan="4" className="py-10 text-center text-gray-400">
+                  <td colSpan='4' className='py-10 text-center text-gray-400'>
                     No users found.
                   </td>
                 </tr>
@@ -199,26 +198,26 @@ const UserSettings = () => {
                 users.map((user) => (
                   <tr
                     key={user.username}
-                    className="border-t border-gray-200 dark:border-slate-700"
+                    className='border-t border-gray-200 dark:border-slate-700'
                   >
-                    <td className="px-6 py-3 text-center">
-                      <div className="flex items-center justify-center gap-2">
+                    <td className='px-6 py-3 text-center'>
+                      <div className='flex items-center justify-center gap-2'>
                         {user.username}
                         {/* ✅ Badge for logged-in user */}
                         {user.username === loggedInUser && (
-                          <span className="text-[9px] px-2 py-0.5 bg-indigo-100 text-indigo-600 rounded-full font-bold uppercase">
+                          <span className='text-[9px] px-2 py-0.5 bg-indigo-100 text-indigo-600 rounded-full font-bold uppercase'>
                             You
                           </span>
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-3 text-center">{user.email}</td>
-                    <td className="px-6 py-3 text-center">
-                      <span className="px-3 py-1 text-xs rounded-full bg-indigo-100 text-indigo-700 uppercase font-bold">
+                    <td className='px-6 py-3 text-center'>{user.email}</td>
+                    <td className='px-6 py-3 text-center'>
+                      <span className='px-3 py-1 text-xs rounded-full bg-indigo-100 text-indigo-700 uppercase font-bold'>
                         {user.role}
                       </span>
                     </td>
-                    <td className="px-6 py-3 text-center">
+                    <td className='px-6 py-3 text-center'>
                       <button
                         onClick={() => requestDelete(user.username)}
                         disabled={
@@ -231,7 +230,7 @@ const UserSettings = () => {
                             ? "Cannot delete your own account"
                             : "Delete user"
                         }
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                        className='p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed'
                       >
                         <Trash2 size={18} />
                       </button>
@@ -244,23 +243,23 @@ const UserSettings = () => {
         </div>
 
         {showForm && (
-          <div className="w-96 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm p-6 h-fit animate-in fade-in slide-in-from-right-2">
-            <h3 className="text-lg font-semibold mb-4">Add User</h3>
+          <div className='w-96 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm p-6 h-fit animate-in fade-in slide-in-from-right-2'>
+            <h3 className='text-lg font-semibold mb-4'>Add User</h3>
 
             {errors.server && (
-              <p className="text-red-500 text-xs mb-3 italic">
+              <p className='text-red-500 text-xs mb-3 italic'>
                 {errors.server}
               </p>
             )}
 
-            <div className="space-y-4">
+            <div className='space-y-4'>
               <div>
-                <label className="text-sm text-gray-500 block mb-1">
+                <label className='text-sm text-gray-500 block mb-1'>
                   Username
                 </label>
                 <input
                   disabled={loading}
-                  placeholder="Enter username"
+                  placeholder='Enter username'
                   value={form.username}
                   onChange={(e) =>
                     setForm({ ...form, username: e.target.value })
@@ -270,13 +269,13 @@ const UserSettings = () => {
               </div>
 
               <div>
-                <label className="text-sm text-gray-500 block mb-1">
+                <label className='text-sm text-gray-500 block mb-1'>
                   Email
                 </label>
                 <input
                   disabled={loading}
-                  type="email"
-                  placeholder="user@eng.jfn.ac.lk"
+                  type='email'
+                  placeholder='user@eng.jfn.ac.lk'
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   className={`${inputClass} ${loading && "opacity-50"}`}
@@ -284,33 +283,33 @@ const UserSettings = () => {
               </div>
 
               <div>
-                <label className="text-sm text-gray-500 block mb-1">Role</label>
+                <label className='text-sm text-gray-500 block mb-1'>Role</label>
                 <select
                   disabled={loading}
                   value={form.role}
                   onChange={(e) => setForm({ ...form, role: e.target.value })}
                   className={`${inputClass} ${loading && "opacity-50"}`}
                 >
-                  <option value="">Select Role</option>
-                  <option value="ADMIN">Admin</option>
-                  <option value="HOD">HOD</option>
-                  <option value="USER">User</option>
+                  <option value=''>Select Role</option>
+                  <option value='ADMIN'>Admin</option>
+                  <option value='HOD'>HOD</option>
+                  <option value='USER'>User</option>
                 </select>
               </div>
 
-              <div className="flex gap-3 pt-2">
+              <div className='flex gap-3 pt-2'>
                 <button
                   onClick={handleSave}
                   disabled={loading}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
+                  className='flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2'
                 >
-                  {loading && <Loader2 size={16} className="animate-spin" />}
+                  {loading && <Loader2 size={16} className='animate-spin' />}
                   Save
                 </button>
                 <button
                   onClick={handleCancel}
                   disabled={loading}
-                  className="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 transition disabled:opacity-50"
+                  className='flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 transition disabled:opacity-50'
                 >
                   Cancel
                 </button>
