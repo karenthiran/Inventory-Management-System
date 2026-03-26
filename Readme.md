@@ -16,7 +16,7 @@
 | Frontend Developer | J. Shapthana | 2022/E/062 |
 | Backend Developer | K. Karenthiran | 2020/E/068 |
 | QA & Design | K. Kiruthikan | 2020/E/073 |
-| Requirements Analyst | A.R Nivethanan Croos | 2020/E/001 |
+| Requirements Analyst & Design | A.R Nivethanan Croos | 2020/E/001 |
 
 ---
 
