@@ -2,20 +2,20 @@
 
 > A web-based Inventory Management System developed for the Faculty of Engineering, University of Jaffna. Built to replace manual inventory tracking with a structured, automated, and role-based solution.
 
-**Live URL:** [https://inventrax.sytes.net/](https://inventrax.sytes.net/)  
-**API Base URL:** [http://inventrax.sytes.net:8080/api/](http://inventrax.sytes.net:8080/api/)  
+**Live URL:** [https://inventory-management-system-sigma-seven.vercel.app/](https://inventory-management-system-sigma-seven.vercel.app/)  
+**API Base URL:** [https://inventory-backend-5fd3.onrender.com/](https://inventory-backend-5fd3.onrender.com/)  
 **GitHub Repository:** [https://github.com/karenthiran/Inventory-Management-System](https://github.com/karenthiran/Inventory-Management-System)
 
 ---
 
 ## 👥 Team
 
-| Role | Member | ID |
-|------|--------|----|
-| Project Manager | T. Shakiththiyan | 2021/E/191 |
-| Frontend Developer | J. Shapthana | 2022/E/062 |
-| Backend Developer | K. Karenthiran | 2020/E/068 |
-| QA & Design | K. Kiruthikan | 2020/E/073 |
+| Role                          | Member               | ID         |
+| ----------------------------- | -------------------- | ---------- |
+| Project Manager               | T. Shakiththiyan     | 2021/E/191 |
+| Frontend Developer            | J. Shapthana         | 2022/E/062 |
+| Backend Developer             | K. Karenthiran       | 2020/E/068 |
+| QA & Design                   | K. Kiruthikan        | 2020/E/073 |
 | Requirements Analyst & Design | A.R Nivethanan Croos | 2020/E/001 |
 
 ---
@@ -41,6 +41,7 @@
 The IMS is designed to manage laboratory inventory in an academic environment. It replaces manual logbooks and spreadsheets with a centralized web platform, providing real-time tracking, role-based access, and automated reporting.
 
 **Problem Statement:**
+
 - No real-time inventory tracking
 - Manual entry errors and poor record keeping
 - No proper tracking of damaged or lost items
@@ -65,31 +66,34 @@ The IMS is designed to manage laboratory inventory in an academic environment. I
 ## Tech Stack
 
 ### Frontend
-| Technology | Purpose |
-|------------|---------|
-| React 19 + Vite 7 | UI framework |
-| Tailwind CSS | Styling and responsive layout |
-| JavaScript | Frontend logic |
+
+| Technology        | Purpose                       |
+| ----------------- | ----------------------------- |
+| React 19 + Vite 7 | UI framework                  |
+| Tailwind CSS      | Styling and responsive layout |
+| JavaScript        | Frontend logic                |
 
 ### Backend
-| Technology | Purpose |
-|------------|---------|
-| Java 21 (LTS) | Backend language |
-| Spring Boot 4.0.3 | Application framework |
-| Spring Data JPA / Hibernate | ORM and persistence |
-| PostgreSQL 17.6 | Relational database |
-| HikariCP | Connection pooling |
-| BCryptPasswordEncoder | Password hashing |
-| JavaMailSender + Gmail SMTP | Email notifications |
-| Maven | Build and dependency management |
+
+| Technology                  | Purpose                         |
+| --------------------------- | ------------------------------- |
+| Java 21 (LTS)               | Backend language                |
+| Spring Boot 4.0.3           | Application framework           |
+| Spring Data JPA / Hibernate | ORM and persistence             |
+| PostgreSQL 17.6             | Relational database             |
+| HikariCP                    | Connection pooling              |
+| BCryptPasswordEncoder       | Password hashing                |
+| JavaMailSender + Gmail SMTP | Email notifications             |
+| Maven                       | Build and dependency management |
 
 ### Infrastructure (AWS)
-| Service | Role |
-|---------|------|
-| EC2 | Hosts the Spring Boot JAR |
-| RDS (ap-south-1) | Managed PostgreSQL database |
-| S3 | Artifact storage for deployment and rollback |
-| Nginx | Reverse proxy for HTTP traffic |
+
+| Service          | Role                                         |
+| ---------------- | -------------------------------------------- |
+| EC2              | Hosts the Spring Boot JAR                    |
+| RDS (ap-south-1) | Managed PostgreSQL database                  |
+| S3               | Artifact storage for deployment and rollback |
+| Nginx            | Reverse proxy for HTTP traffic               |
 
 ---
 
@@ -110,6 +114,7 @@ Response returned to User
 ```
 
 **Key architectural features:**
+
 - Modular, layered design separating frontend, backend, and database
 - Role-Based Access Control enforced at both frontend and backend
 - Scalable — supports growth in users, items, and features
@@ -119,20 +124,20 @@ Response returned to User
 
 ## User Roles & Access Control
 
-| Function | Admin | Staff | HOD |
-|----------|:-----:|:-----:|:---:|
-| Login / Logout | ✅ | ✅ | ✅ |
-| View Inventory | ✅ | ✅ | ✅ |
-| Search / Filter Items | ✅ | ✅ | ✅ |
-| Add Inventory Item | ✅ | ❌ | ❌ |
-| Update Inventory Item | ✅ | ❌ | ❌ |
-| Delete Inventory Item | ✅ | ❌ | ❌ |
-| Issue Items | ✅ | ❌ | ❌ |
-| Return Items | ✅ | ❌ | ❌ |
-| Update Item Condition | ✅ | ❌ | ❌ |
-| Manage Users | ✅ | ❌ | ❌ |
-| View Reports | ✅ | ❌ | ✅ |
-| Export Reports | ✅ | ❌ | ✅ |
+| Function              | Admin | Staff | HOD |
+| --------------------- | :---: | :---: | :-: |
+| Login / Logout        |  ✅   |  ✅   | ✅  |
+| View Inventory        |  ✅   |  ✅   | ✅  |
+| Search / Filter Items |  ✅   |  ✅   | ✅  |
+| Add Inventory Item    |  ✅   |  ❌   | ❌  |
+| Update Inventory Item |  ✅   |  ❌   | ❌  |
+| Delete Inventory Item |  ✅   |  ❌   | ❌  |
+| Issue Items           |  ✅   |  ❌   | ❌  |
+| Return Items          |  ✅   |  ❌   | ❌  |
+| Update Item Condition |  ✅   |  ❌   | ❌  |
+| Manage Users          |  ✅   |  ❌   | ❌  |
+| View Reports          |  ✅   |  ❌   | ✅  |
+| Export Reports        |  ✅   |  ❌   | ✅  |
 
 ---
 
@@ -142,30 +147,30 @@ The database contains **10 tables** managed by Hibernate (`ddl-auto: update`) on
 
 ### Table Overview
 
-| Table | Primary Key | Purpose |
-|-------|-------------|---------|
-| `users` | email (VARCHAR) | User accounts — stores roles, BCrypt passwords, auth metadata |
-| `inventory_items` | item_code (VARCHAR) | Physical items with quantity, type, category, location FKs |
-| `issued_items` | id (BIGINT auto) | Permanent record of every issuing event — never deleted |
-| `returned_items` | id (BIGINT auto) | One-to-one record of every return — linked to issued_items |
-| `current_issued_inventory` | item_code (VARCHAR) | Guard table — item_code present = currently out on loan |
-| `maintenance_requests` | request_id (BIGINT) | Maintenance job records with status tracking |
-| `active_maintenance` | item_code (VARCHAR) | Guard table — item_code present = under maintenance |
-| `categories` | category_id (VARCHAR) | Lookup table for item categories |
-| `locations` | location_id (VARCHAR) | Lookup table for storage/lab locations |
-| `itemtype` | type_id (VARCHAR) | Lookup table for item types (e.g. Laptop, Projector) |
+| Table                      | Primary Key           | Purpose                                                       |
+| -------------------------- | --------------------- | ------------------------------------------------------------- |
+| `users`                    | email (VARCHAR)       | User accounts — stores roles, BCrypt passwords, auth metadata |
+| `inventory_items`          | item_code (VARCHAR)   | Physical items with quantity, type, category, location FKs    |
+| `issued_items`             | id (BIGINT auto)      | Permanent record of every issuing event — never deleted       |
+| `returned_items`           | id (BIGINT auto)      | One-to-one record of every return — linked to issued_items    |
+| `current_issued_inventory` | item_code (VARCHAR)   | Guard table — item_code present = currently out on loan       |
+| `maintenance_requests`     | request_id (BIGINT)   | Maintenance job records with status tracking                  |
+| `active_maintenance`       | item_code (VARCHAR)   | Guard table — item_code present = under maintenance           |
+| `categories`               | category_id (VARCHAR) | Lookup table for item categories                              |
+| `locations`                | location_id (VARCHAR) | Lookup table for storage/lab locations                        |
+| `itemtype`                 | type_id (VARCHAR)     | Lookup table for item types (e.g. Laptop, Projector)          |
 
 > **Note:** `current_issued_inventory` and `active_maintenance` are concurrency guard tables that prevent duplicate issuing and block maintenance items from being re-issued.
 
 ### Key Relationships
 
-| Relationship | Description |
-|---|---|
-| `categories → inventory_items` | @ManyToOne via category_id FK |
-| `itemtype → inventory_items` | @ManyToOne via type_id FK |
-| `locations → inventory_items` | @ManyToOne via location_id FK |
-| `issued_items → returned_items` | @OneToOne via issue_id FK (unique constraint) |
-| `users → issued_items` | issued_by as plain string — intentional, preserves history |
+| Relationship                    | Description                                                |
+| ------------------------------- | ---------------------------------------------------------- |
+| `categories → inventory_items`  | @ManyToOne via category_id FK                              |
+| `itemtype → inventory_items`    | @ManyToOne via type_id FK                                  |
+| `locations → inventory_items`   | @ManyToOne via location_id FK                              |
+| `issued_items → returned_items` | @OneToOne via issue_id FK (unique constraint)              |
+| `users → issued_items`          | issued_by as plain string — intentional, preserves history |
 
 ---
 
@@ -175,77 +180,77 @@ The REST API exposes **37+ endpoints** across 9 controller groups. All endpoints
 
 ### Authentication — `/api/users`
 
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/users/login` | Login with email + password |
-| POST | `/api/users/register` | Register new user (Admin only) |
-| GET | `/api/users/all` | List all users |
-| GET | `/api/users/profile/{username}` | Get user profile |
-| DELETE | `/api/users/{username}` | Delete user (self-deletion blocked) |
-| POST | `/api/users/forgot-password` | Request OTP for password reset |
-| POST | `/api/users/verify-otp-reset` | Verify OTP and reset password |
-| POST | `/api/users/change-password` | Change password on first login |
+| Method | Path                            | Description                         |
+| ------ | ------------------------------- | ----------------------------------- |
+| POST   | `/api/users/login`              | Login with email + password         |
+| POST   | `/api/users/register`           | Register new user (Admin only)      |
+| GET    | `/api/users/all`                | List all users                      |
+| GET    | `/api/users/profile/{username}` | Get user profile                    |
+| DELETE | `/api/users/{username}`         | Delete user (self-deletion blocked) |
+| POST   | `/api/users/forgot-password`    | Request OTP for password reset      |
+| POST   | `/api/users/verify-otp-reset`   | Verify OTP and reset password       |
+| POST   | `/api/users/change-password`    | Change password on first login      |
 
 ### Inventory — `/api/inventory`
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/inventory/all` | List all items with computed live status |
-| POST | `/api/inventory/add` | Add new inventory item |
-| PUT | `/api/inventory/update/{itemCode}` | Update item details |
-| DELETE | `/api/inventory/delete/{itemCode}` | Remove item |
-| GET | `/api/inventory/status/all` | Items with live status (Available / Issued / In Maintenance) |
+| Method | Path                               | Description                                                  |
+| ------ | ---------------------------------- | ------------------------------------------------------------ |
+| GET    | `/api/inventory/all`               | List all items with computed live status                     |
+| POST   | `/api/inventory/add`               | Add new inventory item                                       |
+| PUT    | `/api/inventory/update/{itemCode}` | Update item details                                          |
+| DELETE | `/api/inventory/delete/{itemCode}` | Remove item                                                  |
+| GET    | `/api/inventory/status/all`        | Items with live status (Available / Issued / In Maintenance) |
 
 ### Issue — `/api/issues`
 
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/issues/create` | Issue items (transactional + email notification) |
-| GET | `/api/issues/all` | List all issued records |
-| GET | `/api/issues/{id}` | Get issued record by ID |
-| GET | `/api/issues/unique-items` | Distinct item names for dropdowns |
-| GET | `/api/issues/available-codes/{itemName}` | Available item codes for issuing |
-| PUT | `/api/issues/{id}/update-date` | Edit expected return date |
+| Method | Path                                     | Description                                      |
+| ------ | ---------------------------------------- | ------------------------------------------------ |
+| POST   | `/api/issues/create`                     | Issue items (transactional + email notification) |
+| GET    | `/api/issues/all`                        | List all issued records                          |
+| GET    | `/api/issues/{id}`                       | Get issued record by ID                          |
+| GET    | `/api/issues/unique-items`               | Distinct item names for dropdowns                |
+| GET    | `/api/issues/available-codes/{itemName}` | Available item codes for issuing                 |
+| PUT    | `/api/issues/{id}/update-date`           | Edit expected return date                        |
 
 ### Return — `/api/inventory/issue`
 
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/inventory/issue/return` | Process item return (transactional + email) |
-| GET | `/api/inventory/issue/returns` | Return history |
+| Method | Path                           | Description                                 |
+| ------ | ------------------------------ | ------------------------------------------- |
+| POST   | `/api/inventory/issue/return`  | Process item return (transactional + email) |
+| GET    | `/api/inventory/issue/returns` | Return history                              |
 
 ### Maintenance — `/api/maintenance`
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/maintenance/all` | List all maintenance requests |
-| GET | `/api/maintenance/active-codes` | Item codes currently under maintenance |
-| POST | `/api/maintenance/add` | Log new maintenance request |
-| PUT | `/api/maintenance/update-status/{id}` | Resolve or cancel a request |
-| PUT | `/api/maintenance/edit/{id}` | Edit maintenance record |
+| Method | Path                                  | Description                            |
+| ------ | ------------------------------------- | -------------------------------------- |
+| GET    | `/api/maintenance/all`                | List all maintenance requests          |
+| GET    | `/api/maintenance/active-codes`       | Item codes currently under maintenance |
+| POST   | `/api/maintenance/add`                | Log new maintenance request            |
+| PUT    | `/api/maintenance/update-status/{id}` | Resolve or cancel a request            |
+| PUT    | `/api/maintenance/edit/{id}`          | Edit maintenance record                |
 
 ### Lookup Tables
 
-| Controller | Endpoints |
-|------------|-----------|
+| Controller         | Endpoints                                  |
+| ------------------ | ------------------------------------------ |
 | CategoryController | `/api/categories` — GET, POST, PUT, DELETE |
-| LocationController | `/api/locations` — GET, POST, PUT, DELETE |
-| ItemTypeController | `/api/itemtypes` — GET, POST, DELETE |
+| LocationController | `/api/locations` — GET, POST, PUT, DELETE  |
+| ItemTypeController | `/api/itemtypes` — GET, POST, DELETE       |
 
 ### Email — `/api/email`
 
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/email/send` | Manual email with optional file attachment (up to 10MB) |
+| Method | Path              | Description                                             |
+| ------ | ----------------- | ------------------------------------------------------- |
+| POST   | `/api/email/send` | Manual email with optional file attachment (up to 10MB) |
 
 **Automated emails** (non-blocking, wrapped in try/catch):
 
-| Type | Trigger |
-|------|---------|
-| Welcome Email | POST `/api/users/register` |
-| Issue Notification | POST `/api/issues/create` |
+| Type                | Trigger                            |
+| ------------------- | ---------------------------------- |
+| Welcome Email       | POST `/api/users/register`         |
+| Issue Notification  | POST `/api/issues/create`          |
 | Return Confirmation | POST `/api/inventory/issue/return` |
-| OTP Reset | POST `/api/users/forgot-password` |
+| OTP Reset           | POST `/api/users/forgot-password`  |
 
 ---
 
@@ -312,12 +317,12 @@ curl http://localhost:8080/api/inventory/all
 
 ### EC2 Security Group Ports
 
-| Port | Purpose |
-|------|---------|
-| 22 | SSH access (restrict to your IP) |
-| 8080 | Spring Boot application |
-| 80 / 443 | Nginx HTTP/HTTPS |
-| 5432 | PostgreSQL — allow EC2 security group only, never public |
+| Port     | Purpose                                                  |
+| -------- | -------------------------------------------------------- |
+| 22       | SSH access (restrict to your IP)                         |
+| 8080     | Spring Boot application                                  |
+| 80 / 443 | Nginx HTTP/HTTPS                                         |
+| 5432     | PostgreSQL — allow EC2 security group only, never public |
 
 ### SMTP Configuration
 
@@ -381,16 +386,16 @@ Click the logout icon from the top navigation bar to end your session securely.
 
 All **25 manual test cases passed**. Coverage includes:
 
-| Area | Test Cases |
-|------|------------|
+| Area                        | Test Cases      |
+| --------------------------- | --------------- |
 | Login (positive & negative) | TC_001 – TC_003 |
-| Dashboard | TC_004 |
-| Inventory CRUD | TC_005 – TC_009 |
-| Issue Management | TC_010 – TC_012 |
-| Return Management | TC_013 – TC_015 |
-| Email Functionality | TC_016 – TC_018 |
-| Reports | TC_019 – TC_021 |
-| Navigation & Security | TC_022 – TC_025 |
+| Dashboard                   | TC_004          |
+| Inventory CRUD              | TC_005 – TC_009 |
+| Issue Management            | TC_010 – TC_012 |
+| Return Management           | TC_013 – TC_015 |
+| Email Functionality         | TC_016 – TC_018 |
+| Reports                     | TC_019 – TC_021 |
+| Navigation & Security       | TC_022 – TC_025 |
 
 **Test environment:** Windows, Google Chrome, Selenium, Browser DevTools
 
