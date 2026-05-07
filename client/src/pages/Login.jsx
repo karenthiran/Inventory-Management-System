@@ -84,6 +84,9 @@ function Login() {
                   required
                 />
               </div>
+              <div className="text-xs text-gray-700">
+                Test_Email:superadmin@gmail.com
+              </div>
             </div>
 
             {/* PASSWORD INPUT */}
@@ -109,6 +112,7 @@ function Login() {
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+              <div className="text-xs text-gray-700">password:Supper@min</div>
             </div>
 
             {/* FORGOT PASSWORD */}
@@ -147,10 +151,6 @@ function Login() {
                   "Sign in"
                 )}
               </button>
-            </div>
-            <div className="text-sm text-gray-700">
-              <div>TestEmail:superadmin@gmail.com</div>
-              <div>password:Supper@min</div>
             </div>
           </form>
         </div>
